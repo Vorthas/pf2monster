@@ -7,6 +7,7 @@
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QPalette>
+#include <QStyle>
 
 namespace
 {
@@ -79,7 +80,15 @@ int main(int argc, char *argv[])
 {
     // Before the application: Qt reads the installed fonts when it starts.
     scribe::hideBrokenInstalledFonts();
+    // Fusion, with its own colours, whatever the desktop's style (e.g.
+    // Kvantum through QT_STYLE_OVERRIDE): its input boxes stand out from the
+    // form, and the app looks the same however it is launched. The override
+    // is dropped before the application exists, since a style loaded then
+    // leaves its palette behind even after Fusion replaces it.
+    qunsetenv("QT_STYLE_OVERRIDE");
     QApplication app(argc, argv);
+    QApplication::setStyle(QStringLiteral("Fusion"));
+    QApplication::setPalette(QApplication::style()->standardPalette());
     // Where QSettings keeps options (~/.config/pf2monster/pf2monster.conf on
     // Linux), and the name shown in window titles.
     QApplication::setOrganizationName(QStringLiteral("pf2monster"));
