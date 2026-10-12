@@ -1,0 +1,28 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "guardian",
+ "name": "Guardian",
+ "list": "class",
+ "order": 115,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Moderate Perception; high Athletics; high Str; high to extreme AC; high Fortitude, low Reflex; high HP; resistance to physical damage based on level; moderate accuracy; moderate damage. Abilities: Shield Block, Intercept Attack, one extra reaction each round to use for any reaction specified in statblock (two extra reactions at level 7 or higher), Taunt",
+ "benchmarks": {
+  "perception": ["moderate"],
+  "athletics": ["high"],
+  "strength": ["high"],
+  "ac": ["high", "extreme"],
+  "fortitude": ["high"],
+  "reflex": ["low"],
+  "hp": ["high"]
+ },
+ "notes": {
+  "perception": "Moderate Perception.",
+  "skills": "High Athletics.",
+  "attributes": "High Strength.",
+  "defense": "High to extreme AC; high Fortitude, low Reflex; high HP; resistance to physical damage based on its level.",
+  "offense": "Moderate attack bonus and moderate damage.",
+  "specials": "Shield Block, Intercept Attack, Taunt; one extra reaction each round to use for any reaction in its stat block (two extra reactions at level 7 or higher)."
+ }
+}

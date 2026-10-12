@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "merfolk",
+ "name": "Merfolk",
+ "group": "Ancestry",
+ "order": 72,
+ "source": "Pathfinder NPC Core, Merfolk (pg. 151), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=40",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with merfolk (or adds it); adds amphibious, adds Thalassic, low-light vision, land Speed 5 feet, swim Speed 25 feet.",
+ "optional": "You can add a supramarine chair item to give the merfolk a land Speed equal to their swim Speed. Use the rules for a wheelchair.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "merfolk"},
+  "languagesAlways": true,
+  "languages": ["Thalassic"],
+  "senses": ["low-light vision"],
+  "traits": ["amphibious"],
+  "landSpeed": {"set": 5},
+  "speeds": [{"type": "swim", "steps": [{"change": 25}]}]
+ }
+}

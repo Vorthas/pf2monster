@@ -1,0 +1,31 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "cleric (cloistered)",
+ "name": "Cleric",
+ "variant": "Cloistered Cleric",
+ "list": "class",
+ "order": 107,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Perception; high Religion, moderate or high skill themed to deity; low AC; high Wis; low Fortitude, high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities: Prepared divine spellcasting as a cleric of their level; divine font; domain spells",
+ "benchmarks": {
+  "perception": ["high"],
+  "religion": ["high"],
+  "wisdom": ["high"],
+  "ac": ["low"],
+  "fortitude": ["low"],
+  "will": ["high"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "High Religion; a moderate or high skill themed to the deity.",
+  "attributes": "High Wisdom.",
+  "defense": "Low AC; low Fortitude, high Will; low to moderate HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Prepared divine spellcasting as a cleric of its level: {maxrank}. Divine font; domain spells."
+ }
+}

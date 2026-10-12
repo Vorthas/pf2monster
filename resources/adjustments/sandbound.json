@@ -1,0 +1,22 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "sandbound",
+ "name": "Sandbound",
+ "group": "Environment",
+ "order": 22,
+ "source": "Pathfinder Howl of the Wild, Sandbound adjustment (pg. 123), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=27",
+ "license": "ORC License: Paizo's Pathfinder Howl of the Wild is ORC licensed material.",
+ "rules": "Adds resistance to fire and weakness to cold 3, 5, 10 or 15 by level (3 or lower, 4-8, 9-13, 14+), a burrow Speed of half its fastest Speed if it has none, and Efficient Metabolism, Scorching Adaptation, Desert Steps and Sand Burst.",
+ "changes": {
+  "resistances": [{"type": "fire", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}],
+  "weaknesses": [{"type": "cold", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}],
+  "derivedSpeeds": [{"type": "burrow", "from": "fastest", "half": true, "min": 5}]
+ },
+ "abilities": [
+  {"key": "efficient-metabolism", "name": "Efficient Metabolism", "type": "general", "actions": "none", "traits": "", "description": "{Name} can go 10 times as long as normal before it's affected by starvation and thirst."},
+  {"key": "scorching-adaptation", "name": "Scorching Adaptation", "type": "defense", "actions": "none", "traits": "", "description": "{Name} treats environmental heat effects as if they were one step less extreme (incredible heat becomes extreme, extreme heat becomes severe, and so on)."},
+  {"key": "desert-steps", "name": "Desert Steps", "type": "offense", "actions": "none", "traits": "", "description": "{Name} ignores uneven ground and difficult terrain caused by sand (reducing greater difficult terrain from sand to ordinary difficult terrain)."},
+  {"key": "sand-burst", "name": "Sand Burst", "type": "offense", "actions": "two", "traits": "", "description": "Requirements {Name} is burrowed in loose sand or earth; Effect {Name} Burrows twice, then makes a melee Strike. If it was undetected at the start of its movement, it remains undetected until after the attack."}
+ ]
+}

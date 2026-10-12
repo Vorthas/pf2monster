@@ -1,0 +1,25 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "phantom",
+ "name": "Phantom",
+ "prefix": "Phantom",
+ "group": "Undead/Ghost",
+ "order": 102,
+ "source": "Pathfinder Monster Core, Phantom (pg. 262), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=455",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "For a living creature; no level change. Trades its traits for ethereal, incorporeal and spirit; its Strikes gain magical (and finesse, melee); immunities, resistance to all damage and Phantom Touch.",
+ "optional": "It loses abilities that come from being a living creature, and traits of its life other than human, humanoid and the ancestries (removed here): remove those by hand, and adjust abilities that conflict with its theme. Many phantoms gain occult innate spells or powers tied to the Ethereal Plane; if you give it more than one new ability, consider raising its level. The resistance uses the resistance table's minimum for its level.",
+ "changes": {
+  "traits": ["ethereal", "incorporeal", "spirit"],
+  "removeLiving": true,
+  "livingType": "spirit",
+  "removeTraits": ["animal", "beast"],
+  "strikeTraits": {"all": ["magical"], "melee": ["finesse"]},
+  "immunities": ["bleed", "disease", "paralyzed", "poison", "precision"],
+  "resistances": [{"type": "all damage", "expr": "resmin", "suffix": "(except force, ghost touch, or spirit; double resistance vs. non-magical)"}]
+ },
+ "abilities": [
+  {"key": "phantom-touch", "name": "Phantom Touch", "type": "offense", "actions": "none", "traits": "spirit", "description": "Each time {name} makes a Strike, it can choose to deal spirit damage instead of the normal physical damage type."}
+ ]
+}

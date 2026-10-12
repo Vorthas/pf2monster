@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "earth",
+ "name": "Earth",
+ "group": "Elemental",
+ "order": 11,
+ "source": "Pathfinder Rage of Elements, Earth adjustment (pg. 91), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=17",
+ "license": "ORC License: Paizo's Pathfinder Rage of Elements is ORC licensed material.",
+ "rules": "Adds the earth trait, tremorsense (imprecise) 60 feet, Petran (if it has languages) and a burrow Speed of 20 feet (40 feet at 8th level or higher).",
+ "optional": "Optional: If it can cast spells, you can replace spells with earth spells of the same rank, such as: cantrip scatter scree, 1st pummeling rubble, 2nd exploding earth, 3rd one with stone, 4th mountain resilience, 5th wall of stone, 6th petrify, 7th heaving earth, 8th earthquake.",
+ "changes": {
+  "traits": ["earth"],
+  "languages": ["Petran"],
+  "senses": ["tremorsense (imprecise) 60 feet"],
+  "speeds": [{"type": "burrow", "steps": [{"max": 7, "change": 20}, {"change": 40}]}]
+ }
+}

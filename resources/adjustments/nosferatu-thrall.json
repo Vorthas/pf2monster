@@ -1,0 +1,23 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "nosferatu-thrall",
+ "name": "Nosferatu Thrall",
+ "prefix": "Nosferatu thrall",
+ "group": "Undead/Vampire",
+ "order": 109,
+ "source": "Pathfinder Monster Core 2, Vampire, Nosferatu (pg. 338), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=630",
+ "license": "ORC License: Paizo's Pathfinder Monster Core 2 is ORC licensed material.",
+ "rules": "For a non-mindless living creature that isn't immune to mental effects, bound to a nosferatu by a 1-day ritual. Increase its level by 1. Gains fast healing 5, weakness 10 to mental damage, Mindbound, Mortal Shield and Rally.",
+ "optional": "A nosferatu can keep as many thralls as its Charisma modifier; making more frees the earlier ones.",
+ "changes": {
+  "level": [{"change": 1}],
+  "hpAbilities": [{"type": "fast healing", "steps": [{"change": 5}]}],
+  "weaknesses": [{"type": "mental", "steps": [{"change": 10}]}]
+ },
+ "abilities": [
+  {"key": "mindbound", "name": "Mindbound", "type": "defense", "actions": "none", "traits": "divine", "description": "A nosferatu master exerts a fierce hold over their thrall's mind. If any creature other than {name}'s master targets them with an effect that would give them the controlled condition, {name}'s master rolls a counteract check against it using their Dominate DC – 10 as the counteract check modifier."},
+  {"key": "mortal-shield", "name": "Mortal Shield", "type": "defense", "actions": "reaction", "traits": "", "description": "Trigger {Name}'s master would take damage from a Strike or spell attack and is in an adjacent square; Effect {Name} throws themself in front of their master, taking half the damage of the attack (before applying any weaknesses or resistances). {Name}'s master takes the remaining damage, applying any weaknesses or resistances as normal."},
+  {"key": "rally", "name": "Rally", "type": "defense", "actions": "reaction", "traits": "", "description": "Trigger {Name} ends their turn more than 30 feet away from their master; Effect {Name} Strides up to their Speed toward their master."}
+ ]
+}

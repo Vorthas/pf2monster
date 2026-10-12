@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "elf",
+ "name": "Elf",
+ "group": "Ancestry",
+ "order": 63,
+ "dialog": "options",
+ "source": "Pathfinder NPC Core, Elf (pg. 168), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=43",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with elf (or adds it); adds Elven, low-light vision, optionally Speed 30 feet if lower.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "elf"},
+  "languagesAlways": true,
+  "languages": ["Elven"],
+  "senses": ["low-light vision"]
+ },
+ "choices": [
+  {"key": "options", "type": "pick", "label": "Options", "items": [{"key": "speed", "label": "Speed 30 feet if lower", "on": true, "changes": {"landSpeed": {"min": 30}}}]}
+ ]
+}

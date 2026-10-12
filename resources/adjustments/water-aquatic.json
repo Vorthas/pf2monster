@@ -1,0 +1,19 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "water-aquatic",
+ "name": "Water (Aquatic)",
+ "group": "Elemental",
+ "order": 15,
+ "source": "Pathfinder Rage of Elements, Water adjustment (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=20",
+ "license": "ORC License: Paizo's Pathfinder Rage of Elements is ORC licensed material.",
+ "rules": "Adds the water and aquatic traits and Thalassic (if it has languages); decreases its HP by 6, 10, 20 or 30 and adds resistance to fire 3, 5, 10 or 15, by level (3 or lower, 4-8, 9-13, 14+); swim Speed 25 feet (40 feet at 8th level or higher).",
+ "optional": "Optional: If it can cast spells, you can replace spells with water spells of the same rank, such as: cantrip spout, 1st hydraulic push, 2nd mist, 3rd aqueous orb, 4th hydraulic torrent, 5th control water, 6th personal ocean, 7th hungry depths, 8th whirlpool.",
+ "changes": {
+  "traits": ["water", "aquatic"],
+  "languages": ["Thalassic"],
+  "hp": [{"max": 3, "change": -6}, {"max": 8, "change": -10}, {"max": 13, "change": -20}, {"change": -30}],
+  "resistances": [{"type": "fire", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}],
+  "speeds": [{"type": "swim", "steps": [{"max": 7, "change": 25}, {"change": 40}]}]
+ }
+}

@@ -1,0 +1,303 @@
+{
+ "source": "Pathfinder GM Core, \"Building Creatures\", Trait Abilities, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "traits": {
+  "aberration": {
+   "name": "Aberration",
+   "lines": [
+    "**Senses** usually darkvision",
+    "**Languages** usually Aklo"
+   ]
+  },
+  "aeon": {
+   "name": "Aeon",
+   "lines": [
+    "**Traits** monitor",
+    "**Languages** Utopian and other planar languages; envisioning for true aeons (_Monster Core_)"
+   ]
+  },
+  "air": {
+   "name": "Air",
+   "lines": [
+    "**Languages** usually Sussuran",
+    "**Speed** usually has a fly Speed"
+   ]
+  },
+  "angel": {
+   "name": "Angel",
+   "lines": [
+    "**Traits** celestial, holy",
+    "**Aura** Angels each have a unique aura based on how they serve as messengers and how they deliver those messages.",
+    "**Speed** usually has a fly Speed",
+    "**Rituals** usually angelic messenger (Monster Core)"
+   ]
+  },
+  "animal": {
+   "name": "Animal",
+   "lines": [
+    "**Languages** none",
+    "**Int** –4 or –5"
+   ]
+  },
+  "archon": {
+   "name": "Archon",
+   "lines": [
+    "**Traits** celestial, holy",
+    "**Immunities** fear",
+    "**Virtue Ability** Archons each represent a specific virtue, like courage or hope, and have a special ability based on the virtue they represent."
+   ]
+  },
+  "astral": {
+   "name": "Astral",
+   "lines": [
+    "**Senses** darkvision"
+   ]
+  },
+  "azata": {
+   "name": "Azata",
+   "lines": [
+    "**Traits** celestial, holy",
+    "**Weaknesses** cold iron",
+    "**Freedom Ability** Azatas each represent a specific freedom, like free expression or free love, and have a special ability based on the freedom they represent."
+   ]
+  },
+  "beast": {
+   "name": "Beast",
+   "lines": [
+    "**Int** –3 or higher"
+   ]
+  },
+  "celestial": {
+   "name": "Celestial",
+   "lines": [
+    "**Traits** holy",
+    "**Senses** darkvision",
+    "**Languages** Empyrean",
+    "**Saves** often a +1 status bonus to all saves vs. magic",
+    "**Weaknesses** unholy",
+    "**Strikes** typically have the holy trait"
+   ]
+  },
+  "cold": {
+   "name": "Cold",
+   "lines": [
+    "**Immunities** or **Resistances** cold"
+   ]
+  },
+  "construct": {
+   "name": "Construct",
+   "lines": [
+    "**Traits** Many constructs lack minds and have the mindless trait.",
+    "**Immunities** bleed, death effects, diseased, doomed, drained, fatigued, healing, nonlethal attacks, paralyzed, poison, sickened, spirit, unconscious, vitality, void; if mindless, add mental"
+   ]
+  },
+  "daemon": {
+   "name": "Daemon",
+   "lines": [
+    "**Traits** fiend, unholy",
+    "**Languages** Daemonic, telepathy 100 feet",
+    "**Immunities** death effects",
+    "**Death Ability** Daemons each represent a specific kind of death, like death by disease or starvation, and have a special ability based on the method of death they represent."
+   ]
+  },
+  "demon": {
+   "name": "Demon",
+   "lines": [
+    "**Traits** fiend, unholy",
+    "**Languages** Chthonian, telepathy (usually 100 feet)",
+    "**HP** typically high to account for their multiple weaknesses",
+    "**Weaknesses** cold iron",
+    "**Sin Vulnerability** Demons each represent a specific sin, like envy or wrath, and have a special vulnerability based on the sin they represent. This should be something the PCs can exploit through their actions, which should then deal mental damage to the demon. The amount of damage should be based on how easy the vulnerability is to exploit.",
+    "**Divine Innate Spells** usually 5th-rank translocate and at-will 4th-rank translocate",
+    "**Rituals** usually demonic pact (_Monster Core_)",
+    "**Sin Ability** Demons also have a special ability based on the sin they represent, which either makes them better embody the sin or instills that sin in others."
+   ]
+  },
+  "devil": {
+   "name": "Devil",
+   "lines": [
+    "**Traits** fiend, unholy",
+    "**Languages** Diabolic, telepathy (usually 100 feet)",
+    "**Immunities** fire; Weaknesses holy; **Resistances** physical (except silver), poison",
+    "**Divine Innate Spells** usually one 5th-rank translocate and at-will 4th-rank translocate",
+    "**Rituals** usually diabolic pact (_Monster Core_)",
+    "**Infernal** Hierarchy Ability Devils each have an ability corresponding to the role they play in the infernal hierarchy, typically focused around control or being controlled."
+   ]
+  },
+  "dragon": {
+   "name": "Dragon",
+   "lines": [
+    "**Senses** darkvision",
+    "**Languages** usually Draconic",
+    "**Speed** usually has a fly Speed",
+    "**Dragon Breath** Many dragons have an activity to exhale magical, damaging energy, with specifics determined by their theme."
+   ]
+  },
+  "earth": {
+   "name": "Earth",
+   "lines": [
+    "**Perception** often tremorsense",
+    "**Languages** usually Petran",
+    "**Speed** usually a burrow Speed"
+   ]
+  },
+  "elemental": {
+   "name": "Elemental",
+   "lines": [
+    "**Senses** darkvision",
+    "**Immunities** bleed, paralyzed, poison, sleep"
+   ]
+  },
+  "ethereal": {
+   "name": "Ethereal",
+   "lines": [
+    "**Senses** darkvision"
+   ]
+  },
+  "fey": {
+   "name": "Fey",
+   "lines": [
+    "**Senses** low-light vision",
+    "**Languages** usually Aklo, Fey, or both",
+    "**Weaknesses** cold iron"
+   ]
+  },
+  "fiend": {
+   "name": "Fiend",
+   "lines": [
+    "**Traits** unholy",
+    "**Senses** darkvision",
+    "**Saves** often a +1 status bonus to all saves vs. magic",
+    "**Weaknesses** holy",
+    "**Strikes** typically have the unholy trait"
+   ]
+  },
+  "fire": {
+   "name": "Fire",
+   "lines": [
+    "**Languages** usually Pyric",
+    "**Immunities** fire; **Weaknesses** typically cold and water",
+    "**Strikes** typically deal fire damage"
+   ]
+  },
+  "fungus": {
+   "name": "Fungus",
+   "lines": [
+    "**Traits** fungi without minds have the mindless trait",
+    "**Immunities** if mindless, mental; **Weaknesses** sometimes slashing or fire"
+   ]
+  },
+  "giant": {
+   "name": "Giant",
+   "lines": [
+    "**Traits** Large or bigger, humanoid",
+    "**Senses** low-light vision",
+    "**Languages** usually Jotun"
+   ]
+  },
+  "humanoid": {
+   "name": "Humanoid",
+   "lines": [
+    "**Int** –3 or higher"
+   ]
+  },
+  "incorporeal": {
+   "name": "Incorporeal",
+   "lines": [
+    "**Str** –5",
+    "**HP** terrible at lower levels, then low at higher levels",
+    "**AC** typically low or moderate",
+    "**Immunities** bleed, disease, paralyzed, poison, precision; **Resistances** all damage (except force, _ghost touch_, vitality for undead, or spirit; double resistance vs. non-magical)",
+    "**Strikes** magical trait, typically low or moderate damage"
+   ]
+  },
+  "metal": {
+   "name": "Metal",
+   "lines": [
+    "**Languages** usually Talican"
+   ]
+  },
+  "monitor": {
+   "name": "Monitor",
+   "lines": [
+    "**Senses** darkvision"
+   ]
+  },
+  "ooze": {
+   "name": "Ooze",
+   "lines": [
+    "**Traits** Almost all oozes lack minds and have the mindless trait.",
+    "**Senses** typically motion sense and no vision",
+    "**AC** usually terrible",
+    "**HP** usually around double",
+    "**Immunities** bleed, critical hits, precision, unconscious, often acid; if it has no vision, add visual effects; if mindless, add mental"
+   ]
+  },
+  "plant": {
+   "name": "Plant",
+   "lines": [
+    "**Traits** plants without minds have the mindless trait",
+    "**Senses** usually low-light vision",
+    "**Immunities** if mindless, mental; **Weaknesses** sometimes fire"
+   ]
+  },
+  "protean": {
+   "name": "Protean",
+   "lines": [
+    "**Traits** monitor",
+    "**Languages** Protean",
+    "**Resistances** precision, protean anatomy (_Monster Core_)",
+    "**Divine Innate Spells** constant unfettered movement",
+    "**Change** Shape (_Monster Core_)"
+   ]
+  },
+  "psychopomp": {
+   "name": "Psychopomp",
+   "lines": [
+    "**Traits** monitor",
+    "**Senses** lifesense (typically 60 feet)",
+    "**Languages** Requian",
+    "**Immunities** death effects, disease",
+    "**Resistances** poison, void",
+    "**Damage** _shepherd's touch_ (_Monster Core_)"
+   ]
+  },
+  "spirit": {
+   "name": "Spirit",
+   "lines": [
+    "**Traits** often incorporeal, often undead"
+   ]
+  },
+  "swarm": {
+   "name": "Swarm",
+   "lines": [
+    "**Traits** size based on the entire mass, usually Large or bigger",
+    "**HP** typically low",
+    "**Immunities** grabbed, precision, prone, restrained, swarm mind; **Weaknesses** area damage, splash damage; **Resistances** physical, usually with one physical type having lower or no resistance"
+   ]
+  },
+  "undead": {
+   "name": "Undead",
+   "lines": [
+    "**Traits** Almost all undead are unholy. Ghostly undead have the incorporeal trait. Undead without minds, such as most zombies, have the mindless trait.",
+    "**Senses** darkvision",
+    "**HP** void healing (_Monster Core_)",
+    "**Immunities** death effects, disease, paralyzed, poison, sleep (or unconscious if it never rests at all); if mindless, add mental"
+   ]
+  },
+  "water": {
+   "name": "Water",
+   "lines": [
+    "**Languages** usually Thalassic",
+    "**Speed** usually has a swim Speed"
+   ]
+  },
+  "wood": {
+   "name": "Wood",
+   "lines": [
+    "**Languages** usually Muan",
+    "**Weaknesses** fire and axes or slashing"
+   ]
+  }
+ }
+}

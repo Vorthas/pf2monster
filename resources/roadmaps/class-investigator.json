@@ -1,0 +1,27 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "investigator",
+ "name": "Investigator",
+ "list": "class",
+ "order": 118,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Perception; high Society, high methodology skill, plus more skills than usual; high Int; low Fortitude, high Will; low to moderate HP; moderate attack and low to moderate damage before strategic strike plus high damage with strategic strike. Abilities: Pursue a Lead, Devise a Stratagem, methodology action",
+ "benchmarks": {
+  "perception": ["high"],
+  "society": ["high"],
+  "intelligence": ["high"],
+  "fortitude": ["low"],
+  "will": ["high"],
+  "hp": ["low", "moderate"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "High Society, a high methodology skill, and more skills than usual.",
+  "attributes": "High Intelligence.",
+  "defense": "Low Fortitude, high Will; low to moderate HP.",
+  "offense": "Moderate attack bonus and low to moderate damage before strategic strike, high damage with strategic strike.",
+  "specials": "Pursue a Lead, Devise a Stratagem, methodology action."
+ }
+}

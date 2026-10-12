@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "lizardfolk",
+ "name": "Lizardfolk",
+ "group": "Ancestry",
+ "order": 71,
+ "source": "Pathfinder NPC Core, Lizardfolk (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=51",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with lizardfolk (or adds it); adds Iruxi, swim Speed 15 feet, fists become claws (slashing), Deep Breath.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "lizardfolk"},
+  "languagesAlways": true,
+  "languages": ["Iruxi"],
+  "speeds": [{"type": "swim", "steps": [{"change": 15}]}],
+  "renameStrikes": [{"from": "fist", "name": "claw", "damageFrom": "bludgeoning", "damageTo": "slashing"}]
+ },
+ "abilities": [
+  {"key": "deep-breath", "name": "Deep Breath", "type": "general", "actions": "none", "traits": "", "description": "{Name} can hold their breath for 15 minutes."}
+ ]
+}

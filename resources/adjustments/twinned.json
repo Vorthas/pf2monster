@@ -1,0 +1,19 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "twinned",
+ "name": "Twinned",
+ "group": "Body",
+ "order": 32,
+ "source": "Pathfinder Howl of the Wild, Twinned adjustment (pg. 123), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=28",
+ "license": "ORC License: Paizo's Pathfinder Howl of the Wild is ORC licensed material.",
+ "rules": "Adds a second head: Independent Brains (each head takes its own turn), Gnaw Free and Reactive Strike.",
+ "changes": {
+
+ },
+ "abilities": [
+  {"key": "independent-brains", "name": "Independent Brains", "type": "general", "actions": "none", "traits": "", "description": "Each of {name}'s heads rolls its own initiative and has its own turn. Neither head can Delay. At the start of a head's turn, that head gets 2 actions and 1 reaction. Each brain can control the creature's body normally. Taking damage equal to half its Hit Points ({halfHp} HP) or any ability that would sever one of its heads (such as the vorpal weapon property) destroys one head and causes {name} to lose the turns, actions, and reactions of the severed head. Mental effects that target a single creature affect only one of its heads."},
+  {"key": "gnaw-free", "name": "Gnaw Free", "type": "defense", "actions": "reaction", "traits": "", "description": "Trigger {Name}'s other head attempts to Escape; Effect This head bites its grappler or restraints to help the other head break free. {Name} gains a +2 circumstance bonus to its Escape check."},
+  {"key": "reactive-strike", "name": "Reactive Strike", "type": "defense", "actions": "reaction", "traits": "", "description": ""}
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "experimental-cryptid",
+ "name": "Experimental Cryptid",
+ "prefix": "Experimental",
+ "group": "Cryptid",
+ "order": 40,
+ "source": "Pathfinder Dark Archive (Remastered), Experimental Cryptids (pg. 58), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=56",
+ "license": "ORC License: Paizo's Pathfinder Dark Archive (Remastered) is ORC licensed material.",
+ "rules": "Increase its level by 1; AC, attacks, DCs, Perception, saves and skills by 1; Strike damage by 1; HP by its starting level. Adds the experiment trait, darkvision, Augmented, Operational Flaw, Clobber, Energy Wave and Power Surge.",
+ "optional": "Damage: only its Strikes deal 1 more. The rules also add 1 to the damage of its other offensive abilities (2 for ones it can use only a small number of times, such as a breath weapon): change those by hand. Energy Wave and Power Surge deal energy of a type specific to the experimental cryptid (typically electricity or fire) and have that damage type's trait, plus the trait of a magical tradition (arcane, divine, occult or primal) if the experiments were magical: to set them, write your own Energy Wave and Power Surge in the form; an ability of the same name replaces the one made here. You can also give it the alchemical, clockwork or another construct-related trait to suit its parts.",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "strikeDamage": 1,
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}],
+  "traits": ["experiment"],
+  "senses": ["darkvision"]
+ },
+ "abilities": [
+  {"key": "augmented", "name": "Augmented", "type": "defense", "actions": "none", "traits": "", "description": "{Name} is partially artificial and designed in a way to specifically prevent biological afflictions and instant death. It gains a +2 circumstance bonus to saving throws against death effects, disease, and poison."},
+  {"key": "operational-flaw", "name": "Operational Flaw", "type": "defense", "actions": "none", "traits": "", "description": "{Name} has a flaw in its construction that can be identified with a successful DC {dc:hard} Perception check to Seek. It has weakness {=max(1, level)} to the attacks of any creature that has successfully located the operational flaw."},
+  {"key": "clobber", "name": "Clobber", "type": "offense", "actions": "two", "traits": "", "description": "{Name} Strikes a creature. On a hit, the creature is pushed 5 feet (10 feet on a critical hit) and knocked prone. If this causes the creature to collide with a solid object, the creature takes an additional 1d10 damage.{steps||5= This Strike deals one additional weapon damage die of damage.|15= This Strike deals two additional weapon damage dice of damage.}"},
+  {"key": "energy-wave", "name": "Energy Wave", "type": "offense", "actions": "two", "traits": "", "description": "{Name} unleashes a 30-foot line of energy of a type specific to it (typically electricity or fire). Creatures in the area take {=max(1, level)}d6 damage of that type (DC {abilitydc} basic Reflex save). {Name} can't use Energy Wave again for 1d4 rounds."},
+  {"key": "power-surge", "name": "Power Surge", "type": "offense", "actions": "one", "traits": "", "description": "{Name} draws on its augmentations to empower its attacks. It attempts a DC 5 flat check. On a success, it deals {steps|1d6|9=2d6|15=3d6|18=4d6} additional damage with its Strikes until the end of its turn. On a failure, it takes that much damage instead. The damage and traits are the same as those of Energy Wave."}
+ ]
+}

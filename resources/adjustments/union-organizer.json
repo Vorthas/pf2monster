@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "union-organizer",
+ "name": "Union Organizer",
+ "group": "NPC Role",
+ "order": 54,
+ "source": "Pathfinder NPC Core, Union Organizer (pg. 71), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=35",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Diplomacy and Labor Lore at its highest skill modifier; Solidarity.",
+ "changes": {
+  "skillsToHighest": ["diplomacy"],
+  "lores": [{"name": "Labor Lore", "benchmark": "highest"}]
+ },
+ "abilities": [
+  {"key": "solidarity", "name": "Solidarity", "type": "defense", "actions": "none", "traits": "aura", "description": "10 feet. While leading a demonstration, {name} grants themself and their allies a +1 circumstance bonus to saving throws against fatigue and mental effects. Greater numbers amplify the effect. The emanation increases to 20 feet if there are at least 5 allies within 10 feet, and to 30 feet if there are at least 10 allies within 20 feet."}
+ ]
+}

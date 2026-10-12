@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "spellcaster (cha)",
+ "name": "Spellcaster",
+ "variant": "Charisma",
+ "list": "base",
+ "order": 13,
+ "source": "Pathfinder GM Core, \"Building Creatures\" (pg. 112), Base Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "high or extreme modifier for the spellcasting attribute; low Fortitude, high Will; low HP; low attack bonus and moderate or low damage; high or extreme spell DCs; prepared or spontaneous spells with a rank of up to half the creature's level (rounded up)",
+ "benchmarks": {
+  "charisma": ["high", "extreme"],
+  "fortitude": ["low"],
+  "will": ["high"],
+  "hp": ["low"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "attributes": "High or extreme Charisma, its spellcasting attribute.",
+  "defense": "Low Fortitude, high Will; low HP.",
+  "offense": "Low attack bonus and moderate or low damage.",
+  "spells": "High or extreme spell DCs. Prepared or spontaneous spells up to half the level (rounded up): {maxrank}."
+ }
+}

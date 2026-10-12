@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "ratfolk",
+ "name": "Ratfolk",
+ "group": "Ancestry",
+ "order": 74,
+ "source": "Pathfinder NPC Core, Ratfolk (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=53",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with ratfolk (or adds it); adds Ysoki, low-light vision, size Small, a jaws Strike.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "ratfolk"},
+  "languagesAlways": true,
+  "languages": ["Ysoki"],
+  "senses": ["low-light vision"],
+  "size": "small"
+ },
+ "strikes": [
+  {"key": "jaws", "name": "jaws", "type": "Melee", "from": "lowest", "traits": "agile, finesse", "damageType": "piercing"}
+ ]
+}

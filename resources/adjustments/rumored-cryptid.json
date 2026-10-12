@@ -1,0 +1,38 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "rumored-cryptid",
+ "name": "Rumored Cryptid",
+ "group": "Cryptid",
+ "order": 43,
+ "dialog": "options",
+ "source": "Pathfinder Dark Archive (Remastered), Rumored Cryptid (pg. 61), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=59",
+ "license": "ORC License: Paizo's Pathfinder Dark Archive (Remastered) is ORC licensed material.",
+ "rules": "Increase its level by 1; AC, attacks, DCs, Perception, saves and skills by 1; Strike damage by 1; HP by its starting level. Adds the rare trait, animal becomes beast, Intelligence at least -3, Stealth at its highest skill, darkvision (greater darkvision if it has darkvision) and the rumored abilities; optionally Hybrid Form and Howl.",
+ "optional": "Damage: only its Strikes deal 1 more. The rules also add 1 to the damage of its other offensive abilities (2 for ones it can use only a small number of times, such as a breath weapon): change those by hand. Recall Knowledge (with Creature Obscura): the line shows the incredibly hard DC and Society or a Lore for a nearby settlement; all failures to identify it gain the effects of Dubious Knowledge.",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "strikeDamage": 1,
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}],
+  "rarity": "rare",
+  "replaceTraits": {"animal": "beast"},
+  "attributeMin": {"intelligence": -3},
+  "skillsToHighest": ["stealth"],
+  "senses": ["darkvision"],
+  "senseUpgrades": {"darkvision": "greater darkvision"}, "recallKnowledge": {"difficulty": "incredibly hard", "skills": ["Society or a Lore for a nearby settlement"], "when": "abilities:creature-obscura"}
+ },
+ "choices": [
+  {"key": "abilities", "type": "pick", "label": "Abilities", "note": "All of these, unless one conflicts with the creature's theme.", "items": [{"key": "creature-obscura", "label": "Creature Obscura", "on": true}, {"key": "shifting-form", "label": "Shifting Form", "on": true}, {"key": "obscura-vulnerability", "label": "Obscura Vulnerability", "on": true}, {"key": "stalk", "label": "Stalk", "on": true}, {"key": "vanishing-escape", "label": "Vanishing Escape", "on": true}]},
+  {"key": "extras", "type": "pick", "label": "Optional abilities", "note": "One, both or neither.", "items": [{"key": "hybrid-form", "label": "Hybrid Form (a Speed equal to its land Speed)"}, {"key": "howl", "label": "Howl"}]},
+  {"key": "hybrid", "type": "choice", "label": "Hybrid Form Speed", "when": "extras:hybrid-form", "default": "climb", "items": [{"key": "burrow", "label": "Burrow", "changes": {"derivedSpeeds": [{"type": "burrow", "from": "land", "onlyIfMissing": false}]}}, {"key": "climb", "label": "Climb", "changes": {"derivedSpeeds": [{"type": "climb", "from": "land", "onlyIfMissing": false}]}}, {"key": "swim", "label": "Swim", "changes": {"derivedSpeeds": [{"type": "swim", "from": "land", "onlyIfMissing": false}]}}]}
+ ],
+ "abilities": [
+  {"key": "creature-obscura", "name": "Creature Obscura", "type": "general", "actions": "none", "traits": "", "description": "{Name} appears in so many urban legends that it can be identified using Society or a Lore skill connected to a nearby settlement, in addition to the normal skills. However, much of the information known about it is dubious. The DC to identify it is incredibly hard (rather than very hard for most rare creatures), but all failures to identify it gain the effects of the Dubious Knowledge skill feat.", "when": "abilities:creature-obscura"},
+  {"key": "shifting-form", "name": "Shifting Form", "type": "general", "actions": "none", "traits": "", "description": "{Name} is sustained by localized tales or reports from witnesses. As a result, its appearance morphs between different appearances. If all records of {name} are destroyed or all witnesses die, it ceases to exist.", "when": "abilities:shifting-form"},
+  {"key": "obscura-vulnerability", "name": "Obscura Vulnerability", "type": "defense", "actions": "none", "traits": "", "description": "{Name} is weakened by those who seek its truth. Whenever a creature succeeds at a Recall Knowledge check to identify {name}, it becomes drained 1 (or drained 2 if the Recall Knowledge check was a critical success).", "when": "abilities:obscura-vulnerability"},
+  {"key": "stalk", "name": "Stalk", "type": "offense", "actions": "one", "traits": "", "description": "Requirements {Name} is undetected; Effect {Name} swiftly stalks prey from hiding. It Strides, then Strikes.", "when": "abilities:stalk"},
+  {"key": "vanishing-escape", "name": "Vanishing Escape", "type": "offense", "actions": "one", "traits": "", "description": "{Name} breaks away and fades into the background. It Strides, then Hides.", "when": "abilities:vanishing-escape"},
+  {"key": "howl", "name": "Howl", "type": "offense", "actions": "two", "traits": "auditory, emotion, fear, mental", "description": "{Name} calls out with a wretched sound no living creature should make. Each creature in a 30-foot emanation must attempt a DC {spelldc:high} Will save. A creature that fails is frightened 1 (or frightened 2 on a critical failure). A creature that succeeds is temporarily immune for 1 minute.", "when": "extras:howl"}
+ ]
+}

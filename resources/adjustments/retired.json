@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "retired",
+ "name": "Retired",
+ "prefix": "Retired",
+ "group": "NPC Role",
+ "order": 53,
+ "dialog": "options",
+ "source": "Pathfinder NPC Core, Retired (pg. 81), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=36",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Decrease its level by 1. Deception if it lacks it (+4 to hide its identity), a Lore from its career in retirement at the high skill value, Rusty and Still Got It!",
+ "optional": "Typically, remove its combat items, and the attacks and abilities that rely on them: they're usually readily retrievable from a hidden cache. Its +4 circumstance bonus to hide its identity (in Deception's note) is lost against creatures that witness it successfully Striking in combat or using Still Got It! Rusty's -1 status penalty isn't worked into its numbers.",
+ "changes": {
+  "level": [{"change": -1}],
+  "newSkills": [{"skill": "deception", "benchmark": "moderate", "ifHigh": "charisma", "better": "high", "note": "{+4} to hide its identity"}],
+  "lores": [{"name": "{opt:lore}", "benchmark": "high"}]
+ },
+ "choices": [
+  {"key": "lore", "type": "text", "label": "Lore from its career in retirement", "placeholder": "Cooking Lore, Farming Lore, Guild Lore, Sailing Lore, ...", "default": "Farming Lore"}
+ ],
+ "abilities": [
+  {"key": "rusty", "name": "Rusty", "type": "general", "actions": "none", "traits": "", "description": "{Name} is out of practice. They take a –1 status penalty to all their rolls and DCs. {Name} also rolls twice on initiative rolls and takes the lower result; this is a misfortune effect."},
+  {"key": "still-got-it", "name": "Still Got It!", "type": "offense", "actions": "one", "traits": "", "description": "Frequency once per encounter; Requirements {Name} is in a combat encounter and has either made a critical hit or is in the second round of the encounter; Effect {Name} gains {=max(1, level)} temporary Hit Points that last until the end of the encounter, and suppresses the effects of being rusty until the end of the encounter."}
+ ]
+}

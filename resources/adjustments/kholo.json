@@ -1,0 +1,20 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "kholo",
+ "name": "Kholo",
+ "group": "Ancestry",
+ "order": 68,
+ "source": "Pathfinder NPC Core, Kholo (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=48",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with kholo (or adds it); adds Kholo, darkvision, a jaws Strike.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "kholo"},
+  "languagesAlways": true,
+  "languages": ["Kholo"],
+  "senses": ["darkvision"]
+ },
+ "strikes": [
+  {"key": "jaws", "name": "jaws", "type": "Melee", "from": "lowest", "traits": "", "damageType": "piercing"}
+ ]
+}

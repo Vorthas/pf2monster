@@ -1,0 +1,39 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "ravener",
+ "name": "Ravener",
+ "prefix": "Ravener",
+ "group": "Undead",
+ "order": 114,
+ "dialog": "options",
+ "appliesTo": {"min": 13},
+ "source": "Pathfinder Monster Core 2, Ravener (pg. 268), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=617",
+ "license": "ORC License: Paizo's Pathfinder Monster Core 2 is ORC licensed material.",
+ "rules": "For a dragon of 13th level or higher. Increase its level by 2; AC, attacks, DCs, saves and skills by 2; more HP and weakness to holy, by its level. Melee Strikes deal 2d6 more void damage; its breath becomes Void Breath (4d6 more void damage, drains). Becomes undead and unholy, speaks Necril: darkvision, soulsense, void healing, immunities, Cowering Fear, Soul Ward, Consume Soul, Discorporate and Vicious Criticals.",
+ "optional": "A ravener is likely to have a major impact on your game; Paizo suggests a custom build when there's time. Breath: an ability with \"Breath\" in its name becomes Void Breath, with 4d6 void damage after its first damage and the drain rule; check its wording, and that a limited breath's damage was raised by 2 as well. Cowering Fear relies on its frightful presence.",
+ "changes": {
+  "level": [{"change": 2}],
+  "bonus": 2,
+  "bonusSkip": ["perception"],
+  "traits": ["undead", "unholy"],
+  "languages": ["Necril"],
+  "hp": [{"max": 20, "change": 50}, {"change": 80}],
+  "weaknesses": [{"type": "holy", "steps": [{"max": 20, "change": 15}, {"change": 20}]}],
+  "strikeDamageAdd": {"melee": "plus 2d6 void"},
+  "senses": ["darkvision", "soulsense 60 feet"],
+  "hpAbilities": ["void healing"],
+  "immunities": ["bleed", "death effects", "disease", "paralyzed", "poison", "unconscious"],
+  "editAbilities": [{"match": "breath", "rename": "Void Breath", "addDamage": "4d6 void damage", "append": "A creature that fails its save against {name}'s Void Breath is also drained 1 (or drained 2 on a critical failure). If at least one creature is drained by it, {name}'s soul ward gains 5 Hit Points.", "traits": "{tradition}, void"}]
+ },
+ "choices": [
+  {"key": "tradition", "type": "choice", "label": "Tradition", "note": "The original dragon's tradition, for the traits of Consume Soul, Discorporate and Void Breath.", "items": [{"key": "auto", "label": "From its traits"}, {"key": "arcane", "label": "Arcane"}, {"key": "divine", "label": "Divine"}, {"key": "occult", "label": "Occult"}, {"key": "primal", "label": "Primal"}]}
+ ],
+ "abilities": [
+  {"key": "cowering-fear", "name": "Cowering Fear", "type": "defense", "actions": "none", "traits": "aura, emotion, fear, mental", "description": "{Name}'s frightful presence causes creatures to cower in fear as well. As long as a creature is at least frightened 2 or more as a result of {name}'s frightful presence, it's also immobilized from the fear."},
+  {"key": "soul-ward", "name": "Soul Ward", "type": "defense", "actions": "none", "traits": "", "description": "An intangible field of necromantic energy protects {name} from total destruction. This soul ward has {steps|150|21=200} Hit Points. Whenever {name} would be reduced below 1 Hit Point, all damage in excess of what would reduce them to 1 Hit Point is instead dealt to their soul ward. If this damage reduces the soul ward to fewer than 0 Hit Points, {name} is destroyed. A soul ward's Hit Points can be restored only via specific ravener abilities such as Consume Soul, Void Breath, or vicious criticals. A ravener who goes more than a week without successfully using Consume Soul to feed on a dying creature starves, and their soul ward loses 1d4 Hit Points each day until they feed. If the soul ward loses all its Hit Points while {name} still has more than 1 HP, they become a ravener husk."},
+  {"key": "discorporate", "name": "Discorporate", "type": "defense", "actions": "free", "traits": "{tradition}", "description": "Trigger {Name} takes excess damage to their soul ward but still has at least 51 Hit Points in their soul ward; Effect {Name} draws deeply into their soul ward, discorporating their body into soul energy to escape. They take 50 damage to their soul ward and their physical body vanishes, reappearing 1d4 hours later in a random location within 1 mile from the location where they used Discorporate."},
+  {"key": "consume-soul", "name": "Consume Soul", "type": "offense", "actions": "free", "traits": "death, {tradition}", "description": "Trigger A living creature within 30 feet of {name} dies; Effect {Name} tears the creature's soul from its body with their maw and gulps it down. The dying creature must attempt a DC {abilitydc} Fortitude save.\nCritical Success The creature is unaffected.\nSuccess {Name} tears off a small chunk of the creature's soul. If the victim is restored to life, they are drained 1 in addition to any other side effects of returning to life. {Name} adds a number of Hit Points to their soul ward equal to half the creature's level.\nFailure As success, but the creature's soul is ravaged. The creature is drained 3 and {name} adds a number of Hit Points to their soul ward equal to the creature's level.\nCritical Failure As failure, but {name} devours the entire soul. The victim can't be restored to life as long as {name} exists except via powerful magic such as a _wish_ ritual, and {name} adds a number of Hit Points to their soul ward equal to twice the creature's level."},
+  {"key": "vicious-criticals", "name": "Vicious Criticals", "type": "offense", "actions": "none", "traits": "", "description": "{Name} treats an attack roll as a critical hit on a roll of 19 or 20, as long as the attack roll was a success. Additionally, whenever {name} makes a critical hit with one of their Strikes, the target must succeed at a Fortitude save or gain the drained 1 condition. If the target already has a drained value of greater than 0, their drained value instead increases by 1, to a maximum of drained 4. Whenever {name} applies drain to a creature in this way, their soul ward gains 5 Hit Points."}
+ ]
+}

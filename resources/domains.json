@@ -1,0 +1,374 @@
+{
+ "format": 1,
+ "source": "Pathfinder Player Core, Domains (pg. 39), and Pathfinder Lost Omens Divine Mysteries, Domains (pg. 262-271), via Archives of Nethys: https://2e.aonprd.com/Domains.aspx",
+ "license": "ORC License: Paizo's Pathfinder Player Core and Pathfinder Lost Omens Divine Mysteries are ORC licensed material.",
+ "note": "Each domain's domain spell and advanced domain spell (the remastered domains). Custom data may add more later.",
+ "domains": [
+  {
+   "name": "Abomination",
+   "spell": "lift nature's caul",
+   "advanced": "fearful feast",
+   "source": "Divine Mysteries pg. 262"
+  },
+  {
+   "name": "Air",
+   "spell": "pushing gust",
+   "advanced": "disperse into air",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Ambition",
+   "spell": "ignite ambition",
+   "advanced": "competitive edge",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Change",
+   "spell": "adapt self",
+   "advanced": "adaptive ablation",
+   "source": "Divine Mysteries pg. 262"
+  },
+  {
+   "name": "Cities",
+   "spell": "face in the crowd",
+   "advanced": "pulse of civilization",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Cold",
+   "spell": "winter bolt",
+   "advanced": "diamond dust",
+   "source": "Divine Mysteries pg. 263"
+  },
+  {
+   "name": "Confidence",
+   "spell": "veil of confidence",
+   "advanced": "delusional pride",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Creation",
+   "spell": "creative splash",
+   "advanced": "artistic flourish",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Darkness",
+   "spell": "cloak of shadow",
+   "advanced": "darkened sight",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Death",
+   "spell": "death's call",
+   "advanced": "eradicate undeath",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Decay",
+   "spell": "withering grasp",
+   "advanced": "fallow field",
+   "source": "Divine Mysteries pg. 263"
+  },
+  {
+   "name": "Destruction",
+   "spell": "cry of destruction",
+   "advanced": "destructive aura",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Disorientation",
+   "spell": "clouded focus",
+   "advanced": "ephemeral hazards",
+   "source": "Divine Mysteries pg. 264"
+  },
+  {
+   "name": "Dragon",
+   "spell": "draconic barrage",
+   "advanced": "roar of the dragon",
+   "source": "Divine Mysteries pg. 264"
+  },
+  {
+   "name": "Dreams",
+   "spell": "sweet dream",
+   "advanced": "dreamer's call",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Dust",
+   "spell": "parch",
+   "advanced": "dust storm",
+   "source": "Divine Mysteries pg. 265"
+  },
+  {
+   "name": "Duty",
+   "spell": "swear oath",
+   "advanced": "dutiful challenge",
+   "source": "Divine Mysteries pg. 265"
+  },
+  {
+   "name": "Earth",
+   "spell": "hurtling stone",
+   "advanced": "localized quake",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Family",
+   "spell": "soothing words",
+   "advanced": "unity",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Fate",
+   "spell": "read fate",
+   "advanced": "tempt fate",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Fire",
+   "spell": "fire ray",
+   "advanced": "flame barrier",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Freedom",
+   "spell": "unimpeded stride",
+   "advanced": "word of freedom",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Glyph",
+   "spell": "redact",
+   "advanced": "ghostly transcription",
+   "source": "Divine Mysteries pg. 266"
+  },
+  {
+   "name": "Healing",
+   "spell": "healer's blessing",
+   "advanced": "rebuke death",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Indulgence",
+   "spell": "overstuff",
+   "advanced": "take its course",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Introspection",
+   "spell": "guided introspection",
+   "advanced": "confront selves",
+   "source": "Divine Mysteries pg. 266"
+  },
+  {
+   "name": "Knowledge",
+   "spell": "scholarly recollection",
+   "advanced": "know the enemy",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Lightning",
+   "spell": "charged javelin",
+   "advanced": "bottle the storm",
+   "source": "Divine Mysteries pg. 267"
+  },
+  {
+   "name": "Luck",
+   "spell": "bit of luck",
+   "advanced": "lucky break",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Magic",
+   "spell": "magic's vessel",
+   "advanced": "mystic beacon",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Metal",
+   "spell": "serrate",
+   "advanced": "repel metal",
+   "source": "Divine Mysteries pg. 267"
+  },
+  {
+   "name": "Might",
+   "spell": "athletic rush",
+   "advanced": "enduring might",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Moon",
+   "spell": "moonbeam",
+   "advanced": "touch of the moon",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Naga",
+   "spell": "chastising retort",
+   "advanced": "show the path",
+   "source": "Divine Mysteries pg. 267"
+  },
+  {
+   "name": "Nature",
+   "spell": "vibrant thorns",
+   "advanced": "nature's bounty",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Nightmares",
+   "spell": "waking nightmare",
+   "advanced": "shared nightmare",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Nothingness",
+   "spell": "empty inside",
+   "advanced": "door to beyond",
+   "source": "Divine Mysteries pg. 268"
+  },
+  {
+   "name": "Pain",
+   "spell": "savor the sting",
+   "advanced": "retributive pain",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Passion",
+   "spell": "charming touch",
+   "advanced": "captivating adoration",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Perfection",
+   "spell": "perfected mind",
+   "advanced": "perfected body",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Plague",
+   "spell": "divine plagues",
+   "advanced": "foul miasma",
+   "source": "Divine Mysteries pg. 268"
+  },
+  {
+   "name": "Protection",
+   "spell": "protector's sacrifice",
+   "advanced": "protector's sphere",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Repose",
+   "spell": "share burden",
+   "advanced": "font of serenity",
+   "source": "Divine Mysteries pg. 268"
+  },
+  {
+   "name": "Secrecy",
+   "spell": "whispering quiet",
+   "advanced": "safeguard secret",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Sorrow",
+   "spell": "lament",
+   "advanced": "overflowing sorrow",
+   "source": "Divine Mysteries pg. 268"
+  },
+  {
+   "name": "Soul",
+   "spell": "eject soul",
+   "advanced": "ectoplasmic interstice",
+   "source": "Divine Mysteries pg. 269"
+  },
+  {
+   "name": "Star",
+   "spell": "zenith star",
+   "advanced": "asterism",
+   "source": "Divine Mysteries pg. 269"
+  },
+  {
+   "name": "Sun",
+   "spell": "dazzling flash",
+   "advanced": "vital luminance",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Swarm",
+   "spell": "swarmsense",
+   "advanced": "swarm form",
+   "source": "Divine Mysteries pg. 270"
+  },
+  {
+   "name": "Time",
+   "spell": "delay consequence",
+   "advanced": "stasis",
+   "source": "Divine Mysteries pg. 270"
+  },
+  {
+   "name": "Toil",
+   "spell": "practice makes perfect",
+   "advanced": "tireless worker",
+   "source": "Divine Mysteries pg. 271"
+  },
+  {
+   "name": "Travel",
+   "spell": "agile feet",
+   "advanced": "traveler's transit",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Trickery",
+   "spell": "sudden shift",
+   "advanced": "trickster's twin",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Truth",
+   "spell": "word of truth",
+   "advanced": "glimpse the truth",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Tyranny",
+   "spell": "touch of obedience",
+   "advanced": "commanding lash",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Undeath",
+   "spell": "touch of undeath",
+   "advanced": "malignant sustenance",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Vigil",
+   "spell": "object memory",
+   "advanced": "remember the lost",
+   "source": "Divine Mysteries pg. 271"
+  },
+  {
+   "name": "Water",
+   "spell": "tidal surge",
+   "advanced": "downpour",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Wealth",
+   "spell": "appearance of wealth",
+   "advanced": "precious metals",
+   "source": "Player Core pg. 39"
+  },
+  {
+   "name": "Wood",
+   "spell": "arms of nature",
+   "advanced": "wood walk",
+   "source": "Divine Mysteries pg. 271"
+  },
+  {
+   "name": "Zeal",
+   "spell": "weapon surge",
+   "advanced": "zeal for battle",
+   "source": "Player Core pg. 39"
+  }
+ ]
+}

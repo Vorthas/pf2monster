@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "sorcerer",
+ "name": "Sorcerer",
+ "list": "class",
+ "order": 139,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "Low Perception; moderate bloodline skills and high Charisma-based bloodline skills; high Cha; low AC; low Fortitude; low HP; low accuracy; high to extreme spell DC. Abilities: Spontaneous spellcasting of a tradition based on bloodline as a sorcerer of their level, bloodline and related feats and spells",
+ "benchmarks": {
+  "perception": ["low"],
+  "charisma": ["high"],
+  "ac": ["low"],
+  "fortitude": ["low"],
+  "hp": ["low"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "Moderate bloodline skills; high Charisma-based bloodline skills.",
+  "attributes": "High Charisma.",
+  "defense": "Low AC; low Fortitude; low HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Spontaneous spellcasting of its bloodline's tradition as a sorcerer of its level: {maxrank}. Bloodline spells.",
+  "specials": "Bloodline and related feats."
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "shadowbound",
+ "name": "Shadowbound",
+ "prefix": "Shadowbound",
+ "order": 100,
+ "source": "Pathfinder Lost Omens Cheliax, Infernal Inheritance, Shadowbound Creature (pg. 213), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=690",
+ "license": "ORC License: Paizo's Pathfinder Lost Omens Cheliax, Infernal Inheritance is ORC licensed material.",
+ "rules": "Best at 3rd level or higher. Increase its level by 1; attacks, AC, saves, Perception, DCs and skills by 1; Strike damage by 1 (HP unchanged). Adds the shadow trait (loses holy), Shadowtongue, darkvision, immunities, physical resistance, Light Vulnerability, Shadow Form and Shadow Touch.",
+ "optional": "Shadowtongue only if it can speak (added only to a creature with languages).",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "strikeDamage": 1,
+  "traits": ["shadow"],
+  "removeTraits": ["holy"],
+  "languages": ["Shadowtongue"],
+  "senses": ["darkvision"],
+  "immunities": ["bleed", "paralyzed"],
+  "resistances": [{"type": "physical", "steps": [{"max": 7, "change": 5}, {"max": 14, "change": 10}, {"change": 15}], "suffix": "(except ghost touch)"}]
+ },
+ "abilities": [
+  {"key": "light-vulnerability", "name": "Light Vulnerability", "type": "defense", "actions": "none", "traits": "", "description": "Attacks against {name} are treated as magical if made by a creature that's in magical light or with an object that's in magical light (such as from the light spell)."},
+  {"key": "shadow-form", "name": "Shadow Form", "type": "offense", "actions": "three", "traits": "concentrate, polymorph, shadow", "description": "{Name} assumes a shadowy form. In this state, it gains the incorporeal trait. It has resistance 10 to all damage (except force, _ghost touch_, spirit, or vitality; double resistance vs. non-magical), is immune to precision damage, and can't use any actions with the attack or manipulate trait. It has a fly Speed of 15 feet and can slip through tiny cracks. {Name} can Dismiss this effect to become solid again, but if it does so in an area of bright light, it's stunned 1 for 1 round."},
+  {"key": "shadow-touch", "name": "Shadow Touch", "type": "offense", "actions": "none", "traits": "", "description": "{Name}'s Strikes affect incorporeal creatures with the effects of a _ghost touch_ property rune."}
+ ]
+}

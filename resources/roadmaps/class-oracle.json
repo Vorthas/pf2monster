@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "oracle",
+ "name": "Oracle",
+ "list": "class",
+ "order": 132,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Religion, high mystery skill, moderate or high skill themed to deity; high Cha; low AC; low Fortitude, high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities: Spontaneous divine spellcasting as an oracle of their level; oracle mystery and related spells, revelation spells, curse, skill, and oracle feats",
+ "benchmarks": {
+  "religion": ["high"],
+  "charisma": ["high"],
+  "ac": ["low"],
+  "fortitude": ["low"],
+  "will": ["high"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "skills": "High Religion, a high mystery skill, and a moderate or high skill themed to the deity.",
+  "attributes": "High Charisma.",
+  "defense": "Low AC; low Fortitude, high Will; low to moderate HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Spontaneous divine spellcasting as an oracle of its level: {maxrank}. Mystery and related spells, revelation spells.",
+  "specials": "Oracle mystery, curse, skill, and oracle feats."
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "frostbound",
+ "name": "Frostbound",
+ "group": "Environment",
+ "order": 21,
+ "source": "Pathfinder Howl of the Wild, Frostbound adjustment (pg. 122), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=25",
+ "license": "ORC License: Paizo's Pathfinder Howl of the Wild is ORC licensed material.",
+ "rules": "Adds resistance to cold and weakness to fire 3, 5, 10 or 15 by level (3 or lower, 4-8, 9-13, 14+), and Freezing Adaptation, Winter Senses, Arctic Steps and Snow Spray.",
+ "changes": {
+  "resistances": [{"type": "cold", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}],
+  "weaknesses": [{"type": "fire", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}]
+ },
+ "abilities": [
+  {"key": "winter-senses", "name": "Winter Senses", "type": "general", "actions": "none", "traits": "", "description": "{Name} ignores concealment caused by ice or snow."},
+  {"key": "freezing-adaptation", "name": "Freezing Adaptation", "type": "defense", "actions": "none", "traits": "", "description": "{Name} treats environmental cold effects as if they were one step less extreme (incredible cold becomes extreme, extreme cold becomes severe, and so on)."},
+  {"key": "arctic-steps", "name": "Arctic Steps", "type": "offense", "actions": "none", "traits": "", "description": "{Name} ignores uneven ground and difficult terrain caused by ice and the difficult terrain caused by snow (reducing greater difficult terrain from ice or snow to ordinary difficult terrain)."},
+  {"key": "snow-spray", "name": "Snow Spray", "type": "offense", "actions": "one", "traits": "", "description": "Requirements {Name} is standing on or adjacent to loose snow; Effect {Name} kicks up the snow, becoming concealed to all creatures that are not adjacent to it until it moves or the end of its next turn."}
+ ]
+}

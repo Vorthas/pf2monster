@@ -1,0 +1,19 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "weak",
+ "name": "Weak",
+ "prefix": "Weak",
+ "prefixInText": false,
+ "order": 2,
+ "source": "Pathfinder Monster Core, \"Adjusting Creatures\" (pg. 6), Weak Adjustments, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=3263",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "Only for creatures of level 1 or higher. Decrease the creature's level by 1 (by 2 if it is level 1); its AC, attack modifiers, DCs, saving throws, Perception and skill modifiers by 2; the damage of its Strikes by 2; and its Hit Points based on its starting level.",
+ "appliesTo": {"min": 1},
+ "changes": {
+  "level": [{"min": 1, "max": 1, "change": -2}, {"change": -1}],
+  "bonus": -2,
+  "strikeDamage": -2,
+  "hp": [{"max": 2, "change": -10}, {"max": 5, "change": -15}, {"max": 20, "change": -20}, {"change": -30}]
+ }
+}

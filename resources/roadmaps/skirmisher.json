@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "skirmisher",
+ "name": "Skirmisher",
+ "list": "base",
+ "order": 8,
+ "source": "Pathfinder GM Core, \"Building Creatures\" (pg. 112), Base Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "high Dex modifier; low Fortitude, high Reflex; higher Speed than typical",
+ "benchmarks": {
+  "dexterity": ["high"],
+  "fortitude": ["low"],
+  "reflex": ["high"]
+ },
+ "notes": {
+  "attributes": "High Dexterity.",
+  "defense": "Low Fortitude, high Reflex.",
+  "offense": "Higher Speed than typical (about 10 feet more than usual for its kind)."
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "orc",
+ "name": "Orc",
+ "group": "Ancestry",
+ "order": 73,
+ "source": "Pathfinder NPC Core, Orc (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=52",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with orc (or adds it); adds Orcish, darkvision.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "orc"},
+  "languagesAlways": true,
+  "languages": ["Orcish"],
+  "senses": ["darkvision"]
+ }
+}

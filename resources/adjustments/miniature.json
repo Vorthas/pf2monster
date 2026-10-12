@@ -1,0 +1,19 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "miniature",
+ "name": "Miniature",
+ "group": "Body",
+ "order": 30,
+ "source": "Pathfinder Howl of the Wild, Miniature adjustment (pg. 122), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=26",
+ "license": "ORC License: Paizo's Pathfinder Howl of the Wild is ORC licensed material.",
+ "rules": "Reduces its size to Tiny; its lowest-reach melee Strikes get reach 0 feet and longer-reach ones reach 5 feet; adds Stealth equal to its highest skill modifier and Scamper Underfoot.",
+ "changes": {
+  "size": "tiny",
+  "reach": {"lowest": 0, "others": 5},
+  "skillsToHighest": ["stealth"]
+ },
+ "abilities": [
+  {"key": "scamper-underfoot", "name": "Scamper Underfoot", "type": "offense", "actions": "two", "traits": "", "description": "{Name} Strides twice. It can pass through the space of creatures larger than itself during this movement, and its movement does not trigger reactions."}
+ ]
+}

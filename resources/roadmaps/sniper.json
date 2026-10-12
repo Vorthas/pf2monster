@@ -1,0 +1,24 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "sniper",
+ "name": "Sniper",
+ "list": "base",
+ "order": 9,
+ "source": "Pathfinder GM Core, \"Building Creatures\" (pg. 112), Base Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "high Perception; high Dex modifier; low Fortitude, high Reflex; moderate to low HP; ranged Strikes have high attack bonus and damage or moderate attack bonus and extreme damage (melee Strikes are weaker)",
+ "benchmarks": {
+  "perception": ["high"],
+  "dexterity": ["high"],
+  "fortitude": ["low"],
+  "reflex": ["high"],
+  "hp": ["moderate", "low"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "attributes": "High Dexterity.",
+  "defense": "Low Fortitude, high Reflex; moderate to low HP.",
+  "offense": "Ranged Strikes: high attack bonus and high damage, or moderate attack bonus and extreme damage. Melee Strikes are weaker."
+ }
+}

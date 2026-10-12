@@ -1,0 +1,32 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "bard",
+ "name": "Bard",
+ "list": "class",
+ "order": 104,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "Moderate Occultism, high Performance, high Charisma-based skills; high Cha; low Fortitude, moderate to high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities: spontaneous occult spellcasting as a bard of their level, composition spells, muse feats",
+ "benchmarks": {
+  "occultism": ["moderate"],
+  "performance": ["high"],
+  "deception": ["high"],
+  "diplomacy": ["high"],
+  "intimidation": ["high"],
+  "charisma": ["high"],
+  "fortitude": ["low"],
+  "will": ["moderate", "high"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "skills": "Moderate Occultism, high Performance, high Charisma-based skills (set: Deception, Diplomacy and Intimidation).",
+  "attributes": "High Charisma.",
+  "defense": "Low Fortitude, moderate to high Will; low to moderate HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Spontaneous occult spellcasting as a bard of its level: {maxrank}.",
+  "specials": "Composition spells, muse feats."
+ }
+}

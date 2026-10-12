@@ -1,0 +1,28 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "swashbuckler",
+ "name": "Swashbuckler",
+ "list": "class",
+ "order": 141,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Perception; high Acrobatics, plus high style skill; high Dex; high AC; low Fortitude, high Reflex; moderate HP; moderate attack and low to moderate damage before precise strike plus high or extreme damage with precise strike. Abilities: Confident finisher, panache, precise strike, stylish combatant, swashbuckler's style (plus exemplary finisher at 9th level)",
+ "benchmarks": {
+  "perception": ["high"],
+  "acrobatics": ["high"],
+  "dexterity": ["high"],
+  "ac": ["high"],
+  "fortitude": ["low"],
+  "reflex": ["high"],
+  "hp": ["moderate"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "High Acrobatics, plus a high style skill.",
+  "attributes": "High Dexterity.",
+  "defense": "High AC; low Fortitude, high Reflex; moderate HP.",
+  "offense": "Moderate attack bonus and low to moderate damage before precise strike, high or extreme damage with precise strike.",
+  "specials": "Confident finisher, panache, precise strike, stylish combatant, swashbuckler's style (plus exemplary finisher at 9th level)."
+ }
+}

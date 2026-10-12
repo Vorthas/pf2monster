@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "elite",
+ "name": "Elite",
+ "prefix": "Elite",
+ "prefixInText": false,
+ "order": 1,
+ "source": "Pathfinder Monster Core, \"Adjusting Creatures\" (pg. 6), Elite Adjustments, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=3263",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "Increase the creature's level by 1 (by 2 if it is level -1 or 0); its AC, attack modifiers, DCs, saving throws, Perception and skill modifiers by 2; the damage of its Strikes by 2; and its Hit Points based on its starting level.",
+ "changes": {
+  "level": [{"max": 0, "change": 2}, {"change": 1}],
+  "bonus": 2,
+  "strikeDamage": 2,
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}]
+ }
+}

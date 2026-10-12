@@ -1,0 +1,20 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "tengu",
+ "name": "Tengu",
+ "group": "Ancestry",
+ "order": 75,
+ "source": "Pathfinder NPC Core, Tengu (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=54",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with tengu (or adds it); adds Tengu, low-light vision, a beak Strike.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "tengu"},
+  "languagesAlways": true,
+  "languages": ["Tengu"],
+  "senses": ["low-light vision"]
+ },
+ "strikes": [
+  {"key": "beak", "name": "beak", "type": "Melee", "from": "lowest", "traits": "finesse", "damageType": "piercing"}
+ ]
+}

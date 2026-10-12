@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "fire",
+ "name": "Fire",
+ "group": "Elemental",
+ "order": 12,
+ "source": "Pathfinder Rage of Elements, Fire adjustment (pg. 115), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=18",
+ "license": "ORC License: Paizo's Pathfinder Rage of Elements is ORC licensed material.",
+ "rules": "Adds the fire trait, Pyric (if it has languages) and immunity to fire; one damage die of each Strike with several becomes fire damage, and a Strike with one die deals 1 extra fire damage.",
+ "optional": "Optional: If it can cast spells, you can replace spells with fire spells of the same rank, such as: cantrip ignition, 1st breathe fire, 2nd blazing bolt, 3rd fireball, 4th wall of fire, 5th fire's pathway, 6th fireball, 7th fiery body, 8th burning blossoms, 9th falling stars.",
+ "changes": {
+  "traits": ["fire"],
+  "languages": ["Pyric"],
+  "immunities": ["fire"],
+  "strikeDie": "fire"
+ }
+}

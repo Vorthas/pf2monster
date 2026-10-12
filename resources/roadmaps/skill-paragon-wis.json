@@ -1,0 +1,28 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "skill paragon (wis)",
+ "name": "Skill Paragon",
+ "variant": "Wisdom",
+ "list": "base",
+ "order": 6,
+ "source": "Pathfinder GM Core, \"Building Creatures\" (pg. 112), Base Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "high or extreme attribute modifier matching its best skills; typically high Reflex or Will and low Fortitude; many skills at moderate or high and potentially one or two extreme skills; at least one special ability to use the creature's skills in combat",
+ "benchmarks": {
+  "wisdom": ["high", "extreme"],
+  "fortitude": ["low"],
+  "will": ["high"],
+  "reflex": ["moderate", "high"],
+  "nature": ["extreme", "high"],
+  "medicine": ["high", "moderate"],
+  "religion": ["high", "moderate"],
+  "survival": ["high", "moderate"]
+ },
+ "notes": {
+  "attributes": "High or extreme Wisdom, the attribute of its best skills.",
+  "defense": "Typically high Reflex or Will (set: high Will) and low Fortitude.",
+  "skills": "Many skills moderate or high, one or two extreme (set: the Wisdom skills high, Nature extreme).",
+  "specials": "At least one special ability that uses its skills in combat."
+ }
+}

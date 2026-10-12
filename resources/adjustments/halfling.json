@@ -1,0 +1,20 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "halfling",
+ "name": "Halfling",
+ "group": "Ancestry",
+ "order": 66,
+ "source": "Pathfinder NPC Core, Halfling (pg. 168), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=46",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with halfling (or adds it); adds Halfling, size Small, Keen Eyes.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "halfling"},
+  "languagesAlways": true,
+  "languages": ["Halfling"],
+  "size": "small"
+ },
+ "abilities": [
+  {"key": "keen-eyes", "name": "Keen Eyes", "type": "general", "actions": "none", "traits": "", "description": "{Name} gains a +2 circumstance bonus when using the Seek action to find hidden or undetected creatures within 30 feet of them. Whenever {name} targets a creature that is concealed or hidden from them, reduce the DC of the flat check to 3 for a concealed target or 9 for a hidden one."}
+ ]
+}

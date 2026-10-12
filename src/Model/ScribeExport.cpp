@@ -1,0 +1,895 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Vorthas
+
+#include "Model/ScribeExport.h"
+
+#include "Model/Adjustments.h"
+#include "Model/Benchmarks.h"
+#include "Model/Monster.h"
+#include "Model/RecallKnowledge.h"
+
+#include <QHash>
+#include <QRegularExpression>
+#include <QSet>
+
+#include <algorithm>
+#include <cmath>
+
+namespace monster
+{
+    namespace
+    {
+        // "acrobatics" -> "Acrobatics", "stonekin lore" -> "Stonekin Lore".
+        QString titleCase(const QString &text)
+        {
+            QString out = text;
+            bool start = true;
+            for (QChar &c : out)
+            {
+                if (start && c.isLetter())
+                {
+                    c = c.toUpper();
+                }
+                start = c.isSpace() || c == QLatin1Char('-') || c == QLatin1Char('(');
+            }
+            return out;
+        }
+
+        // 1 -> "1st", 2 -> "2nd", 12 -> "12th".
+        QString ordinal(int n)
+        {
+            const int lastTwo = n % 100;
+            const char *suffix = "th";
+            if (lastTwo < 11 || lastTwo > 13)
+            {
+                switch (n % 10)
+                {
+                case 1: suffix = "st"; break;
+                case 2: suffix = "nd"; break;
+                case 3: suffix = "rd"; break;
+                default: break;
+                }
+            }
+            return QString::number(n) + QLatin1String(suffix);
+        }
+
+        // The site's text fields can hold a little HTML (its own exports
+        // write <i>...</i>); markdown says the same.
+        QString htmlToMarkdown(QString text)
+        {
+            static const QRegularExpression italic(
+                QStringLiteral(R"(</?\s*(i|em)\s*>)"), QRegularExpression::CaseInsensitiveOption);
+            static const QRegularExpression bold(
+                QStringLiteral(R"(</?\s*(b|strong)\s*>)"), QRegularExpression::CaseInsensitiveOption);
+            static const QRegularExpression lineBreak(
+                QStringLiteral(R"(<\s*br\s*/?\s*>)"), QRegularExpression::CaseInsensitiveOption);
+            text.replace(italic, QStringLiteral("*"));
+            text.replace(bold, QStringLiteral("**"));
+            text.replace(lineBreak, QStringLiteral("\n"));
+            text.replace(QLatin1String("&nbsp;"), QStringLiteral(" "));
+            return text;
+        }
+
+        // Text typed into a field, ready to go inside the item block: HTML
+        // turned into markdown, "(x2)" into "(×2)", and lines that mean
+        // something to Scribe inside a block (a lone "-", "|", ")", "%",
+        // "/" or "=", or a leading ";") escaped so they show as typed.
+        QString fieldText(const QString &raw)
+        {
+            static const QRegularExpression times(QStringLiteral(R"(\(x(\d+)\))"));
+            QString text = htmlToMarkdown(raw);
+            text.replace(times, QStringLiteral("(×\\1)"));
+            // The site's _italic_; Qt's markdown would underline it.
+            static const QRegularExpression underscores(
+                QStringLiteral(R"((?<![\w_])_([^_\n]+?)_(?![\w_]))"));
+            text.replace(underscores, QStringLiteral("*\\1*"));
+            text.remove(QLatin1Char('\r'));
+
+            static const QSet<QString> special{
+                QStringLiteral("-"), QStringLiteral("|"), QStringLiteral(")"),
+                QStringLiteral("%"), QStringLiteral("/"), QStringLiteral("=")};
+            QStringList lines = text.split(QLatin1Char('\n'));
+            for (QString &line : lines)
+            {
+                const QString trimmed = line.trimmed();
+                if (special.contains(trimmed) || line.startsWith(QLatin1Char(';')))
+                {
+                    const qsizetype at = line.indexOf(trimmed.at(0));
+                    line.insert(at, QLatin1Char('\\'));
+                }
+            }
+            return lines.join(QLatin1Char('\n')).trimmed();
+        }
+
+        // A Resistances list from fieldText(): "ghost touch" in an exception
+        // names a property rune, so it's italic as Paizo prints it ("all
+        // damage 5 (except force, *ghost touch*, spirit, or vitality)"),
+        // unless it already is.
+        QString resistanceText(const QString &raw)
+        {
+            static const QRegularExpression ghostTouch(
+                QStringLiteral(R"((?<![*\w])(ghost touch)(?![*\w]))"),
+                QRegularExpression::CaseInsensitiveOption);
+            QString text = fieldText(raw).simplified();
+            text.replace(ghostTouch, QStringLiteral("*\\1*"));
+            return text;
+        }
+
+        // Text that goes outside any block (the description): like
+        // fieldText(), and also lines that would mean something to Scribe
+        // there are escaped: a block opening ("info(", "left(", ...), a
+        // content definition ("name {"), a reference ("{{name}}") or a
+        // directive alone on its line ("pagenumbers", "reset").
+        QString bodyText(const QString &raw)
+        {
+            static const QRegularExpression blockOpen(
+                QStringLiteral(R"(^(\s*(?:watermark|title|head|css|fonts|sticky|info|rules|)"
+                               R"(note|math|left|right|item)\s*)\()"),
+                QRegularExpression::CaseInsensitiveOption);
+            static const QRegularExpression definition(
+                QStringLiteral(R"(^(\s*[A-Za-z][A-Za-z0-9_-]*\s*)\{\s*$)"));
+            static const QRegularExpression reference(QStringLiteral(R"(^(\s*)\{\{)"));
+            static const QRegularExpression directive(
+                QStringLiteral(R"(^\s*(pagenumbers|reset)\s*$)"),
+                QRegularExpression::CaseInsensitiveOption);
+            QStringList lines = fieldText(raw).split(QLatin1Char('\n'));
+            for (QString &line : lines)
+            {
+                line.replace(blockOpen, QStringLiteral("\\1\\("));
+                line.replace(definition, QStringLiteral("\\1\\{"));
+                line.replace(reference, QStringLiteral("\\1\\{{"));
+                if (directive.match(line).hasMatch())
+                {
+                    line += QChar(0x200B); // no longer the directive alone
+                }
+            }
+            return lines.join(QLatin1Char('\n'));
+        }
+
+        // An ability's description: like fieldText(), with the words Paizo
+        // sets in bold ("Trigger", "Critical Success", ...) made bold, as
+        // the website does, and each line that starts in bold made its own
+        // paragraph (the degrees of success under a saving throw).
+        QString descriptionText(const QString &raw)
+        {
+            static const QRegularExpression keywords(QStringLiteral(
+                R"((?<![\w*])(Saving Throw|Maximum Duration|Stage [1-6]|Trigger|Effect|)"
+                R"(Critical Success|Success|Critical Failure|Failure|Requirements|Requirement|)"
+                R"(Frequency|Activate|Heightened \(\+\d+\)|\((?:1st|2nd|3rd|[4-9]th|10th)\))(?![\w*]))"));
+            QString text = fieldText(raw);
+            text.replace(keywords, QStringLiteral("**\\1**"));
+
+            QStringList lines = text.split(QLatin1Char('\n'));
+            QStringList out;
+            for (int i = 0; i < lines.size(); ++i)
+            {
+                if (i > 0 && lines[i].startsWith(QLatin1String("**")) &&
+                    !out.isEmpty() && !out.last().isEmpty())
+                {
+                    out << QString();
+                }
+                out << lines[i];
+            }
+            return out.join(QLatin1Char('\n'));
+        }
+
+        // A note in parentheses after a value, if there is one.
+        QString note(const QString &text)
+        {
+            const QString trimmed = text.trimmed();
+            return trimmed.isEmpty() ? QString()
+                                     : QStringLiteral(" (%1)").arg(fieldText(trimmed));
+        }
+
+        const Stat &statOf(const Monster &m, const char *key)
+        {
+            static const Stat empty;
+            const Stat *stat = m.findStat(QString::fromLatin1(key));
+            return stat ? *stat : empty;
+        }
+
+        // What the statblock shows for a statistic: its value, or when that's
+        // empty its benchmark's hint (core statistics, see usesHint(); spell
+        // DC and attack while the monster has spells), else `fallback`.
+        QString shown(const Monster &m, const char *key, const QString &fallback,
+                      bool hinted = false)
+        {
+            const QString statKey = QString::fromLatin1(key);
+            const Stat *stat = m.findStat(statKey);
+            if (stat && !stat->value.isEmpty())
+            {
+                return stat->value.text().trimmed();
+            }
+            if (hinted || usesHint(statKey))
+            {
+                if (const Hint h = statHint(m, statKey); h.valid && h.value)
+                {
+                    return QString::number(*h.value);
+                }
+            }
+            return fallback;
+        }
+
+        bool hasSpells(const Monster &m)
+        {
+            return std::any_of(m.spells.begin(), m.spells.end(),
+                               [](const QString &s) { return !s.trimmed().isEmpty(); }) ||
+                   !m.constant.trimmed().isEmpty();
+        }
+
+        QString actionIcon(const QString &actions)
+        {
+            const QString key = actions.trimmed().toLower();
+            if (key == QLatin1String("one")) return QStringLiteral(":a:");
+            if (key == QLatin1String("two")) return QStringLiteral(":aa:");
+            if (key == QLatin1String("three")) return QStringLiteral(":aaa:");
+            if (key == QLatin1String("free")) return QStringLiteral(":f:");
+            if (key == QLatin1String("reaction")) return QStringLiteral(":r:");
+            if (key.isEmpty() || key == QLatin1String("none")) return {};
+            return actions.trimmed(); // "1 minute", "10 minutes": as text
+        }
+
+        // "**Name** :aa: (traits) Description".
+        // `bullet`: one of the entries listed under another (Mythic Power's
+        // actions), as Paizo prints them: "* *Name* :a: ...".
+        QString specialLine(const Special &special, bool bullet = false)
+        {
+            QString line = bullet ? QStringLiteral("* *%1*").arg(fieldText(special.name).simplified())
+                                  : QStringLiteral("**%1**").arg(fieldText(special.name).simplified());
+            const QString icon = actionIcon(special.actions);
+            if (!icon.isEmpty())
+            {
+                line += QLatin1Char(' ') + icon;
+            }
+            const QString description = descriptionText(special.description);
+            // "(concentrate) **Cost** ...", "(move) **Trigger** ...": no
+            // semicolon after the traits, as the Remaster books print it
+            // (War of Immortals pg. 168-174).
+            if (!special.traits.trimmed().isEmpty())
+            {
+                line += QStringLiteral(" (%1)").arg(fieldText(special.traits).simplified());
+            }
+            if (!description.isEmpty())
+            {
+                line += QLatin1Char(' ') + description;
+            }
+            return line;
+        }
+
+        QString strikeLine(const Strike &strike)
+        {
+            const QString type = strike.type.trimmed().isEmpty()
+                                     ? QStringLiteral("Melee")
+                                     : titleCase(strike.type.trimmed());
+            // The name upright, as Paizo prints it; italics only where typed
+            // (a magical weapon: "*+1 striking longsword*" or the site's
+            // <i>...</i>).
+            QString line = QStringLiteral("**%1** :a: %2 %3")
+                               .arg(type, fieldText(strike.name).simplified(),
+                                    withSign(strike.attack.isEmpty()
+                                                 ? QStringLiteral("0")
+                                                 : strike.attack.text().trimmed()));
+            if (!strike.traits.trimmed().isEmpty())
+            {
+                line += QStringLiteral(" (%1)").arg(fieldText(strike.traits).simplified());
+            }
+            line += QStringLiteral(", **Damage** %1").arg(fieldText(strike.damage).simplified());
+            return line;
+        }
+
+        // A list of spells as Paizo sets it: each name in italics, notes in
+        // parentheses upright ("*translocate* (at will), *phase bolt*").
+        // Italics typed around single spells (the site writes <i>...</i>)
+        // are dropped first, so they don't double up.
+        QString spellList(const QString &raw)
+        {
+            QString list = fieldText(raw).simplified();
+            list.remove(QLatin1Char('*'));
+
+            // Split at commas outside parentheses.
+            QStringList items;
+            QString item;
+            int depth = 0;
+            for (const QChar c : list)
+            {
+                if (c == QLatin1Char('('))
+                {
+                    ++depth;
+                }
+                else if (c == QLatin1Char(')') && depth > 0)
+                {
+                    --depth;
+                }
+                if (c == QLatin1Char(',') && depth == 0)
+                {
+                    items << item.trimmed();
+                    item.clear();
+                    continue;
+                }
+                item += c;
+            }
+            items << item.trimmed();
+
+            QStringList out;
+            for (QString entry : items)
+            {
+                if (entry.isEmpty())
+                {
+                    continue;
+                }
+                // A note before the first spell stays upright too:
+                // "(4 slots) *disintegrate*".
+                QString lead;
+                if (entry.startsWith(QLatin1Char('(')))
+                {
+                    const qsizetype close = entry.indexOf(QLatin1Char(')'));
+                    if (close > 0)
+                    {
+                        lead = entry.left(close + 1) + QLatin1Char(' ');
+                        entry = entry.mid(close + 1).trimmed();
+                    }
+                }
+                if (entry.isEmpty())
+                {
+                    out << lead.trimmed();
+                    continue;
+                }
+                const qsizetype paren = entry.indexOf(QLatin1Char('('));
+                const QString name = (paren < 0 ? entry : entry.left(paren)).trimmed();
+                const QString rest = paren < 0 ? QString() : entry.mid(paren);
+                out << lead + (name.isEmpty() ? rest
+                                              : QStringLiteral("*%1*").arg(name) +
+                                                    (rest.isEmpty() ? QString() : QLatin1Char(' ') + rest));
+            }
+            return out.join(QStringLiteral(", "));
+        }
+
+        QString rankLabel(int index)
+        {
+            return ordinal(kSpellRanks - 1 - index); // index 0 is 10th rank
+        }
+
+        // "**Arcane Innate Spells** DC 29, attack +21; **5th** *fireball*;
+        // **Cantrips (6th)** *light*; **Constant (3rd)** *see the unseen*".
+        QString spellLine(const QString &title, const Value &focusPoints, const Stat &dc,
+                          const QString &dcValue, const Stat &attack,
+                          const QString &attackValue, const QString &extraNote,
+                          const std::array<QString, kSpellRanks> &spells,
+                          const Value &cantripLevel, const QString &constant, int level)
+        {
+            QString line = QStringLiteral("**%1**").arg(title);
+            QStringList head;
+            if (const int points = focusPoints.number().value_or(0); points > 0)
+            {
+                head << (points == 1 ? QStringLiteral("1 Focus Point")
+                                     : QStringLiteral("%1 Focus Points").arg(points));
+            }
+            head << QStringLiteral("DC %1%2").arg(dcValue.isEmpty() ? QStringLiteral("0") : dcValue,
+                                                  note(dc.note));
+            if (!attackValue.isEmpty())
+            {
+                head << QStringLiteral("attack %1%2").arg(withSign(attackValue), note(attack.note));
+            }
+            line += QLatin1Char(' ') + head.join(QStringLiteral(", "));
+            if (!extraNote.trimmed().isEmpty())
+            {
+                line += QLatin1Char(' ') + fieldText(extraNote).simplified();
+            }
+
+            QStringList ranks;
+            for (int i = 0; i < kSpellRanks; ++i)
+            {
+                const QString list = spellList(spells[static_cast<size_t>(i)]);
+                if (list.isEmpty())
+                {
+                    continue;
+                }
+                QString label;
+                if (i == kCantrips)
+                {
+                    const int rank = cantripLevel.number().value_or(
+                        static_cast<int>(std::ceil(std::max(level, 2) / 2.0)));
+                    label = QStringLiteral("Cantrips (%1)").arg(ordinal(rank));
+                }
+                else
+                {
+                    label = rankLabel(i);
+                }
+                ranks << QStringLiteral("**%1** %2").arg(label, list);
+            }
+            if (!constant.trimmed().isEmpty())
+            {
+                ranks << QStringLiteral("**Constant** %1").arg(spellList(constant));
+            }
+            if (!ranks.isEmpty())
+            {
+                line += QStringLiteral("; ") + ranks.join(QStringLiteral("; "));
+            }
+            return line;
+        }
+
+        // The trait row: rarity, alignment, size, creature type, then the
+        // other traits, each once.
+        QString traitRow(const Monster &m)
+        {
+            QStringList traits;
+            for (const QString &trait : m.traits.split(QLatin1Char(','), Qt::SkipEmptyParts))
+            {
+                const QString t = fieldText(trait).simplified();
+                if (!t.isEmpty() && t != QLatin1String("-"))
+                {
+                    traits << t;
+                }
+            }
+            QStringList row;
+            QSet<QString> seen;
+            auto add = [&](const QString &trait) {
+                if (!trait.isEmpty() && trait != QLatin1String("-") &&
+                    !seen.contains(trait.toLower()))
+                {
+                    seen.insert(trait.toLower());
+                    row << trait;
+                }
+            };
+            for (const char *rarity : {"unique", "rare", "uncommon"})
+            {
+                for (const QString &t : traits)
+                {
+                    if (t.compare(QLatin1String(rarity), Qt::CaseInsensitive) == 0)
+                    {
+                        add(titleCase(t.toLower()));
+                    }
+                }
+            }
+            add(m.alignment.trimmed().toUpper());
+            add(titleCase(m.size.trimmed()));
+            const qsizetype others = row.size(); // the type and the other traits
+            add(titleCase(m.type.trimmed()));
+            for (const QString &t : traits)
+            {
+                add(t);
+            }
+            // The type and the other traits in alphabetical order, as Paizo
+            // prints them ("Earth Mythic Undead Unholy"), whatever order
+            // they were typed in. Those adjustments add ("mythic", "fire")
+            // are capitalized like the rest.
+            QStringList added{QStringLiteral("mythic")};
+            added += m.addedTraits;
+            for (qsizetype at = others; at < row.size(); ++at)
+            {
+                if (added.contains(row[at], Qt::CaseInsensitive))
+                {
+                    row[at] = titleCase(row[at].toLower());
+                }
+            }
+            std::stable_sort(row.begin() + others, row.end(), [](const QString &a, const QString &b) {
+                return a.compare(b, Qt::CaseInsensitive) < 0;
+            });
+            return row.join(QLatin1Char(','));
+        }
+    } // namespace
+
+    QString withSign(const QString &value)
+    {
+        const QString trimmed = value.trimmed();
+        bool ok = false;
+        const int number = trimmed.toInt(&ok);
+        if (!ok || trimmed.startsWith(QLatin1Char('+')) || trimmed.startsWith(QLatin1Char('-')))
+        {
+            return trimmed;
+        }
+        return number >= 0 ? QStringLiteral("+%1").arg(number) : QString::number(number);
+    }
+
+    QString expandReferences(const Monster &monster, const QString &text)
+    {
+        if (!text.contains(QLatin1Char('%')) && !text.contains(QLatin1Char('[')))
+        {
+            return text;
+        }
+        // The website's short names.
+        static const QHash<QString, QString> aliases{
+            {"dc", "spelldc"},     {"fort", "fortitude"},  {"ref", "reflex"},
+            {"str", "strength"},   {"dex", "dexterity"},   {"con", "constitution"},
+            {"int", "intelligence"}, {"wis", "wisdom"},    {"cha", "charisma"}};
+        // "\%", an escaped bracket ("\[ac]" stays as it is: markdown shows
+        // "[ac]"), "%", or a reference not followed by "(" (a markdown link).
+        static const QRegularExpression token(
+            QStringLiteral(R"(\\%|\\\[|%|\[([A-Za-z][A-Za-z ]*)\](?!\())"));
+
+        QString out;
+        qsizetype at = 0;
+        for (auto it = token.globalMatch(text); it.hasNext();)
+        {
+            const QRegularExpressionMatch match = it.next();
+            out += QStringView(text).mid(at, match.capturedStart() - at);
+            at = match.capturedEnd();
+            const QString found = match.captured();
+            if (found == QLatin1String("\\%"))
+            {
+                out += QLatin1Char('%');
+                continue;
+            }
+            if (found == QLatin1String("\\["))
+            {
+                out += found;
+                continue;
+            }
+            if (found == QLatin1String("%"))
+            {
+                out += monster.name;
+                continue;
+            }
+            QString key = match.captured(1).toLower().remove(QLatin1Char(' '));
+            key = aliases.value(key, key);
+            const Stat *stat = monster.findStat(key);
+            if (!stat)
+            {
+                out += found; // unknown: kept as typed
+                continue;
+            }
+            QString value = stat->value.text().trimmed();
+            if (value.isEmpty())
+            {
+                if (const Hint h = statHint(monster, key); h.valid && h.value)
+                {
+                    value = QString::number(*h.value);
+                }
+            }
+            // Bonuses with their sign, as the statblock shows them; AC, DCs
+            // and HP without.
+            const std::optional<Table> table = tableFor(key);
+            const bool withPlus = table && (*table == Table::Attribute || *table == Table::Perception ||
+                                            *table == Table::Skill || *table == Table::Save ||
+                                            *table == Table::SpellAttack);
+            out += withPlus && !value.isEmpty() ? withSign(value) : value;
+        }
+        out += QStringView(text).mid(at);
+        return out;
+    }
+
+    QString toScribe(const Monster &input)
+    {
+        // The applied adjustments first, then the references and % (in the
+        // fields the website works them out in) from the adjusted numbers;
+        // % is the name with the adjustments' prefixes in lower case
+        // ("experimental flame drake"), as their abilities say it.
+        Monster m = adjusted(input);
+        Monster references = m;
+        references.name = spokenName(m.name, input.name);
+        auto expand = [&references](QString &field) { field = expandReferences(references, field); };
+        expand(m.description);
+        expand(m.items);
+        expand(m.languages);
+        expand(m.constant);
+        for (QString &spells : m.spells)
+        {
+            expand(spells);
+        }
+        for (SpellList &list : m.morespells)
+        {
+            expand(list.constant);
+            for (QString &spells : list.spells)
+            {
+                expand(spells);
+            }
+        }
+        for (Strike &strike : m.strikes)
+        {
+            expand(strike.name);
+        }
+        for (Special &special : m.specials)
+        {
+            expand(special.description);
+        }
+
+        const int level = m.level.number().value_or(0);
+        const QString shownLevel = m.showlevel.isEmpty() ? m.level.text().trimmed()
+                                                         : m.showlevel.text().trimmed();
+        const QString label = m.creature.trimmed().isEmpty() ? QStringLiteral("Creature")
+                                                             : fieldText(m.creature).simplified();
+
+        // Each entry is its own paragraph; "-" is a rule.
+        QStringList entries;
+        // A section's abilities in alphabetical order, whatever order they're
+        // listed in; Mythic Power first, and in defense the reactions after
+        // the automatic abilities, as Paizo prints them (War of
+        // Immortals' Mythic Lich: Frightful Presence, then Counterspell).
+        auto specialsOf = [&](const char *type) {
+            std::vector<const Special *> section;
+            for (const Special &special : m.specials)
+            {
+                if (special.type.compare(QLatin1String(type), Qt::CaseInsensitive) == 0 &&
+                    special.under.isEmpty())
+                {
+                    section.push_back(&special);
+                }
+            }
+            const bool defense = QLatin1String(type) == QLatin1String("defense");
+            auto rank = [defense](const Special *s) {
+                if (s->generated == QLatin1String("mythic-power"))
+                {
+                    return 0;
+                }
+                return defense && s->actions == QLatin1String("reaction") ? 2 : 1;
+            };
+            std::stable_sort(section.begin(), section.end(), [&](const Special *a, const Special *b) {
+                if (rank(a) != rank(b))
+                {
+                    return rank(a) < rank(b);
+                }
+                return fieldText(a->name).simplified().compare(fieldText(b->name).simplified(),
+                                                               Qt::CaseInsensitive) < 0;
+            });
+            for (const Special *entry : section)
+            {
+                const Special &special = *entry;
+                // The entries listed under this one follow it as bullets,
+                // wherever they are in the list.
+                QStringList lines{specialLine(special)};
+                for (const Special &sub : m.specials)
+                {
+                    if (!special.generated.isEmpty() && sub.under == special.generated)
+                    {
+                        lines << specialLine(sub, true);
+                    }
+                }
+                entries << lines.join(QLatin1Char('\n'));
+            }
+        };
+
+        // Identity and senses.
+        if (!m.info.trimmed().isEmpty())
+        {
+            entries << fieldText(m.info);
+        }
+        // Recall Knowledge, where Archives of Nethys prints it: above
+        // Perception (or with the description, or not at all).
+        const QString recall = QStringLiteral("**Recall Knowledge** ") + recallKnowledgeText(m);
+        if (m.recallKnowledge.isEmpty())
+        {
+            entries << recall;
+        }
+        const Stat &perception = statOf(m, "perception");
+        const QString perceptionValue = shown(m, "perception", QString());
+        if (!perceptionValue.isEmpty())
+        {
+            QString line = QStringLiteral("**Perception** %1").arg(withSign(perceptionValue));
+            if (!perception.note.trimmed().isEmpty())
+            {
+                line += QStringLiteral("; ") + fieldText(perception.note).simplified();
+            }
+            entries << line;
+        }
+        if (!m.languages.trimmed().isEmpty())
+        {
+            entries << QStringLiteral("**Languages** ") + fieldText(m.languages).simplified();
+        }
+        // Lores sorted in among the other skills by name, as Paizo prints
+        // them.
+        std::vector<std::pair<QString, QString>> skillEntries; // name, entry
+        auto addSkill = [&](const QString &name, const Stat &stat) {
+            if (!stat.value.isEmpty())
+            {
+                const QString title = titleCase(name);
+                skillEntries.emplace_back(title, QStringLiteral("%1 %2%3").arg(
+                                                     title, withSign(stat.value.text()), note(stat.note)));
+            }
+        };
+        for (const char *key : kSkills)
+        {
+            addSkill(QString::fromLatin1(key), statOf(m, key));
+        }
+        for (const QString &key : m.loreKeys())
+        {
+            const Stat &lore = *m.findStat(key);
+            addSkill(lore.name.trimmed().isEmpty() ? QStringLiteral("lore") : fieldText(lore.name).simplified(),
+                     lore);
+        }
+        std::stable_sort(skillEntries.begin(), skillEntries.end(), [](const auto &a, const auto &b) {
+            return a.first.compare(b.first, Qt::CaseInsensitive) < 0;
+        });
+        QStringList skills;
+        for (const auto &entry : skillEntries)
+        {
+            skills << entry.second;
+        }
+        if (!skills.isEmpty())
+        {
+            entries << QStringLiteral("**Skills** ") + skills.join(QStringLiteral(", "));
+        }
+        QStringList attributes;
+        const std::array<const char *, 6> shortNames{"Str", "Dex", "Con", "Int", "Wis", "Cha"};
+        for (size_t i = 0; i < kAbilities.size(); ++i)
+        {
+            const Stat &stat = statOf(m, kAbilities[i]);
+            attributes << QStringLiteral("**%1** %2%3").arg(
+                QLatin1String(shortNames[i]), withSign(shown(m, kAbilities[i], QStringLiteral("0"))),
+                note(stat.note));
+        }
+        entries << attributes.join(QStringLiteral(", "));
+        if (!m.items.trimmed().isEmpty())
+        {
+            entries << QStringLiteral("**Items** ") + fieldText(m.items).simplified();
+        }
+        // After Items, as Paizo prints them.
+        specialsOf("general");
+        entries << QStringLiteral("-");
+
+        // Defense.
+        auto save = [&](const char *label, const char *key) {
+            const Stat &stat = statOf(m, key);
+            return QStringLiteral("**%1** %2%3").arg(QLatin1String(label),
+                                                     withSign(shown(m, key, QStringLiteral("0"))),
+                                                     note(stat.note));
+        };
+        const Stat &ac = statOf(m, "ac");
+        QString defense = QStringLiteral("**AC** %1%2; %3, %4, %5")
+                              .arg(shown(m, "ac", QStringLiteral("0")), note(ac.note),
+                                   save("Fort", "fortitude"), save("Ref", "reflex"),
+                                   save("Will", "will"));
+        if (!m.savenote.trimmed().isEmpty())
+        {
+            defense += QStringLiteral("; ") + fieldText(m.savenote).simplified();
+        }
+        entries << defense;
+        const Stat &hp = statOf(m, "hp");
+        // With parts, the creature's own line is labelled ("(body, head
+        // regrowth)") and each part follows with its own: "**HP** 50 (head);
+        // **Immunities** area damage; ...", as in the user's Scribe documents.
+        auto labelled = [](const QString &label, const QString &text) {
+            QStringList parts;
+            for (const QString &p : {label.trimmed(), text.trimmed()})
+            {
+                if (!p.isEmpty())
+                {
+                    parts << p;
+                }
+            }
+            return note(parts.join(QStringLiteral(", ")));
+        };
+        // Templates' "fast healing 7", "void healing" join the note in its
+        // parentheses, as Monster Core prints them ("HP 65 (coffin
+        // restoration, fast healing 7, void healing)").
+        QStringList inside;
+        if (!hp.note.trimmed().isEmpty())
+        {
+            inside << hp.note.trimmed();
+        }
+        inside << m.hpAbilities;
+        QString hpLine = QStringLiteral("**HP** %1%2").arg(
+            shown(m, "hp", QStringLiteral("1")),
+            labelled(m.hpParts.empty() ? QString() : m.mainPart, inside.join(QStringLiteral(", "))));
+        for (const auto &[label, key] : {std::pair{"Immunities", "immunity"},
+                                         std::pair{"Resistances", "resistance"},
+                                         std::pair{"Weaknesses", "weakness"}})
+        {
+            const Stat &stat = statOf(m, key);
+            if (!stat.value.isEmpty())
+            {
+                const QString text = qstrcmp(key, "resistance") == 0
+                                         ? resistanceText(stat.value.text())
+                                         : fieldText(stat.value.text()).simplified();
+                hpLine += QStringLiteral("; **%1** %2").arg(QLatin1String(label), text);
+            }
+        }
+        entries << hpLine;
+        for (const HpPart &part : m.hpParts)
+        {
+            QString line = QStringLiteral("**HP** %1%2").arg(fieldText(part.hp).simplified(),
+                                                             labelled(part.name, part.note));
+            for (const auto &[label, list] : {std::pair{"Immunities", part.immunities},
+                                              std::pair{"Resistances", part.resistances},
+                                              std::pair{"Weaknesses", part.weaknesses}})
+            {
+                if (!list.trimmed().isEmpty())
+                {
+                    const QString text = qstrcmp(label, "Resistances") == 0
+                                             ? resistanceText(list)
+                                             : fieldText(list).simplified();
+                    line += QStringLiteral("; **%1** %2").arg(QLatin1String(label), text);
+                }
+            }
+            entries << line;
+        }
+        specialsOf("defense");
+        entries << QStringLiteral("-");
+
+        // Offense.
+        entries << QStringLiteral("**Speed** ") +
+                       (m.speed.trimmed().isEmpty() ? QStringLiteral("5 feet")
+                                                    : fieldText(m.speed).simplified());
+        for (const Strike &strike : m.strikes)
+        {
+            entries << strikeLine(strike);
+        }
+        const Stat &spellDc = statOf(m, "spelldc");
+        const Stat &spellAttack = statOf(m, "spellattack");
+        // Spellcasting: shown once it has a DC or attack, or spells (then
+        // with the benchmarks' DC and attack where those are empty).
+        const bool spells = hasSpells(m);
+        if (spells || !spellDc.value.isEmpty() || !spellAttack.value.isEmpty())
+        {
+            const QString type = fieldText(m.spelltype).simplified();
+            entries << spellLine(titleCase(type.isEmpty() ? QStringLiteral("Spells")
+                                                          : type + QStringLiteral(" Spells")),
+                                 m.focuspoints, spellDc, shown(m, "spelldc", QString(), spells),
+                                 spellAttack, shown(m, "spellattack", QString(), spells),
+                                 QString(), m.spells, m.cantriplevel, m.constant, level);
+        }
+        for (const SpellList &list : m.morespells)
+        {
+            // Additional spell lists: an empty DC is its benchmark's hint;
+            // an empty attack is left out.
+            QString dc = list.spelldc.value.text().trimmed();
+            if (dc.isEmpty())
+            {
+                if (const Hint h = hint(Table::SpellDc, level, list.spelldc.benchmark); h.valid && h.value)
+                {
+                    dc = QString::number(*h.value);
+                }
+            }
+            const QString name = fieldText(list.name).simplified();
+            entries << spellLine(titleCase(name.isEmpty() ? QStringLiteral("Spells")
+                                                          : name + QStringLiteral(" Spells")),
+                                 list.focuspoints, list.spelldc, dc,
+                                 list.spellattack, list.spellattack.value.text().trimmed(),
+                                 list.note, list.spells, list.cantriplevel, list.constant, level);
+        }
+        if (!m.ritualtype.trimmed().isEmpty())
+        {
+            entries << QStringLiteral("**%1 Rituals** DC %2; %3")
+                           .arg(titleCase(fieldText(m.ritualtype).simplified()),
+                                shown(m, "spelldc", QStringLiteral("0"), true),
+                                spellList(m.rituals));
+        }
+        specialsOf("offense");
+
+
+        QStringList lines;
+        lines << QStringLiteral("item(")
+              << QStringLiteral("# ") + fieldText(m.name).simplified()
+              << QStringLiteral("## %1 %2").arg(label, shownLevel) << QStringLiteral("-");
+        if (const QString traits = traitRow(m); !traits.isEmpty())
+        {
+            lines << QLatin1Char(';') + traits;
+        }
+        // Rules sit on their own line; other entries are separated by a
+        // blank line, so each is its own paragraph.
+        bool afterRule = true;
+        for (const QString &entry : entries)
+        {
+            const bool rule = entry == QLatin1String("-");
+            if (!afterRule && !rule)
+            {
+                lines << QString();
+            }
+            lines << entry;
+            afterRule = rule;
+        }
+        lines << QStringLiteral(")");
+
+        // The description follows the statblock as ordinary text, as on the
+        // website (and in the book's body font), below a horizontal rule
+        // (a lone "-" in Scribe) so the two read apart.
+        // Recall Knowledge can go above or below it.
+        QStringList after;
+        if (m.recallKnowledge == QLatin1String("above"))
+        {
+            after << recall;
+        }
+        if (!m.description.trimmed().isEmpty())
+        {
+            after << bodyText(m.description);
+        }
+        if (m.recallKnowledge == QLatin1String("below"))
+        {
+            after << recall;
+        }
+        if (!after.isEmpty())
+        {
+            lines << QString() << QStringLiteral("-") << QString() << after.join(QStringLiteral("\n\n"));
+        }
+        return lines.join(QLatin1Char('\n')) + QLatin1Char('\n');
+    }
+} // namespace monster

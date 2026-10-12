@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "leshy",
+ "name": "Leshy",
+ "group": "Ancestry",
+ "order": 70,
+ "dialog": "options",
+ "source": "Pathfinder NPC Core, Leshy (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=50",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with leshy and humanoid with plant (or fungus); adds Fey, low-light vision, size Small, Verdant Burst.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "leshy"},
+  "languagesAlways": true,
+  "languages": ["Fey"],
+  "senses": ["low-light vision"],
+  "size": "small"
+ },
+ "choices": [
+  {"key": "kind", "type": "choice", "label": "Leshy", "default": "plant", "items": [{"key": "plant", "label": "Plant leshy", "changes": {"replaceOrAdd": {"humanoid": "plant"}}}, {"key": "fungus", "label": "Fungus leshy (plants become fungi)", "changes": {"replaceOrAdd": {"humanoid": "fungus"}}}]}
+ ],
+ "abilities": [
+  {"key": "verdant-burst", "name": "Verdant Burst", "type": "defense", "actions": "none", "traits": "healing", "description": "When {name} dies, a burst of primal energy explodes from their body, restoring {steps|1d4|1=1d8|2=2d8|4=3d8|6=4d8|8=5d8|10=6d8|12=7d8|14=8d8|16=9d8|18=10d8|20=11d8} Hit Points to each plant creature in a 30-foot emanation. This area is filled with plants, becoming difficult terrain. If the terrain is not a viable environment for these plants, they wither after 24 hours.", "when": "kind:plant"},
+  {"key": "verdant-burst-fungus", "name": "Verdant Burst", "type": "defense", "actions": "none", "traits": "healing", "description": "When {name} dies, a burst of primal energy explodes from their body, restoring {steps|1d4|1=1d8|2=2d8|4=3d8|6=4d8|8=5d8|10=6d8|12=7d8|14=8d8|16=9d8|18=10d8|20=11d8} Hit Points to each fungus creature in a 30-foot emanation. This area is filled with fungi, becoming difficult terrain. If the terrain is not a viable environment for these fungi, they wither after 24 hours.", "when": "kind:fungus"}
+ ]
+}

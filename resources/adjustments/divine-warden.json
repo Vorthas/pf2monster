@@ -1,0 +1,37 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "divine-warden",
+ "name": "Divine Warden",
+ "prefix": "Divine warden",
+ "order": 112,
+ "dialog": "options",
+ "source": "Pathfinder Monster Core 2, Divine Warden (pg. 114), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=581; domains from Pathfinder Player Core and Pathfinder Divine Mysteries",
+ "license": "ORC License: Paizo's Pathfinder Monster Core 2, Player Core and Divine Mysteries are ORC licensed material.",
+ "rules": "For a construct empowered by a deity. Increase its level by 1; AC, attacks, DCs, saves and skills by 1; HP by its level. Gains the uncommon and divine traits, Divine Destruction, two of its deity's domains' spells (advanced ones from 10th level), divine lance, Faith Bound, Faithful Weapon and Instrument of Faith; holy or unholy as its deity prefers.",
+ "optional": "It keeps its abilities; adjust or remove those that conflict with its theme. New DCs: its own highest, else the moderate DC for its level. Faithful Weapon: the weapon goes in its Items; give it a Strike with that weapon by hand (striking from 4th level, greater striking from 12th, major striking from 19th).",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "bonusSkip": ["perception"],
+  "traits": ["divine"],
+  "rarity": "uncommon",
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}],
+  "items": ["{opt:weapon}"],
+  "innateSpells": [{"list": "Divine Innate", "spell": "divine lance", "rank": "cantrip", "dc": "own:moderate", "attack": true}],
+  "domainSpells": {"choices": ["domain1", "domain2"], "list": "Divine Domain", "advancedLevel": 10, "points": [{"max": 9, "change": 1}, {"change": 2}], "dc": "own:moderate"}
+ },
+ "choices": [
+  {"key": "deity", "type": "text", "label": "Patron deity", "placeholder": "Pharasma", "default": "its patron deity"},
+  {"key": "domain1", "type": "choice", "label": "First domain", "itemsFrom": "domains", "default": ""},
+  {"key": "domain2", "type": "choice", "label": "Second domain", "itemsFrom": "domains", "default": ""},
+  {"key": "weapon", "type": "text", "label": "Favored weapon", "placeholder": "dagger", "note": "The deity's favored weapon: added to its Items and named in Faithful Weapon."},
+  {"key": "sanctification", "type": "choice", "label": "Sanctification", "note": "As its deity prefers; none if the deity has no preference.", "items": [{"key": "none", "label": "None"}, {"key": "holy", "label": "Holy", "changes": {"traits": ["holy"]}}, {"key": "unholy", "label": "Unholy", "changes": {"traits": ["unholy"]}}]}
+ ],
+ "abilities": [
+  {"key": "divine-destruction", "name": "Divine Destruction", "type": "defense", "actions": "none", "traits": "divine, spirit", "description": "When {name} is reduced to 0 HP, it erupts with divine energy in a 30-foot emanation, dealing {level}d6 spirit damage. Each creature in the area must attempt a DC {owndc:moderate} Will save.\nCritical Success The creature takes half damage.\nSuccess The creature takes full damage.\nFailure The creature takes full damage and becomes temporarily cursed by {opt:deity}. The creature becomes enfeebled 1 and stupefied 1 for 1 day; this is a curse effect that uses the Will save DC as the counteract DC.\nCritical Failure As failure, except the creature becomes enfeebled 2 and stupefied 2."},
+  {"key": "faith-bound", "name": "Faith Bound", "type": "defense", "actions": "none", "traits": "divine", "description": "{Name} can't attack a creature that openly wears or displays the religious symbol of {opt:deity} unless that creature uses a hostile action against it first. If {name} is intelligent, it can also attack a creature it believes isn't faithful to its deity or who wears the religious symbol as a ruse (typically after succeeding at a Perception check to Sense Motive)."},
+  {"key": "faithful-weapon", "name": "Faithful Weapon", "type": "offense", "actions": "none", "traits": "", "description": "{Name} always wields its patron deity's favored weapon ({opt:weapon|lower}). If the weapon is a ranged weapon, {name} automatically generates new ammunition with each attack.{steps||4= While it wields the weapon, the weapon gains the effects of a striking rune.|12= While it wields the weapon, the weapon gains the effects of a greater striking rune.|19= While it wields the weapon, the weapon gains the effects of a major striking rune.}"},
+  {"key": "instrument-of-faith", "name": "Instrument of Faith", "type": "offense", "actions": "none", "traits": "", "description": "{Name} is a beacon for its deity's faith. A cleric of {opt:deity} can channel a _heal_ spell through {name} if they can see it within 60 feet. The cleric determines any targets or area for the spell as if they were standing in {name}'s space."}
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "cleric (warpriest)",
+ "name": "Cleric",
+ "variant": "Warpriest",
+ "list": "class",
+ "order": 108,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "Moderate Perception; moderate Religion, moderate or high skill themed to deity; high Str, moderate Wis; high AC; low Reflex, high Will; high spell DC. Abilities: prepared divine spellcasting as a cleric of their level; divine font, Shield Block",
+ "benchmarks": {
+  "perception": ["moderate"],
+  "religion": ["moderate"],
+  "strength": ["high"],
+  "wisdom": ["moderate"],
+  "ac": ["high"],
+  "reflex": ["low"],
+  "will": ["high"],
+  "spelldc": ["high"],
+  "spellattack": ["high"]
+ },
+ "notes": {
+  "perception": "Moderate Perception.",
+  "skills": "Moderate Religion; a moderate or high skill themed to the deity.",
+  "attributes": "High Strength, moderate Wisdom.",
+  "defense": "High AC; low Reflex, high Will.",
+  "spells": "High spell DC. Prepared divine spellcasting as a cleric of its level: {maxrank}. Divine font.",
+  "specials": "Shield Block."
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "ranger (str)",
+ "name": "Ranger",
+ "variant": "Strength",
+ "list": "class",
+ "order": 135,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Perception; moderate Nature and moderate to high Survival; high Str or Dex; high AC; moderate attack and high damage (or for a simpler ranger, remove Hunt Prey, and just use high attack and high damage). Abilities: Hunt Prey, hunter's edge, nature's edge, masterful hunter, swift prey, companion or combat style and related feats",
+ "benchmarks": {
+  "perception": ["high"],
+  "nature": ["moderate"],
+  "survival": ["moderate", "high"],
+  "strength": ["high"],
+  "ac": ["high"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "Moderate Nature and moderate to high Survival.",
+  "attributes": "High Strength or Dexterity.",
+  "defense": "High AC.",
+  "offense": "Moderate attack bonus and high damage (or, for a simpler ranger without Hunt Prey, high attack bonus and high damage).",
+  "specials": "Hunt Prey, hunter's edge, nature's edge, masterful hunter, swift prey, companion or combat style and related feats."
+ }
+}

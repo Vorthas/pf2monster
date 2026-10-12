@@ -1,0 +1,17 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "catfolk",
+ "name": "Catfolk",
+ "group": "Ancestry",
+ "order": 61,
+ "source": "Pathfinder NPC Core, Catfolk (pg. 151), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=41",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with catfolk (or adds it); adds Amurrun, low-light vision.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "catfolk"},
+  "languagesAlways": true,
+  "languages": ["Amurrun"],
+  "senses": ["low-light vision"]
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "broodpiercer",
+ "name": "Broodpiercer",
+ "group": "Body",
+ "order": 33,
+ "source": "Pathfinder Howl of the Wild, Broodpiercer Host Adjustments (pg. 129), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=30",
+ "license": "ORC License: Paizo's Pathfinder Howl of the Wild is ORC licensed material.",
+ "rules": "Meant for an animal, beast, humanoid or dragon. Increases its level by 1; its AC, attack bonuses, DCs, Perception, saves and skills by 1; the damage of its Strikes by 1; its HP based on its starting level (10, 15, 20 or 30); its Intelligence to -3 if it was lower; and adds Cold Stasis, Fumbling Dodge, Erratic Barrage and Induce Frenzy.",
+ "optional": "Damage: only its Strikes deal 1 more. The rules also add 1 to the damage of its other offensive abilities (2 for ones it can use only so often, such as spells or a breath weapon): change those by hand.",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "strikeDamage": 1,
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}],
+  "attributeMin": {"intelligence": -3}
+ },
+ "abilities": [
+  {"key": "cold-stasis", "name": "Cold Stasis", "type": "defense", "actions": "none", "traits": "", "description": "A broodpiercer larva is vulnerable to cold. Any effect that deals cold damage causes {name} to become slowed 1 for 1d4 rounds. While slowed from cold, it can't use Fumbling Dodge or Erratic Barrage. This occurs even if {name} is immune to cold."},
+  {"key": "fumbling-dodge", "name": "Fumbling Dodge", "type": "defense", "actions": "reaction", "traits": "", "description": "Trigger {Name} is targeted with an attack, or an effect that requires a Reflex save and is aware of the attacker; Effect {Name} lurches suddenly, stumbling out of harm's way as if dragged by a puppeteer. It gains a +3 circumstance bonus to AC against the triggering attack or to its Reflex save. After using Fumbling Dodge, {name} becomes clumsy 2 for 1 round."},
+  {"key": "erratic-barrage", "name": "Erratic Barrage", "type": "offense", "actions": "two", "traits": "", "description": "{Name} attacks twice while spinning ceaselessly, aiming blows from unexpected, seemingly illogical directions. It makes two melee Strikes against the same creature; its multiple attack penalty does not increase until it has made both attacks. The target is off-guard for the second Strike. The target creature then gets a sense for the erratic movement and becomes temporarily immune to Erratic Barrage for 1 day."},
+  {"key": "induce-frenzy", "name": "Induce Frenzy", "type": "offense", "actions": "one", "traits": "emotion", "description": "The broodpiercer floods the brain of {name} with adrenaline, amplifying its hunger and numbing its pain to drive it into an obsessive fugue. While frenzied, {name} gains a +2 circumstance bonus to Will saves, temporary Hit Points equal to its level, and a +10-foot circumstance bonus to its Speeds. The frenzy lasts for 1 minute, after which {name} is fatigued for 1 minute and can't enter another frenzy for 1 minute."}
+ ]
+}

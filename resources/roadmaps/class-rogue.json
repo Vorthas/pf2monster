@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "rogue",
+ "name": "Rogue",
+ "list": "class",
+ "order": 137,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Perception; high Stealth and Thievery, plus more skills than usual; high Dex (or key attribute for a specific rogue's racket); high AC; low Fortitude, high Reflex; low to moderate HP; moderate attack and low to moderate damage before sneak attack plus high or extreme damage with sneak attack. Abilities: Sneak attack, surprise attack, deny advantage, debilitating strike, master strike, rogue's racket and related feats",
+ "benchmarks": {
+  "perception": ["high"],
+  "stealth": ["high"],
+  "thievery": ["high"],
+  "dexterity": ["high"],
+  "ac": ["high"],
+  "fortitude": ["low"],
+  "reflex": ["high"],
+  "hp": ["low", "moderate"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "High Stealth and Thievery, and more skills than usual.",
+  "attributes": "High Dexterity (or the key attribute of the rogue's racket).",
+  "defense": "High AC; low Fortitude, high Reflex; low to moderate HP.",
+  "offense": "Moderate attack bonus and low to moderate damage before sneak attack, high or extreme damage with sneak attack.",
+  "specials": "Sneak attack, surprise attack, deny advantage, debilitating strike, master strike, rogue's racket and related feats."
+ }
+}

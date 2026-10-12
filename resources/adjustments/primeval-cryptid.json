@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "primeval-cryptid",
+ "name": "Primeval Cryptid",
+ "prefix": "Primeval",
+ "group": "Cryptid",
+ "order": 42,
+ "dialog": "options",
+ "source": "Pathfinder Dark Archive (Remastered), Primeval Cryptid (pg. 60), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=58",
+ "license": "ORC License: Paizo's Pathfinder Dark Archive (Remastered) is ORC licensed material.",
+ "rules": "For a living creature. Increase its level by 1; AC, attacks, DCs, Perception, saves and skills by 1; Strike damage by 1; HP by its starting level. Rarity one step up, animal becomes beast, one size larger (reach +5 feet once Huge or Gargantuan), Intelligence at least -3; two primeval abilities.",
+ "optional": "Damage: only its Strikes deal 1 more. The rules also add 1 to the damage of its other offensive abilities (2 for ones it can use only a small number of times, such as a breath weapon): change those by hand.",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "strikeDamage": 1,
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}],
+  "rarity": "raise",
+  "replaceTraits": {"animal": "beast"},
+  "grow": {"sizes": 1, "reach": 5},
+  "attributeMin": {"intelligence": -3}
+ },
+ "choices": [
+  {"key": "abilities", "type": "pick", "label": "Abilities", "note": "Two of these. More make an especially tough primeval cryptid, which you might need to weaken in some other way.", "items": [{"key": "stench", "label": "Stench"}, {"key": "broken-arsenal", "label": "Broken Arsenal"}, {"key": "grasp-for-life", "label": "Grasp for Life", "on": true}, {"key": "shockwave", "label": "Shockwave", "on": true}]}
+ ],
+ "abilities": [
+  {"key": "stench", "name": "Stench", "type": "defense", "actions": "none", "traits": "aura, olfactory", "description": "30 feet. A creature entering the aura or starting its turn in the area must succeed at a DC {dc:standard} Fortitude save or become sickened 1 (plus slowed 1 as long as it's sickened on a critical failure). A creature that succeeds at its save or recovers from being sickened is temporarily immune to all stench auras for 1 minute.", "when": "abilities:stench"},
+  {"key": "broken-arsenal", "name": "Broken Arsenal", "type": "defense", "actions": "none", "traits": "", "description": "Fragments of broken blades and spears, the remnants of countless failed attempts to fell {name}, remain lodged in its flesh. When an adjacent creature hits {name} with a melee attack or otherwise touches it, that creature takes {=max(1, level / 2)} piercing damage.", "when": "abilities:broken-arsenal"},
+  {"key": "grasp-for-life", "name": "Grasp for Life", "type": "defense", "actions": "free", "traits": "healing", "description": "Frequency once per week; Trigger {Name} would be reduced to 0 Hit Points; Effect {Name}'s will to live is second nature, and it shrugs off death. Instead of being reduced to 0 Hit Points, its Hit Points become {=max(4, 4 * level)}.", "when": "abilities:grasp-for-life"},
+  {"key": "shockwave", "name": "Shockwave", "type": "offense", "actions": "two", "traits": "", "description": "{Name} creates a shock wave by stomping on the ground, beating its tail on the ground, or making another similarly violent, percussive slam. Creatures on the ground within 30 feet of {name} take {=max(2, level)}d6 bludgeoning damage (DC {abilitydc} basic Reflex save). On a critical failure, a creature is also knocked prone.", "when": "abilities:shockwave"}
+ ]
+}

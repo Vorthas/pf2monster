@@ -1,0 +1,17 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "hobgoblin",
+ "name": "Hobgoblin",
+ "group": "Ancestry",
+ "order": 67,
+ "source": "Pathfinder NPC Core, Hobgoblin (pg. 168), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=47",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with hobgoblin (or adds it); adds Goblin, darkvision.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "hobgoblin"},
+  "languagesAlways": true,
+  "languages": ["Goblin"],
+  "senses": ["darkvision"]
+ }
+}

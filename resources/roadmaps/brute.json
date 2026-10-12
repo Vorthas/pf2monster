@@ -1,0 +1,31 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "brute",
+ "name": "Brute",
+ "list": "base",
+ "order": 1,
+ "source": "Pathfinder GM Core, \"Building Creatures\" (pg. 112), Base Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "low Perception; high or extreme Str modifier, high to moderate Con modifier, low or lower Dex and mental modifiers; moderate or low AC; high Fortitude, low Reflex or Will or both; high HP; high attack bonus and high damage or moderate attack bonus and extreme damage",
+ "benchmarks": {
+  "perception": ["low"],
+  "strength": ["high", "extreme"],
+  "constitution": ["high", "moderate"],
+  "dexterity": ["low", "terrible", "abysmal"],
+  "intelligence": ["low", "terrible", "abysmal"],
+  "wisdom": ["low", "terrible", "abysmal"],
+  "charisma": ["low", "terrible", "abysmal"],
+  "ac": ["moderate", "low"],
+  "fortitude": ["high"],
+  "reflex": ["low", "moderate"],
+  "will": ["moderate", "low"],
+  "hp": ["high"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "attributes": "High or extreme Strength, high to moderate Constitution, low or lower Dexterity and mental modifiers.",
+  "defense": "Moderate or low AC; high Fortitude; low Reflex or Will or both (set: low Reflex); high HP.",
+  "offense": "High attack bonus and high damage, or moderate attack bonus and extreme damage."
+ }
+}

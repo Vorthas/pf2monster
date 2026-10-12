@@ -1,0 +1,30 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "commander",
+ "name": "Commander",
+ "list": "class",
+ "order": 109,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "High Perception; high Warfare Lore, moderate Society; high Int, moderate Str; high AC; low Fortitude, moderate Reflex, high Will; moderate HP; moderate accuracy and moderate damage. Abilities: Commander's banner (aura giving allies within 30 feet a +1 status bonus to Will saves and DCs against fear), three tactics appropriate for their level (one used per round, allies in the encounter count as squadmates), Drilled Reactions, Shield Block",
+ "benchmarks": {
+  "perception": ["high"],
+  "society": ["moderate"],
+  "intelligence": ["high"],
+  "strength": ["moderate"],
+  "ac": ["high"],
+  "fortitude": ["low"],
+  "reflex": ["moderate"],
+  "will": ["high"],
+  "hp": ["moderate"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "High Warfare Lore, moderate Society.",
+  "attributes": "High Intelligence, moderate Strength.",
+  "defense": "High AC; low Fortitude, moderate Reflex, high Will; moderate HP.",
+  "offense": "Moderate attack bonus and moderate damage.",
+  "specials": "Commander's banner (aura giving allies within 30 feet a +1 status bonus to Will saves and DCs against fear), three tactics appropriate for its level (one used per round; allies in the encounter count as squadmates), Drilled Reactions, Shield Block."
+ }
+}

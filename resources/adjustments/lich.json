@@ -1,0 +1,41 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "lich",
+ "name": "Lich",
+ "prefix": "Lich",
+ "group": "Undead",
+ "order": 104,
+ "dialog": "options",
+ "source": "Pathfinder Monster Core, Lich (pg. 218), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=438",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "For a spellcaster able to perform a ritual of undeath (usually one casting 6th-rank spells). Increase its level by 1 and its spell DCs and spell attack by 2. Becomes an unholy undead: darkvision, +1 vs. vitality, void healing, immunities, cold and physical resistance, Rejuvenation, a hand Strike and three lich abilities.",
+ "optional": "It loses abilities that come from being a living creature, and traits of its life other than human, humanoid and the ancestries (removed here): remove those by hand, and adjust abilities that conflict with its theme. Unholy: liches usually are; remove it if not. Cold Beyond Cold: change its hand Strike to cold damage by hand.",
+ "changes": {
+  "level": [{"change": 1}],
+  "spellBonus": 2,
+  "traits": ["undead", "unholy"],
+  "removeLiving": true,
+  "livingType": "undead",
+  "senses": ["darkvision"],
+  "saveNote": "+1 status to all saves vs. vitality",
+  "hpAbilities": ["void healing"],
+  "immunities": ["bleed", "death effects", "disease", "paralyzed", "poison", "unconscious"],
+  "resistances": [{"type": "cold", "steps": [{"change": 10}]}, {"type": "physical", "steps": [{"change": 10}], "suffix": "(except magical bludgeoning)"}]
+ },
+ "choices": [
+  {"key": "abilities", "type": "pick", "label": "Lich abilities", "note": "You can substitute any one of the last four for Frightful Presence, Siphon Life or Drain Soul Cage.", "items": [{"key": "frightful-presence", "label": "Frightful Presence", "on": true}, {"key": "siphon-life", "label": "Siphon Life", "on": true}, {"key": "drain-soul-cage", "label": "Drain Soul Cage", "on": true}, {"key": "blasphemous-utterances", "label": "Blasphemous Utterances"}, {"key": "cold-beyond-cold", "label": "Cold Beyond Cold"}, {"key": "dark-deliverance", "label": "Dark Deliverance", "changes": {"resistances": [{"type": "vitality", "expr": "max(1, level)"}]}}, {"key": "void-shroud", "label": "Void Shroud"}]}
+ ],
+ "strikes": [
+  {"key": "hand", "name": "hand", "type": "Melee", "from": "none", "attack": "moderate", "traits": "finesse", "damageText": "{=max(1, level / 3)}d8 void"}
+ ],
+ "abilities": [
+  {"key": "frightful-presence", "name": "Frightful Presence", "type": "defense", "actions": "none", "traits": "aura, emotion, fear, mental", "description": "60 feet, DC {spelldc:moderate}", "when": "abilities:frightful-presence"},
+  {"key": "blasphemous-utterances", "name": "Blasphemous Utterances", "type": "defense", "actions": "none", "traits": "arcane, aura, mental", "description": "10 feet. {Name} is accompanied by a constant echo of blasphemous murmurs and tainted whispers. A creature in the aura takes a –2 circumstance penalty to saves against mental effects and can't take actions that have the concentrate trait unless they succeed at a DC 10 flat check. On a failure, the action is disrupted.", "when": "abilities:blasphemous-utterances"},
+  {"key": "void-shroud", "name": "Void Shroud", "type": "defense", "actions": "none", "traits": "aura, death", "description": "30 feet. {Name} is surrounded by an aura of death, drawing forth souls to be consumed by its constant hunger. Living creatures in the emanation take a –2 status penalty to saves against fear and death effects. In addition, any creature that starts its turn in the area gains the doomed 1 condition unless it succeeds at a DC {=spelldc - 4} Will save.", "when": "abilities:void-shroud"},
+  {"key": "rejuvenation", "name": "Rejuvenation", "type": "defense", "actions": "none", "traits": "arcane", "description": "When {name} is destroyed, its soul immediately transfers to its soul cage. {Name} can be permanently destroyed only if its soul cage is found and destroyed."},
+  {"key": "cold-beyond-cold", "name": "Cold Beyond Cold", "type": "offense", "actions": "none", "traits": "", "description": "{Name}'s hand Strike deals cold damage instead of void and the target is slowed 2. A successful Fortitude save reduces this to slowed 1 (or negates it on a critical success).", "when": "abilities:cold-beyond-cold"},
+  {"key": "drain-soul-cage", "name": "Drain Soul Cage", "type": "offense", "actions": "free", "traits": "", "description": "Frequency once per day; Effect {Name} taps into its soul cage's power to cast any arcane spell up to the highest rank it can cast, even if the spell being cast is not one of its prepared spells. Its soul cage doesn't need to be present for it to use this ability.", "when": "abilities:drain-soul-cage"},
+  {"key": "siphon-life", "name": "Siphon Life", "type": "offense", "actions": "none", "traits": "", "description": "{Name}'s form draws forth life from those who come into contact with it. When {name} damages a living creature with an unarmed attack, it gains 5 temporary Hit Points and the creature must succeed at a DC {=spelldc - 2} Fortitude save or become drained 1. If {name} is grabbed or restrained at the start of its turn, each creature grabbing or restraining it must succeed at a Fortitude save or become drained 1. If {name} siphons a creature's life again, the drained value increases by 1, to a maximum of drained 4.", "when": "abilities:siphon-life"}
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "mutant-cryptid",
+ "name": "Mutant Cryptid",
+ "prefix": "Mutant",
+ "group": "Cryptid",
+ "order": 41,
+ "dialog": "options",
+ "source": "Pathfinder Dark Archive (Remastered), Mutant Cryptids (pg. 59), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=57",
+ "license": "ORC License: Paizo's Pathfinder Dark Archive (Remastered) is ORC licensed material.",
+ "rules": "For a living creature. Increase its level by 1; AC, attacks, DCs, Perception, saves and skills by 1; Strike damage by 1; HP by its starting level. Adds the rare trait and mutant abilities: all four, or two not counting Unusual Bane.",
+ "optional": "Damage: only its Strikes deal 1 more. The rules also add 1 to the damage of its other offensive abilities (2 for ones it can use only a small number of times, such as a breath weapon): change those by hand. Explosive End: choose a damage type appropriate for it (flame, acid, toxic goop or something stranger). A unique mutant ability of your own (written in the form) can replace one of the three that make it stronger, or Unusual Bane if it's detrimental.",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "strikeDamage": 1,
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}],
+  "rarity": "rare"
+ },
+ "choices": [
+  {"key": "abilities", "type": "pick", "label": "Abilities", "note": "All four, or just two not counting Unusual Bane.", "items": [{"key": "unusual-bane", "label": "Unusual Bane", "on": true}, {"key": "explosive-end", "label": "Explosive End", "on": true}, {"key": "shifting-iridescence", "label": "Shifting Iridescence", "on": true}, {"key": "marrowlance", "label": "Marrowlance (a ranged Strike)", "on": true}]},
+  {"key": "bane", "type": "text", "label": "Bane", "placeholder": "saffron, the sound of children's laughter, ...", "default": "a specific bane", "when": "abilities:unusual-bane"}
+ ],
+ "strikes": [
+  {"key": "marrowlance", "name": "marrowlance", "type": "Ranged", "traits": "range 60 feet, versatile S", "damageType": "piercing", "attack": "moderate", "damage": "low", "when": "abilities:marrowlance"}
+ ],
+ "abilities": [
+  {"key": "unusual-bane", "name": "Unusual Bane", "type": "defense", "actions": "none", "traits": "", "description": "{Name} has an unusual weakness to {opt:bane}. The first time each round it comes within 15 feet of its bane or interacts with its bane, it takes {=max(1, level)} mental damage and must attempt a DC {dc:hard} Will save. On a failure, it's stunned 1 (stunned 3 on a critical failure).", "when": "abilities:unusual-bane"},
+  {"key": "explosive-end", "name": "Explosive End", "type": "defense", "actions": "none", "traits": "", "description": "When {name} dies, it explodes into flame, acid, a pile of toxic goop, or something stranger still, dealing {=max(1, (level + 1) / 2)}d6 damage to each creature in a 10-foot emanation (DC {dc:standard} basic Reflex save).", "when": "abilities:explosive-end"},
+  {"key": "shifting-iridescence", "name": "Shifting Iridescence", "type": "defense", "actions": "none", "traits": "magical", "description": "Whenever {name} takes energy damage to which it isn't resistant or immune, after taking the damage normally, it gains resistance {steps|5|9=10|17=15} to that damage type. If it had a resistance to a different damage type from shifting iridescence, the new resistance replaces the old one.", "when": "abilities:shifting-iridescence"}
+ ]
+}

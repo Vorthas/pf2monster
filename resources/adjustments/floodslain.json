@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "floodslain",
+ "name": "Floodslain Creature",
+ "prefix": "Floodslain",
+ "group": "Undead",
+ "order": 101,
+ "source": "Pathfinder Adventure Path #207: The Resurrection Flood, Floodslain Creature (pg. 84), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=557",
+ "license": "ORC License: Paizo's Pathfinder Adventure Path #207: The Resurrection Flood is ORC licensed material.",
+ "rules": "For an animal or humanoid. Increase its level by 1; AC, attacks, DCs, saves and skills by 1; HP by its starting level. Becomes amphibious and undead: darkvision, void healing, immunities, fire resistance equal to its level, a swim Speed equal to its Speed, Drowning Touch, Floodslain Spawn, Sodden Ground and Vomit Flotsam.",
+ "optional": "It loses abilities that come from being a living creature, and traits of its life other than human, humanoid and the ancestries (removed here): remove those by hand, and adjust abilities that conflict with its theme.",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "bonusSkip": ["perception"],
+  "hp": [{"max": 1, "change": 10}, {"max": 4, "change": 15}, {"max": 19, "change": 20}, {"change": 30}],
+  "traits": ["amphibious", "undead"],
+  "removeLiving": true,
+  "livingType": "undead",
+  "senses": ["darkvision"],
+  "hpAbilities": ["void healing"],
+  "immunities": ["death effects", "disease", "paralyzed", "poison", "sleep"],
+  "resistances": [{"type": "fire", "expr": "max(1, level)"}],
+  "derivedSpeeds": [{"type": "swim", "from": "land", "onlyIfMissing": false}]
+ },
+ "abilities": [
+  {"key": "floodslain-spawn", "name": "Floodslain Spawn", "type": "general", "actions": "none", "traits": "occult", "description": "A living animal or humanoid killed by {name} rises as a floodslain if its corpse is left in water for 24 hours. The new floodslain isn't under the control of {name}."},
+  {"key": "sodden-ground", "name": "Sodden Ground", "type": "defense", "actions": "none", "traits": "aura, occult, water", "description": "20 feet. Water flows endlessly from {name}, making the area around it slippery. The ground in the aura is difficult terrain for all non-floodslain creatures."},
+  {"key": "drowning-touch", "name": "Drowning Touch", "type": "offense", "actions": "none", "traits": "occult", "description": "When {name} damages a creature with a non-weapon melee attack, the target's lungs begin to fill with water. The target must attempt a DC {statdc:will} Fortitude save. A target affected by Drowning Touch can spend a single action coughing in an attempt to recover, which immediately lets it attempt a new Fortitude save against the effect. A success improves the previous result by 1 step, a critical success improves it by 2, and a critical failure decreases it by 1.\nCritical Success The creature is unaffected.\nSuccess The creature is slowed 1 for 1 round.\nFailure The creature is slowed 2 for 1 round.\nCritical Failure The creature is slowed 2 and drowning."},
+  {"key": "vomit-flotsam", "name": "Vomit Flotsam", "type": "offense", "actions": "two", "traits": "occult", "description": "{Name}'s body is filled with debris from its horrific death, which it spews at its enemies in a 15-foot cone. Each creature in the area takes {=max(1, level)}d8 bludgeoning damage (DC {statdc:fortitude} basic Reflex save)."}
+ ]
+}

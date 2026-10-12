@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "werecreature",
+ "name": "Werecreature",
+ "prefix": "Were{opt:animal|lower}",
+ "order": 111,
+ "dialog": "options",
+ "source": "Pathfinder Monster Core, Werecreature (pg. 344), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=484",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "For a living humanoid, in its hybrid form. Increase its level by 1; AC, attacks, DCs, saves and skills by 1; Strike damage by 1; one size larger if the animal is larger. More HP and weakness to silver, by its level. Gains the beast and werecreature traits, the animal's senses, Animal Empathy, claws, jaws carrying its curse, Change Shape, the curse of the werecreature and Moon Frenzy.",
+ "optional": "Damage: only its Strikes deal 1 more; add 1 to its other offensive abilities (2 for limited ones) by hand. Adjust abilities that conflict with its theme. In animal shape it also gains the animal's special Strike effects (such as Grab): name them in \"Animal shape\".",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "bonusSkip": ["perception"],
+  "strikeDamage": 1,
+  "traits": ["beast", "werecreature"],
+  "hp": [{"max": 4, "change": 25}, {"max": 7, "change": 35}, {"max": 14, "change": 50}, {"change": 75}],
+  "weaknesses": [{"type": "silver", "steps": [{"max": 4, "change": 5}, {"max": 7, "change": 7}, {"max": 14, "change": 10}, {"change": 15}]}],
+  "senses": ["{opt:senses}"]
+ },
+ "choices": [
+  {"key": "animal", "type": "text", "label": "Animal", "placeholder": "wolf", "default": "wolf", "note": "The animal it turns into: \"wolf\" makes a werewolf."},
+  {"key": "size", "type": "pick", "label": "Size", "items": [{"key": "larger", "label": "The animal is larger (one size larger)", "changes": {"grow": {"sizes": 1, "reach": 5}}}]},
+  {"key": "senses", "type": "text", "label": "The animal's senses", "placeholder": "low-light vision, scent (imprecise) 30 feet", "note": "Added to its Perception."},
+  {"key": "kind", "type": "text", "label": "Animal Empathy with", "placeholder": "canine creatures", "default": "animals of its general kind"},
+  {"key": "shape", "type": "text", "label": "Animal shape", "placeholder": "Speed 40 feet and jaws with Knockdown", "default": "the animal's Speed", "note": "For Change Shape: the animal's Speed and the special Strike effects it gains."},
+  {"key": "fullText", "type": "check", "label": "Write out the abilities' rules text", "note": "Off: names and numbers only, as Paizo prints werecreatures (the rules are with the Werecreature family in Monster Core). On: Change Shape, the curse and Moon Frenzy with their full text."}
+ ],
+ "strikes": [
+  {"key": "claw", "name": "claw", "type": "Melee", "from": "agile", "traits": "agile", "damageType": "slashing"},
+  {"key": "jaws", "name": "jaws", "type": "Melee", "from": "nonagile", "fallback": 1.3333, "damageType": "piercing", "extra": "plus curse of the were{opt:animal}"}
+ ],
+ "abilities": [
+  {"key": "animal-empathy", "name": "{opt:animal|cap} Empathy", "type": "general", "actions": "none", "traits": "", "description": "{Name} can ask questions of, receive answers from, and use the Diplomacy skill with {opt:kind}."},
+  {"key": "change-shape", "name": "Change Shape", "type": "offense", "actions": "one", "traits": "concentrate, polymorph, primal", "description": "Humanoid with fist {strikeattack:claw} for {strikedice:claw} bludgeoning, or {opt:animal|lower} with {opt:shape}.", "when": "!fullText"},
+  {"key": "change-shape", "name": "Change Shape", "type": "offense", "actions": "one", "traits": "concentrate, polymorph, primal", "description": "{Name} changes into its humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true werecreature's natural form is its hybrid shape. In humanoid shape, it uses its original humanoid size, loses its jaws and claws Strikes, and gains a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by its claw ({strikeattack:claw} for {strikedice:claw} bludgeoning). In animal shape ({opt:animal|lower}), its Speed and size change to that of the animal, it gains any special Strike effects of the animal that it didn't already have (such as Grab), and it loses its weapon Strikes ({opt:shape}).", "when": "fullText"},
+  {"key": "curse", "name": "Curse of the Were{opt:animal|lower}", "type": "offense", "actions": "none", "traits": "curse, primal", "description": "Saving Throw DC {spelldc:moderate} Fortitude", "when": "!fullText"},
+  {"key": "curse", "name": "Curse of the Were{opt:animal|lower}", "type": "offense", "actions": "none", "traits": "curse, primal", "description": "This curse affects only humanoids. Saving Throw DC {spelldc:moderate} Fortitude. On each full moon, the cursed creature must succeed at another Fortitude save or turn into a were{opt:animal|lower} until dawn. The creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.", "when": "fullText"},
+  {"key": "moon-frenzy", "name": "Moon Frenzy", "type": "offense", "actions": "none", "traits": "polymorph, primal", "description": "", "when": "!fullText"},
+  {"key": "moon-frenzy", "name": "Moon Frenzy", "type": "offense", "actions": "none", "traits": "polymorph, primal", "description": "When a full moon appears in the night sky, {name} must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its jaws by 2. When the moon sets or the sun rises, {name} returns to humanoid form and is fatigued for 2d4 hours.", "when": "fullText"}
+ ]
+}

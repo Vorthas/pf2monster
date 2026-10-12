@@ -1,0 +1,25 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "monk (str)",
+ "name": "Monk",
+ "variant": "Strength",
+ "list": "class",
+ "order": 127,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Acrobatics, Athletics, or both; high Str or Dex, moderate Wis; high or extreme AC; moderate attack and high damage. Abilities: Flurry of Blows, metal strikes, mystic strikes, perfected form, stance and related feats, qi abilities",
+ "benchmarks": {
+  "athletics": ["high"],
+  "strength": ["high"],
+  "wisdom": ["moderate"],
+  "ac": ["high", "extreme"]
+ },
+ "notes": {
+  "skills": "High Acrobatics, Athletics, or both (set: Athletics).",
+  "attributes": "High Strength or Dexterity, moderate Wisdom.",
+  "defense": "High or extreme AC.",
+  "offense": "Moderate attack bonus and high damage.",
+  "specials": "Flurry of Blows, metal strikes, mystic strikes, perfected form, stance and related feats, qi abilities."
+ }
+}

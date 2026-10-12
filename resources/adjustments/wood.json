@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "wood",
+ "name": "Wood",
+ "group": "Elemental",
+ "order": 16,
+ "source": "Pathfinder Rage of Elements, Wood adjustment (pg. 193), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=21",
+ "license": "ORC License: Paizo's Pathfinder Rage of Elements is ORC licensed material.",
+ "rules": "Adds the wood trait and Muan (if it has languages); increases its HP by 10, 20, 40 or 60 and adds weaknesses to fire and to axes 3, 5, 10 or 15, by level (3 or lower, 4-8, 9-13, 14+).",
+ "optional": "Optional: if it's a growing plant, you can also add the plant trait. If it can cast spells, you can replace spells with wood spells of the same rank, such as: cantrip timber, 1st protector tree, 2nd oaken resilience, 3rd wall of thorns, 4th life-draining roots, 5th nature's pathway, 6th lignify, 7th pollen pods, 8th burning blossoms, 9th one with the land.",
+ "changes": {
+  "traits": ["wood"],
+  "languages": ["Muan"],
+  "hp": [{"max": 3, "change": 10}, {"max": 8, "change": 20}, {"max": 13, "change": 40}, {"change": 60}],
+  "weaknesses": [{"type": "axes", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}, {"type": "fire", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}]
+ }
+}

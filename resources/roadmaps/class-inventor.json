@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "inventor",
+ "name": "Inventor",
+ "list": "class",
+ "order": 117,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low Perception; high Crafting; high Int; high AC (Extreme if Armor Innovation); low to moderate HP; Overdrive, Explode, Shield Block; moderate attack and high damage (Extreme damage for weapon innovation); add a construct to the encounter for construct innovation; Inventor innovation, modifications to gear to reflect modifications",
+ "benchmarks": {
+  "perception": ["low"],
+  "crafting": ["high"],
+  "intelligence": ["high"],
+  "ac": ["high", "extreme"],
+  "hp": ["low", "moderate"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "High Crafting.",
+  "attributes": "High Intelligence.",
+  "defense": "High AC (extreme with an armor innovation); low to moderate HP.",
+  "offense": "Moderate attack bonus and high damage (extreme with a weapon innovation).",
+  "specials": "Overdrive, Explode, Shield Block; inventor innovation, with modifications to its gear to reflect them; add a construct to the encounter for a construct innovation."
+ }
+}

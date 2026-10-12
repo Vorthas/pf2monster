@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "metal",
+ "name": "Metal",
+ "group": "Elemental",
+ "order": 13,
+ "source": "Pathfinder Rage of Elements, Metal adjustment (pg. 139), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=19",
+ "license": "ORC License: Paizo's Pathfinder Rage of Elements is ORC licensed material.",
+ "rules": "Adds the metal trait and Talican (if it has languages); decreases its HP by 6, 10, 20 or 30 and adds resistance to electricity 3, 5, 10 or 15, by level (3 or lower, 4-8, 9-13, 14+).",
+ "optional": "Optional: if it has metal spikes or blades, you can give its physical Strikes your choice of versatile P or versatile S. If it can cast spells, you can replace spells with metal spells of the same rank, such as: cantrip needle darts, 1st conductive weapon, 2nd magnetic repulsion, 3rd noxious metals, 4th rust cloud, 5th impaling spike, 6th field of razors, 7th beheading buzz saw, 8th ferrous form, 9th magnetic dominion.",
+ "changes": {
+  "traits": ["metal"],
+  "languages": ["Talican"],
+  "hp": [{"max": 3, "change": -6}, {"max": 8, "change": -10}, {"max": 13, "change": -20}, {"change": -30}],
+  "resistances": [{"type": "electricity", "steps": [{"max": 3, "change": 3}, {"max": 8, "change": 5}, {"max": 13, "change": 10}, {"change": 15}]}]
+ }
+}

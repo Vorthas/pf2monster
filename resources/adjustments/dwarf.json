@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "dwarf",
+ "name": "Dwarf",
+ "group": "Ancestry",
+ "order": 62,
+ "dialog": "options",
+ "source": "Pathfinder NPC Core, Dwarf (pg. 168), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=42",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with dwarf (or adds it); adds Dwarven, darkvision, Speed 20 feet if higher, a clan dagger, optionally a clan dagger Strike.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "dwarf"},
+  "languagesAlways": true,
+  "languages": ["Dwarven"],
+  "senses": ["darkvision"],
+  "items": ["clan dagger"],
+  "landSpeed": {"max": 20}
+ },
+ "choices": [
+  {"key": "options", "type": "pick", "label": "Options", "items": [{"key": "clan-dagger", "label": "Clan dagger Strike (damage of its lowest melee Strike)"}]}
+ ],
+ "strikes": [
+  {"key": "clan-dagger", "name": "clan dagger", "type": "Melee", "from": "lowest", "traits": "agile, dwarf, parry, uncommon, versatile B", "damageType": "piercing", "when": "options:clan-dagger"}
+ ]
+}

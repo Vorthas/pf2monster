@@ -1,0 +1,41 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "ghoul",
+ "name": "Ghoul",
+ "prefix": "Ghoul",
+ "group": "Undead",
+ "order": 103,
+ "dialog": "options",
+ "source": "Pathfinder Monster Core, Ghoul (pg. 162), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=419",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "For a living creature. Increase its level by 1; AC, attacks, DCs, saves, Perception and skills by 1; Strike damage by 1. Becomes an unholy undead ghoul: darkvision, void healing, immunities, Stench, burrow 5 feet, claws and jaws, Consume Flesh, Ghoul Whispers, Grave Knowledge and Swift Leap.",
+ "optional": "Damage: only its Strikes deal 1 more; add 1 to its other offensive abilities (2 for limited ones) by hand. It loses abilities that come from being a living creature, and traits of its life other than human, humanoid and the ancestries (removed here): remove those by hand, and adjust abilities that conflict with its theme. Unholy: ghouls usually are; remove it if not.",
+ "changes": {
+  "level": [{"change": 1}],
+  "bonus": 1,
+  "strikeDamage": 1,
+  "traits": ["undead", "ghoul", "unholy"],
+  "removeLiving": true,
+  "livingType": "undead",
+  "senses": ["darkvision"],
+  "hpAbilities": ["void healing"],
+  "immunities": ["bleed", "death effects", "disease", "paralyzed", "poison", "unconscious"],
+  "speeds": [{"type": "burrow", "steps": [{"change": 5}]}]
+ },
+ "choices": [
+  {"key": "body", "type": "pick", "label": "Body", "note": "Claws if it had hands; jaws if it had a mouth.", "items": [{"key": "hands", "label": "Hands (claw Strike)", "on": true}, {"key": "mouth", "label": "Mouth (jaws Strike)", "on": true}]}
+ ],
+ "strikes": [
+  {"key": "claw", "name": "claw", "type": "Melee", "from": "agile", "traits": "agile", "damageType": "slashing", "extra": "plus Grab", "when": "body:hands"},
+  {"key": "jaws", "name": "jaws", "type": "Melee", "from": "nonagile", "damageType": "slashing", "when": "body:mouth"}
+ ],
+ "abilities": [
+  {"key": "grave-knowledge", "name": "Grave Knowledge", "type": "general", "actions": "none", "traits": "occult", "description": "Frequency once per hour; Effect {Name} calls upon knowledge it retains from one creature it has consumed in the past 7 days. It attempts a skill check using a skill in which the consumed creature was trained (if it's unclear whether the creature was trained, the GM decides), as trained with a {skill:high} modifier. This takes the same amount of actions or time as usual for the check. {Name} can instead automatically learn something specific known by a creature it consumed in the last 7 days, like the location of a hidden treasure or the name of a loved one. It can do this only once for a given creature, no matter how much of its flesh it consumed."},
+  {"key": "stench", "name": "Stench", "type": "defense", "actions": "none", "traits": "aura, olfactory", "description": "10 feet. A creature entering the aura or starting its turn in the area must succeed at a DC {spelldc:moderate} Fortitude save or become sickened 1 (plus slowed 1 as long as it's sickened on a critical failure). A creature that succeeds at its save or recovers from being sickened is temporarily immune to all stench auras for 1 minute."},
+  {"key": "consume-flesh", "name": "Consume Flesh", "type": "offense", "actions": "one", "traits": "manipulate", "description": "Requirements {Name} is adjacent to the corpse of a creature that died within the last hour; Effect {Name} devours a chunk of the corpse and regains {=1 + max(0, level) / 2}d6 Hit Points. It can regain Hit Points from any given corpse only once."},
+  {"key": "ghoul-whispers", "name": "Ghoul Whispers", "type": "offense", "actions": "one", "traits": "auditory, linguistic, occult", "description": "Requirements A grabbed, paralyzed, restrained, or unconscious creature is within {name}'s reach; Effect {Name} whispers dark thoughts and vile cravings into the creature's ears. The creature must save against forbidden cravings."},
+  {"key": "forbidden-cravings", "name": "Forbidden Cravings", "type": "offense", "actions": "none", "traits": "curse", "description": "A creature can still eat and drink while sickened by this curse. Saving Throw DC {spelldc:high} Will; Stage 1 carrier with no ill effects (1 day); Stage 2 2d6 void damage and the target is sickened 1 until it consumes raw meat (1 day); Stage 3 as stage 2; Stage 4 as stage 2 unless the target has consumed raw meat in the past 24 hours, then it takes 4d6 void damage and is sickened 2 until it consumes raw meat; Stage 5 if the creature has eaten raw meat in the past 24 hours, it dies and rises as a ghoul, if not, it returns to stage 4"},
+  {"key": "swift-leap", "name": "Swift Leap", "type": "offense", "actions": "one", "traits": "move", "description": "{Name} jumps up to half its Speed. This movement doesn't trigger reactions."}
+ ]
+}

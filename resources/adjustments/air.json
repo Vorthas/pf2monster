@@ -1,0 +1,17 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "air",
+ "name": "Air",
+ "group": "Elemental",
+ "order": 10,
+ "source": "Pathfinder Rage of Elements, Air adjustment (pg. 67), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=16",
+ "license": "ORC License: Paizo's Pathfinder Rage of Elements is ORC licensed material.",
+ "rules": "Adds the air trait and Sussuran (if it has languages); fly Speed 25 feet at 8th level or higher.",
+ "optional": "Optional: below 8th level, you can give it the fly Speed 25 feet if it doesn't have ranged attacks or you remove them; use discretion. If it can cast spells, you can replace spells with air spells of the same rank, such as: cantrip gale blast, 1st gust of wind, 2nd cleanse air, 3rd wall of wind, 4th fly, 5th pressure zone, 6th phantom orchestra, 7th fly, 8th whirlwind, 9th wrathful storm.",
+ "changes": {
+  "traits": ["air"],
+  "languages": ["Sussuran"],
+  "speeds": [{"type": "fly", "steps": [{"min": 8, "change": 25}]}]
+ }
+}

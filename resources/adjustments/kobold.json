@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "kobold",
+ "name": "Kobold",
+ "group": "Ancestry",
+ "order": 69,
+ "source": "Pathfinder NPC Core, Kobold (pg. 169), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=49",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with kobold (or adds it); adds Sakvroth, darkvision, size Small.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "kobold"},
+  "languagesAlways": true,
+  "languages": ["Sakvroth"],
+  "senses": ["darkvision"],
+  "size": "small"
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "alchemist",
+ "name": "Alchemist",
+ "list": "class",
+ "order": 101,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "Low Perception; high Crafting; high Int, moderate or better Dex or Str; low to moderate HP; moderate attack with bombs. Abilities: Infused alchemical items, Quick Bomber if a bomber alchemist, a few other alchemist abilities; it's usually easier to give the alchemist their bomb items rather than use Quick Alchemy on the spot",
+ "benchmarks": {
+  "perception": ["low"],
+  "crafting": ["high"],
+  "intelligence": ["high"],
+  "dexterity": ["moderate", "high", "extreme"],
+  "hp": ["low", "moderate"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "High Crafting.",
+  "attributes": "High Intelligence; moderate or better Dexterity or Strength (set: moderate Dexterity).",
+  "defense": "Low to moderate HP.",
+  "offense": "Moderate attack bonus with bombs.",
+  "specials": "Infused alchemical items, Quick Bomber if a bomber alchemist, a few other alchemist abilities; it's usually easier to give the alchemist their bomb items rather than use Quick Alchemy on the spot."
+ }
+}

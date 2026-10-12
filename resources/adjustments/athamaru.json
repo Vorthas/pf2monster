@@ -1,0 +1,19 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "athamaru",
+ "name": "Athamaru",
+ "group": "Ancestry",
+ "order": 60,
+ "source": "Pathfinder NPC Core, Athamaru (pg. 151), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=39",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "Replaces its ancestry trait with athamaru (or adds it); adds amphibious, adds Thalassic, low-light vision, swim Speed 25 feet.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "athamaru"},
+  "languagesAlways": true,
+  "languages": ["Thalassic"],
+  "senses": ["low-light vision"],
+  "traits": ["amphibious"],
+  "speeds": [{"type": "swim", "steps": [{"change": 25}]}]
+ }
+}

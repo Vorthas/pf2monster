@@ -1,0 +1,34 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "kineticist (metal)",
+ "name": "Kineticist",
+ "variant": "Metal",
+ "list": "class",
+ "order": 122,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low to moderate Perception; high Nature, moderate Crafting; high Con; high AC; high to extreme Fortitude, high Reflex, low Will; moderate HP; high accuracy with blasts and moderate damage; high to extreme spell DC (standing in for class DC). Abilities: Two-action Elemental Blast (use Strikes for one-action Elemental Blast, piercing or slashing damage, 30 feet), Channel Elements, armor of metal (counted in its AC), a reaction that deals acid, electricity or piercing damage equal to half its level to an attacker, Metal impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist",
+ "benchmarks": {
+  "perception": ["low", "moderate"],
+  "nature": ["high"],
+  "crafting": ["moderate"],
+  "constitution": ["high"],
+  "ac": ["high"],
+  "fortitude": ["high", "extreme"],
+  "reflex": ["high"],
+  "will": ["low"],
+  "hp": ["moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low to moderate Perception.",
+  "skills": "High Nature, moderate Crafting.",
+  "attributes": "High Constitution.",
+  "defense": "High AC; high to extreme Fortitude, high Reflex, low Will; moderate HP.",
+  "offense": "High attack bonus with blasts (its spell attack) and moderate damage.",
+  "spells": "High to extreme spell DC, standing in for its class DC: its impulses work like spells, but it has no spellcasting.",
+  "specials": "Two-action Elemental Blast (use Strikes for the one-action Elemental Blast, piercing or slashing damage, 30 feet), Channel Elements; armor of metal (counted in its AC); a reaction that deals acid, electricity or piercing damage equal to half its level to an attacker; Metal impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist."
+ }
+}

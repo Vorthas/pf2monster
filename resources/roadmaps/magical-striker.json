@@ -1,0 +1,19 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "magical striker",
+ "name": "Magical Striker",
+ "list": "base",
+ "order": 2,
+ "source": "Pathfinder GM Core, \"Building Creatures\" (pg. 112), Base Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "high attack and high damage; moderate to high spell DCs; either a scattering of innate spells, or prepared or spontaneous spells with a rank up to half the creature's level (rounded up) minus 1",
+ "benchmarks": {
+  "spelldc": ["moderate", "high"],
+  "spellattack": ["moderate", "high"]
+ },
+ "notes": {
+  "offense": "High attack bonus and high damage.",
+  "spells": "Moderate to high spell DCs. Either a scattering of innate spells, or prepared or spontaneous spells up to half the level (rounded up) minus 1: {maxrank-1}."
+ }
+}

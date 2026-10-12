@@ -1,0 +1,30 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "exemplar (dex)",
+ "name": "Exemplar",
+ "variant": "Dexterity",
+ "list": "class",
+ "order": 112,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Moderate Perception; high Religion; high Str or Dex; moderate AC; moderate Fortitude, low Reflex, high Will; high HP; high accuracy and high damage. Abilities: Weapon Ikon appropriate for weapon used, a Body Ikon or Worn Ikon of choice, Reactive Strike, Ikon abilities from chosen Ikons and feats related to chosen Ikons",
+ "benchmarks": {
+  "perception": ["moderate"],
+  "religion": ["high"],
+  "dexterity": ["high"],
+  "ac": ["moderate"],
+  "fortitude": ["moderate"],
+  "reflex": ["low"],
+  "will": ["high"],
+  "hp": ["high"]
+ },
+ "notes": {
+  "perception": "Moderate Perception.",
+  "skills": "High Religion.",
+  "attributes": "High Strength or Dexterity.",
+  "defense": "Moderate AC; moderate Fortitude, low Reflex, high Will; high HP.",
+  "offense": "High attack bonus and high damage.",
+  "specials": "A weapon ikon that suits the weapon it uses, a body ikon or worn ikon of choice, Reactive Strike, the chosen ikons' abilities and feats related to them."
+ }
+}

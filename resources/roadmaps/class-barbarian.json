@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "barbarian",
+ "name": "Barbarian",
+ "list": "class",
+ "order": 103,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Athletics; high Str, high to moderate Con; high AC; high Fortitude; high HP; moderate attack and extreme damage (when raging). Abilities: Rage, instinct ability and related feats, raging resistance",
+ "benchmarks": {
+  "athletics": ["high"],
+  "strength": ["high"],
+  "constitution": ["high", "moderate"],
+  "ac": ["high"],
+  "fortitude": ["high"],
+  "hp": ["high"]
+ },
+ "notes": {
+  "skills": "High Athletics.",
+  "attributes": "High Strength, high to moderate Constitution.",
+  "defense": "High AC; high Fortitude; high HP.",
+  "offense": "Moderate attack bonus and extreme damage (when raging).",
+  "specials": "Rage, instinct ability and related feats, raging resistance."
+ }
+}

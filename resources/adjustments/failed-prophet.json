@@ -1,0 +1,38 @@
+{
+ "format": 1,
+ "kind": "template",
+ "id": "failed-prophet",
+ "name": "Failed Prophet",
+ "prefix": "Failed prophet",
+ "order": 113,
+ "appliesTo": {"min": 10},
+ "source": "Pathfinder Lost Omens Shining Kingdoms, Failed Prophet (pg. 180), via Archives of Nethys: https://2e.aonprd.com/MonsterFamilies.aspx?ID=563",
+ "license": "ORC License: Paizo's Pathfinder Lost Omens Shining Kingdoms is ORC licensed material.",
+ "rules": "For a living creature of 10th level or higher that failed the Kalistocrat death ritual. Its level stays; AC, attacks, DCs, Perception, saves and skills increase by 1, and Thievery to at least high. Becomes a construct: wealthsense, immunities, weakness to spirit, cold, electricity and physical resistance, Broken Mindscape, Taboos, a fist with Greedy Grab, and This Is My Reality!",
+ "optional": "It loses abilities that come from being a living creature, and traits of its life other than human, humanoid and the ancestries (removed here): remove those by hand. A fist Strike it had is replaced by the failed prophet's.",
+ "changes": {
+  "bonus": 1,
+  "traits": ["construct"],
+  "removeLiving": true,
+  "livingType": "construct",
+  "skillBenchmarks": {"thievery": "high"},
+  "senses": ["wealthsense (imprecise) 60 feet"],
+  "immunities": ["bleed", "death effects", "disease", "doomed", "drained", "fatigued", "healing", "nonlethal attacks", "paralyzed", "poison", "sickened", "unconscious", "vitality", "void"],
+  "resistances": [
+   {"type": "cold", "steps": [{"max": 14, "change": 10}, {"change": 15}]},
+   {"type": "electricity", "steps": [{"max": 14, "change": 10}, {"change": 15}]},
+   {"type": "physical", "steps": [{"max": 14, "change": 10}, {"change": 15}], "suffix": "(except magical bludgeoning)"}
+  ],
+  "weaknesses": [{"type": "spirit", "steps": [{"max": 14, "change": 10}, {"change": 15}]}]
+ },
+ "strikes": [
+  {"key": "fist", "name": "fist", "type": "Melee", "from": "none", "attack": "high", "damage": "moderate", "traits": "magical", "damageType": "bludgeoning", "extra": "plus Greedy Grab", "reachPlus": 5, "replace": true}
+ ],
+ "abilities": [
+  {"key": "wealthsense", "name": "Wealthsense", "type": "general", "actions": "none", "traits": "", "description": "{Name} can detect concentrations of coinage and other valuables as an imprecise sense with a range of 60 feet. It detects any creature carrying coins and treasure totaling at least the average cost of a consumable item of its level."},
+  {"key": "broken-mindscape", "name": "Broken Mindscape", "type": "defense", "actions": "none", "traits": "aura, illusion, incapacitation, mental", "description": "30 feet. A creature entering the aura or starting its turn in the aura must attempt a DC {spelldc:moderate} Will save.\nCritical Success The creature is unaffected and becomes immune to broken mindscape for 1 minute.\nSuccess The creature is stunned 1 as disjointed visions of {name}'s mindscape assail its senses.\nFailure The creature's mind is pulled into {name}'s mindscape. It's paralyzed for 1 round. While paralyzed, the creature can take any actions with the mental or spirit traits, or that deal mental or spirit damage, as though those actions were purely mental. Such actions only have line of effect to {name} and other creatures currently paralyzed by broken mindscape, though they treat all such creatures as though they were adjacent.\nCritical Failure As failure, but the duration is 1 minute or until {name} is destroyed, whichever happens first."},
+  {"key": "taboos", "name": "Taboos", "type": "defense", "actions": "none", "traits": "", "description": "Despite {name}'s transformed body, a lifelong adherence to the strictures of the Prophecies of Kalistrade has ingrained the philosophical prohibitions into their soul. Whenever {name} is critically hit by an unarmed attack, is critically hit by or critically fails a save against a touch spell, or is exposed to a disease or poison effect (even though immune), they take a –2 status penalty to their AC, attack bonuses, DCs, Perception, saving throws, and skill modifiers for 1 minute. Breaking other Kalistocratic taboos can also trigger this penalty at the GM's discretion."},
+  {"key": "greedy-grab", "name": "Greedy Grab", "type": "offense", "actions": "one", "traits": "", "description": "Requirements {Name}'s last action was a successful fist Strike that dealt damage; Effect {Name} attempts a Thievery check against the target's Reflex DC. On a success, {name} pilfers coins and gems from the target with a total value of {steps|5d10|13=6d10|16=7d10|19=8d10} gp, to a maximum of what the target is carrying. Valuables in unlocked containers on the target's person can be taken just as easily as those carried. On a critical success, {name} steals double that amount. {Name} gains a number of temporary Hit Points equal to the value stolen that last for 1 minute."},
+  {"key": "this-is-my-reality", "name": "This Is My Reality!", "type": "offense", "actions": "two", "traits": "concentrate", "description": "{Name} exerts control over their crumbling mindscape to inflict harm upon those trapped within. This can take the form of falling debris, natural disasters, or anything else {name} can imagine. No matter the form, each creature currently paralyzed by {name}'s broken mindscape takes {area:unlimited} spirit damage with a DC {spelldc:high} basic Will save."}
+ ]
+}

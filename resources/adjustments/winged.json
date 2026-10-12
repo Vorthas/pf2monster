@@ -1,0 +1,18 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "winged",
+ "name": "Winged",
+ "group": "Body",
+ "order": 31,
+ "source": "Pathfinder Howl of the Wild, Winged adjustment (pg. 123), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=29",
+ "license": "ORC License: Paizo's Pathfinder Howl of the Wild is ORC licensed material.",
+ "rules": "Adds Acrobatics equal to its highest skill modifier, a fly Speed equal to its highest Speed, and Dropping Dodge.",
+ "changes": {
+  "skillsToHighest": ["acrobatics"],
+  "derivedSpeeds": [{"type": "fly", "from": "fastest", "half": false, "min": 5, "onlyIfMissing": false}]
+ },
+ "abilities": [
+  {"key": "dropping-dodge", "name": "Dropping Dodge", "type": "defense", "actions": "reaction", "traits": "", "description": "Requirements {Name} is flying; Trigger An enemy targets {name} with a Strike; Effect {Name} folds its wings and drops to avoid the hit at the last second. {Name} gains a +2 circumstance bonus to AC against the Strike. After the Strike resolves, {name} drops 15 feet. Even if it is stopped by the ground, it doesn't take falling damage."}
+ ]
+}

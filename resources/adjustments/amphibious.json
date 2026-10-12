@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "amphibious",
+ "name": "Amphibious",
+ "group": "Environment",
+ "order": 20,
+ "source": "Pathfinder Howl of the Wild, Amphibious adjustment (pg. 122), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=24",
+ "license": "ORC License: Paizo's Pathfinder Howl of the Wild is ORC licensed material.",
+ "rules": "Adds the amphibious trait (removing aquatic), low-light vision, Athletics equal to its highest skill modifier, a swim Speed of half its land Speed if it has none and a land Speed of half its swim Speed if it has none (minimum 15 feet), and Drag Along.",
+ "changes": {
+  "traits": ["amphibious"],
+  "removeTraits": ["aquatic"],
+  "senses": ["low-light vision"],
+  "skillsToHighest": ["athletics"],
+  "derivedSpeeds": [{"type": "swim", "from": "land", "half": true, "min": 15}, {"type": "land", "from": "swim", "half": true, "min": 15}]
+ },
+ "abilities": [
+  {"key": "drag-along", "name": "Drag Along", "type": "offense", "actions": "one", "traits": "", "description": "Requirements {Name}'s previous action was a successful melee Strike; Effect {Name} Strides or Swims 10 feet away from the target. The target moves the same direction and distance as forced movement."}
+ ]
+}

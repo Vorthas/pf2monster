@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "witch",
+ "name": "Witch",
+ "list": "class",
+ "order": 143,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "Low Perception; high patron skill; high Int; low AC; low Fortitude; low HP; low accuracy; high to extreme spell DC. Abilities: prepared spellcasting of a tradition based on patron as a witch of their level, familiar, witch's patron and related cantrip, hex, and spells",
+ "benchmarks": {
+  "perception": ["low"],
+  "intelligence": ["high"],
+  "ac": ["low"],
+  "fortitude": ["low"],
+  "hp": ["low"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "A high patron skill.",
+  "attributes": "High Intelligence.",
+  "defense": "Low AC; low Fortitude; low HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Prepared spellcasting of its patron's tradition as a witch of its level: {maxrank}. Patron cantrip, hexes and spells.",
+  "specials": "Familiar, witch's patron and related feats."
+ }
+}

@@ -1,0 +1,199 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "mythic",
+ "name": "Mythic",
+ "prefix": "Mythic",
+ "order": 3,
+ "dialog": "mythic",
+ "source": "Pathfinder War of Immortals, \"Mythic Monster Templates\" (pg. 168-169): Basic Mythic Abilities and the Mythic Ambusher, Brute, Caster and Striker templates, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=3341 and https://2e.aonprd.com/MonsterTemplates.aspx?ID=31 (to 34). Statblock style after War of Immortals' Mythic Ogre Boss (https://2e.aonprd.com/Monsters.aspx?ID=3401) and Mythic Lich (ID=3402).",
+ "license": "ORC License: Paizo's Pathfinder War of Immortals is ORC licensed material.",
+ "rules": "Adds the mythic trait and the basic mythic abilities up to the creature's level (mythic resilience or resistance, Mythic Power, ...), and optionally a template: Ambusher, Brute, Caster or Striker.",
+ "changes": {},
+ "abilities": {
+  "mythic-resilience": {
+   "name": "Mythic Resilience",
+   "type": "defense",
+   "actions": "none",
+   "compactOmit": true,
+   "description": "{Name} treats its saving throws with the associated save as one degree of success better than it rolled. This is not cumulative with other effects that change their degree of success, like the incapacitation trait (except for rolling a natural 1 or 20)."
+  },
+  "mythic-resistance": {
+   "name": "Mythic Resistance",
+   "type": "defense",
+   "actions": "none",
+   "compactOmit": true,
+   "description": "{Name} has resistance {resistance} to all Strikes made by non-mythic creatures. Mythic weapons bypass this resistance even if the creature wielding them is not mythic."
+  },
+  "mythic-defenses": {
+   "name": "Mythic Defenses",
+   "type": "defense",
+   "actions": "none",
+   "compact": "",
+   "description": "Whenever an attacker rolls a critical hit against {name}, the attacker must reroll the attack roll and take the new result."
+  },
+  "mythic-immunity": {
+   "name": "Mythic Immunity",
+   "type": "defense",
+   "actions": "none",
+   "compact": "{immunityShort}",
+   "description": "{Name} is immune to {immunity}."
+  },
+  "mythic-power": {
+   "name": "Mythic Power",
+   "type": "offense",
+   "actions": "none",
+   "compact": "3 Mythic Points",
+   "description": "3 Mythic Points"
+  },
+  "mythic-skill": {
+   "name": "Mythic Skill",
+   "type": "offense",
+   "actions": "free",
+   "compact": "**Cost** 1 Mythic Point; {skillList}",
+   "description": "**Cost** 1 Mythic Point; **Effect** {Name} attempts its next {skills} check with a +4 bonus and is considered to have mythic proficiency for that check."
+  },
+  "recharge": {
+   "name": "Recharge",
+   "type": "offense",
+   "actions": "one",
+   "traits": "concentrate",
+   "compact": "**Cost** 1 Mythic Point; **Effect** {Name} gains one additional use of a spell or ability that is normally only available a limited number of times.",
+   "description": "**Cost** 1 Mythic Point; **Effect** {Name} gains one additional use of a spell or ability that is normally only available a limited number of times. For example, a spellcaster can regain an expended slot or use an ability with a frequency of once per day again."
+  },
+  "recharge-spell": {
+   "name": "Recharge Spell",
+   "type": "offense",
+   "actions": "one",
+   "traits": "concentrate",
+   "costsPoints": true,
+   "compact": "**Cost** 1 Mythic Point; **Effect** {Name} regains one spell.",
+   "description": "**Cost** 1 Mythic Point; **Effect** {Name} regains one spell."
+  },
+  "remove-condition": {
+   "name": "Remove a Condition",
+   "type": "offense",
+   "actions": "one",
+   "traits": "concentrate",
+   "compact": "**Cost** 1 Mythic Point; **Effect** {Name} ends one condition affecting it.",
+   "description": "**Cost** 1 Mythic Point; **Effect** {Name} ends one condition affecting it."
+  },
+  "reroll": {
+   "name": "Reroll",
+   "type": "offense",
+   "actions": "free",
+   "traits": "fortune",
+   "compact": "**Cost** 1 Mythic Point; **Trigger** {Name} fails a check; **Effect** {Name} rerolls the check.",
+   "description": "**Cost** 1 Mythic Point; **Trigger** {Name} fails a check; **Effect** {Name} rerolls the check."
+  },
+  "undying-myth": {
+   "name": "Undying Myth",
+   "type": "offense",
+   "actions": "free",
+   "compact": "**Cost** all {name}'s Mythic Points; **Trigger** {Name} would die and has at least 1 Mythic Point; **Effect** {Name} remains standing and conscious, and recovers 50\\% of its maximum Hit Points.",
+   "description": "**Cost** all {name}'s Mythic Points; **Trigger** {Name} would die and has at least 1 Mythic Point; **Effect** {Name} remains standing and conscious, and recovers 50\\% of its maximum Hit Points."
+  },
+  "ambush-excellence": {
+   "name": "Ambush Excellence",
+   "skill": "stealth",
+   "summary": "Stealth uses the extreme skill value for its level."
+  },
+  "hazard-immunity": {
+   "name": "Hazard Immunity",
+   "type": "defense",
+   "actions": "none",
+   "compact": "",
+   "description": "{Name} never triggers the reactions of hazards in its own lair and is immune to the negative consequences of damaging area effects created by hazards in its lair."
+  },
+  "brutish-athleticism": {
+   "name": "Brutish Athleticism",
+   "skill": "athletics",
+   "summary": "Athletics uses the extreme skill value for its level."
+  },
+  "mythic-ferocity": {
+   "name": "Mythic Ferocity",
+   "type": "defense",
+   "actions": "reaction",
+   "costsPoints": true,
+   "compact": "**Cost** 1 Mythic Point, {halfHp} HP",
+   "description": "**Cost** 1 Mythic Point; **Trigger** {Name} is reduced to 0 HP; **Effect** {Name} avoids being knocked out and remains at half its maximum HP, but its wounded value increases by 1. When it is wounded 3, it can no longer use this ability."
+  },
+  "titanic-might": {
+   "name": "Titanic Might",
+   "type": "general",
+   "actions": "none",
+   "compact": "",
+   "description": "{Name} ignores size limitations when performing actions like Grapple or Trip."
+  },
+  "devastating-magic": {
+   "name": "Devastating Magic",
+   "spells": true,
+   "summary": "Spell DC and spell attack use the high values for its level (extreme at 11th level and higher)."
+  },
+  "mythic-knowledge": {
+   "name": "Mythic Knowledge",
+   "skill": "tradition",
+   "summary": "The skill of its spellcasting tradition (Arcana, Nature, Occultism or Religion) uses the extreme skill value for its level."
+  },
+  "deadly-striker": {
+   "name": "Deadly Striker",
+   "type": "offense",
+   "actions": "none",
+   "compact": "1d6",
+   "description": "{Name} deals an additional 1d6 precision damage on its next Strike whenever it uses an action to Stride 10 or more feet (or to Burrow, Climb, or Fly 10 or more feet)."
+  },
+  "mythic-mobility": {
+   "name": "Mythic Mobility",
+   "skill": "acrobatics",
+   "summary": "Acrobatics uses the extreme skill value for its level."
+  },
+  "unimpeded": {
+   "name": "Unimpeded",
+   "type": "offense",
+   "actions": "one",
+   "costsPoints": true,
+   "compact": "**Cost** 1 Mythic Point",
+   "description": "**Cost** 1 Mythic Point; **Effect** {Name} automatically ends one effect that would give it a circumstance penalty to Speed. When it attempts to Escape an effect that has it immobilized, grabbed, or restrained, it automatically succeeds."
+  }
+ },
+ "templates": [
+  {
+   "id": "ambusher",
+   "name": "Ambusher",
+   "summary": "Lies in wait, often using its mythic power to conceal itself or prepare its lair for intruders.",
+   "weakness": "Mythic Weakness (Frailty): can't gain mythic immunity to Strikes or mythic resistance. Mythic resilience for Reflex at any level; its other saves at 7th and 13th level as normal.",
+   "noResistance": true,
+   "noImmunity": ["strikes"],
+   "firstResilience": "reflex",
+   "abilities": ["ambush-excellence", "hazard-immunity"]
+  },
+  {
+   "id": "brute",
+   "name": "Brute",
+   "summary": "Hardy and physically resilient, fighting its enemies directly.",
+   "weakness": "Mythic Weakness (Weak-Willed): can't gain mythic resilience to Will saves. Mythic resistance equal to its level at any level.",
+   "noResilience": ["will"],
+   "fullResistance": true,
+   "abilities": ["brutish-athleticism", "mythic-ferocity", "titanic-might"]
+  },
+  {
+   "id": "caster",
+   "name": "Caster",
+   "summary": "Supplements its spellcasting power with mythic might.",
+   "weakness": "Mythic Weakness (Extreme Frailty): can't gain mythic resilience in Fortitude, mythic immunity to Strikes, or mythic resistance. The Recharge mythic power action for spells at any level.",
+   "noResilience": ["fortitude"],
+   "noResistance": true,
+   "noImmunity": ["strikes"],
+   "abilities": ["devastating-magic", "mythic-knowledge", "recharge-spell"]
+  },
+  {
+   "id": "striker",
+   "name": "Striker",
+   "summary": "Deals out damage in one or two big swings, then moves out of direct melee.",
+   "weakness": "Mythic Weakness (Infirmity): never gains mythic resilience in Fortitude and can't gain the Remove a Condition mythic power action.",
+   "noResilience": ["fortitude"],
+   "noRemoveCondition": true,
+   "abilities": ["deadly-striker", "mythic-mobility", "unimpeded"]
+  }
+ ]
+}

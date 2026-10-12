@@ -1,0 +1,28 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "champion (str)",
+ "name": "Champion",
+ "variant": "Strength",
+ "list": "class",
+ "order": 105,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "Low Perception; moderate Religion; high Str or Dex, moderate Cha; extreme AC; low Reflex; moderate attack and high damage. Abilities: Blessing of the devoted and related feats, cause, champion's aura, devotion spells, exalted reaction, feats based on cause, sanctification, Shield Block, Smite",
+ "benchmarks": {
+  "perception": ["low"],
+  "religion": ["moderate"],
+  "strength": ["high"],
+  "charisma": ["moderate"],
+  "ac": ["extreme"],
+  "reflex": ["low"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "Moderate Religion.",
+  "attributes": "High Strength or Dexterity, moderate Charisma.",
+  "defense": "Extreme AC; low Reflex.",
+  "offense": "Moderate attack bonus and high damage.",
+  "specials": "Blessing of the devoted and related feats, cause, champion's aura, devotion spells, exalted reaction, feats based on cause, sanctification, Shield Block, Smite."
+ }
+}

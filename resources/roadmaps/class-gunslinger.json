@@ -1,0 +1,27 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "gunslinger",
+ "name": "Gunslinger",
+ "list": "class",
+ "order": 116,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "High Perception; high skill based on Way; high Dex; moderate AC; low Will; high Reflex; low HP; high attack and extreme damage with guns; Slinger's Reload; Initial Deed; Gunslinger way, abilities associated with combat style and feats (Sword and Pistol or Dual-Weapon Reload)",
+ "benchmarks": {
+  "perception": ["high"],
+  "dexterity": ["high"],
+  "ac": ["moderate"],
+  "reflex": ["high"],
+  "will": ["low"],
+  "hp": ["low"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "A high skill from its way.",
+  "attributes": "High Dexterity.",
+  "defense": "Moderate AC; high Reflex, low Will; low HP.",
+  "offense": "High attack bonus and extreme damage with guns.",
+  "specials": "Slinger's Reload; Initial Deed; gunslinger's way; abilities and feats associated with its combat style (Sword and Pistol or Dual-Weapon Reload)."
+ }
+}

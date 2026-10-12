@@ -1,0 +1,31 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "magus (str)",
+ "name": "Magus",
+ "variant": "Strength",
+ "list": "class",
+ "order": 125,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low Perception; high Arcana; high Str or Dex, moderate or high Int; high AC; low to moderate HP; moderate accuracy; high to extreme spell DC; prepared arcane spellcasting as a magus of their level; conflux spells; Spellstrike, Arcane Cascade; Magus hybrid study abilities",
+ "benchmarks": {
+  "perception": ["low"],
+  "arcana": ["high"],
+  "strength": ["high"],
+  "intelligence": ["moderate", "high"],
+  "ac": ["high"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "High Arcana.",
+  "attributes": "High Strength or Dexterity, moderate or high Intelligence.",
+  "defense": "High AC; low to moderate HP.",
+  "offense": "Moderate attack bonus.",
+  "spells": "High to extreme spell DC. Prepared arcane spellcasting as a magus of its level: {maxrank}. Conflux spells.",
+  "specials": "Spellstrike, Arcane Cascade, hybrid study abilities."
+ }
+}

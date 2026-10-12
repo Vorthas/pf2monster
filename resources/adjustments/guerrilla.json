@@ -1,0 +1,21 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "guerrilla",
+ "name": "Guerrilla",
+ "prefix": "Guerrilla",
+ "group": "NPC Role",
+ "order": 52,
+ "source": "Pathfinder NPC Core, Guerrilla (pg. 95), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=37",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "For a military NPC or troop, or a mercenary. Stealth at the high skill value for its level; Athletics -2 if it has it; Strike damage -2; Sneak Attack and Pounce.",
+ "changes": {
+  "strikeDamage": -2,
+  "skillBenchmarks": {"stealth": "high"},
+  "statChanges": {"athletics": -2}
+ },
+ "abilities": [
+  {"key": "sneak-attack", "name": "Sneak Attack", "type": "offense", "actions": "none", "traits": "", "description": "{Name} deals 1d6 extra precision damage to off-guard creatures."},
+  {"key": "pounce", "name": "Pounce", "type": "offense", "actions": "one", "traits": "", "description": "{Name} Strides and makes a Strike at the end of that movement. If {name} began this action hidden, they remain hidden until after this ability's Strike."}
+ ]
+}

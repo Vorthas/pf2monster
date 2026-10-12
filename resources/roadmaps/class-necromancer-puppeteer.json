@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "necromancer (puppeteer)",
+ "name": "Necromancer",
+ "variant": "Puppeteer",
+ "list": "class",
+ "order": 131,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low Perception; high Occultism; high Int, low AC; high Fortitude, low Reflex, moderate Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities: Prepared occult spellcasting as a necromancer of their level; grave spells, Create Thrall (two thralls, command thrall to move in same action), max cap of 4 thralls",
+ "benchmarks": {
+  "perception": ["low"],
+  "occultism": ["high"],
+  "intelligence": ["high"],
+  "ac": ["low"],
+  "fortitude": ["high"],
+  "reflex": ["low"],
+  "will": ["moderate"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "High Occultism.",
+  "attributes": "High Intelligence.",
+  "defense": "Low AC; high Fortitude, low Reflex, moderate Will; low to moderate HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Prepared occult spellcasting as a necromancer of its level: {maxrank}. Grave spells.",
+  "specials": "Create Thrall (two thralls, and command a thrall to move, in the same action); at most 4 thralls."
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "necromancer (reaper str)",
+ "name": "Necromancer",
+ "variant": "Reaper, Strength",
+ "list": "class",
+ "order": 129,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Moderate Perception; moderate Occultism; high Str or Dex; moderate AC; high Fortitude, low Reflex, moderate Will; moderate HP; moderate accuracy, moderate to high damage; high spell DC. Abilities: Prepared occult spellcasting as a necromancer of their level; grave spells, Create Thrall (one thrall and Strike in same action), max cap of 3 thralls",
+ "benchmarks": {
+  "perception": ["moderate"],
+  "occultism": ["moderate"],
+  "strength": ["high"],
+  "ac": ["moderate"],
+  "fortitude": ["high"],
+  "reflex": ["low"],
+  "will": ["moderate"],
+  "hp": ["moderate"],
+  "spelldc": ["high"],
+  "spellattack": ["high"]
+ },
+ "notes": {
+  "perception": "Moderate Perception.",
+  "skills": "Moderate Occultism.",
+  "attributes": "High Strength or Dexterity.",
+  "defense": "Moderate AC; high Fortitude, low Reflex, moderate Will; moderate HP.",
+  "offense": "Moderate attack bonus and moderate to high damage.",
+  "spells": "High spell DC. Prepared occult spellcasting as a necromancer of its level: {maxrank}. Grave spells.",
+  "specials": "Create Thrall (one thrall and a Strike in the same action); at most 3 thralls."
+ }
+}

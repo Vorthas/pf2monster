@@ -1,0 +1,31 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "thaumaturge",
+ "name": "Thaumaturge",
+ "list": "class",
+ "order": 142,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "High Perception; moderate Arcana, Nature, Occult, and Religion; high Cha; high AC; low to moderate HP; high Fortitude; low Reflex; moderate attack and high damage with Exploit Vulnerability. Abilities: Exploit Vulnerability, Implement, Implement's Empowerment",
+ "benchmarks": {
+  "perception": ["high"],
+  "arcana": ["moderate"],
+  "nature": ["moderate"],
+  "occultism": ["moderate"],
+  "religion": ["moderate"],
+  "charisma": ["high"],
+  "ac": ["high"],
+  "fortitude": ["high"],
+  "reflex": ["low"],
+  "hp": ["low", "moderate"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "Moderate Arcana, Nature, Occultism and Religion.",
+  "attributes": "High Charisma.",
+  "defense": "High AC; high Fortitude, low Reflex; low to moderate HP.",
+  "offense": "Moderate attack bonus and high damage with Exploit Vulnerability.",
+  "specials": "Exploit Vulnerability, implement, Implement's Empowerment."
+ }
+}

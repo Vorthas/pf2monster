@@ -1,0 +1,30 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "wizard",
+ "name": "Wizard",
+ "list": "class",
+ "order": 144,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "Low Perception; high Arcana; high Int; low AC; low Fortitude; low HP; low accuracy; high to extreme spell DC. Abilities: prepared arcane spellcasting as a wizard of their level, Drain Bonded Item, school spell, and curriculum spells",
+ "benchmarks": {
+  "perception": ["low"],
+  "arcana": ["high"],
+  "intelligence": ["high"],
+  "ac": ["low"],
+  "fortitude": ["low"],
+  "hp": ["low"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "High Arcana.",
+  "attributes": "High Intelligence.",
+  "defense": "Low AC; low Fortitude; low HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Prepared arcane spellcasting as a wizard of its level: {maxrank}. School spell and curriculum spells.",
+  "specials": "Drain Bonded Item."
+ }
+}

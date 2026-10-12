@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "source": "Pathfinder GM Core, Recall Knowledge, Creature Identification Skills (pg. 54), via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2638",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "note": "The skills that identify a creature with each creature trait. Its DC: GM Core's DC for its level, +2 uncommon, +5 rare, +10 unique; an applicable Lore is easy (unspecific) or very easy (specific) before rarity.",
+ "traits": {
+  "aberration": ["Occultism"],
+  "animal": ["Nature"],
+  "astral": ["Occultism"],
+  "beast": ["Arcana", "Nature"],
+  "celestial": ["Religion"],
+  "construct": ["Arcana", "Crafting"],
+  "dragon": ["Arcana"],
+  "dream": ["Occultism"],
+  "elemental": ["Arcana", "Nature"],
+  "ethereal": ["Occultism"],
+  "fey": ["Nature"],
+  "fiend": ["Religion"],
+  "fungus": ["Nature"],
+  "humanoid": ["Society"],
+  "monitor": ["Religion"],
+  "ooze": ["Occultism"],
+  "plant": ["Nature"],
+  "shade": ["Religion"],
+  "spirit": ["Occultism"],
+  "time": ["Occultism"],
+  "undead": ["Religion"]
+ }
+}

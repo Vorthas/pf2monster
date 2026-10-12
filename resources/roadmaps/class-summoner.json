@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "summoner",
+ "name": "Summoner",
+ "list": "class",
+ "order": 140,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low Perception; moderate to high Eidolon skills; high Cha; low AC; low Reflex; high Will; moderate HP; high spell DC; spontaneous spellcasting (determined by the type of eidolon) as a summoner of their level; link spells; add an eidolon to the encounter of the appropriate type; Manifest Eidolon, Share Senses, Act Together",
+ "benchmarks": {
+  "perception": ["low"],
+  "charisma": ["high"],
+  "ac": ["low"],
+  "reflex": ["low"],
+  "will": ["high"],
+  "hp": ["moderate"],
+  "spelldc": ["high"],
+  "spellattack": ["high"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "Moderate to high eidolon skills.",
+  "attributes": "High Charisma.",
+  "defense": "Low AC; low Reflex, high Will; moderate HP.",
+  "spells": "High spell DC. Spontaneous spellcasting of its eidolon's tradition as a summoner of its level: {maxrank}. Link spells.",
+  "specials": "Add an eidolon of the appropriate type to the encounter; Manifest Eidolon, Share Senses, Act Together."
+ }
+}

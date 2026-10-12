@@ -1,0 +1,34 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "kineticist (water)",
+ "name": "Kineticist",
+ "variant": "Water",
+ "list": "class",
+ "order": 123,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low to moderate Perception; high Nature, moderate Athletics; high Con; moderate AC; high to extreme Fortitude, high Reflex, low Will; moderate HP; high accuracy with blasts and low to moderate damage; extreme spell DC (standing in for class DC). Abilities: Two-action Elemental Blast (use Strikes for one-action Elemental Blast, bludgeoning or cold damage, 30 feet), Channel Elements, its blasts can move a creature 5 to 10 feet, Water impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist",
+ "benchmarks": {
+  "perception": ["low", "moderate"],
+  "nature": ["high"],
+  "athletics": ["moderate"],
+  "constitution": ["high"],
+  "ac": ["moderate"],
+  "fortitude": ["high", "extreme"],
+  "reflex": ["high"],
+  "will": ["low"],
+  "hp": ["moderate"],
+  "spelldc": ["extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low to moderate Perception.",
+  "skills": "High Nature, moderate Athletics.",
+  "attributes": "High Constitution.",
+  "defense": "Moderate AC; high to extreme Fortitude, high Reflex, low Will; moderate HP.",
+  "offense": "High attack bonus with blasts (its spell attack) and low to moderate damage.",
+  "spells": "Extreme spell DC, standing in for its class DC: its impulses work like spells, but it has no spellcasting.",
+  "specials": "Two-action Elemental Blast (use Strikes for the one-action Elemental Blast, bludgeoning or cold damage, 30 feet), Channel Elements; its blasts can move a creature 5 to 10 feet; Water impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist."
+ }
+}

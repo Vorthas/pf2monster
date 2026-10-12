@@ -1,0 +1,24 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "corrupt",
+ "name": "Corrupt",
+ "prefix": "Corrupt",
+ "group": "NPC Role",
+ "order": 51,
+ "dialog": "options",
+ "source": "Pathfinder NPC Core, Corrupt (pg. 122), via Archives of Nethys: https://2e.aonprd.com/MonsterTemplates.aspx?ID=38",
+ "license": "ORC License: Paizo's Pathfinder NPC Core is ORC licensed material.",
+ "rules": "For an official. Deception and Underworld Lore at the high skill value for its level; Will -1; Official Bully with a skill important to its office.",
+ "changes": {
+  "skillBenchmarks": {"deception": "high"},
+  "lores": [{"name": "Underworld Lore", "benchmark": "high"}],
+  "statChanges": {"will": -1}
+ },
+ "choices": [
+  {"key": "bully", "type": "text", "label": "Official Bully skill", "note": "An Intelligence-, Wisdom- or Charisma-based skill important to its office.", "placeholder": "Legal Lore", "default": "Society"}
+ ],
+ "abilities": [
+  {"key": "official-bully", "name": "Official Bully", "type": "general", "actions": "none", "traits": "", "description": "{Name} can use {opt:bully} to Coerce or Demoralize in place of Intimidation."}
+ ]
+}

@@ -1,0 +1,76 @@
+PLAYER CORE AND PLAYER CORE 2
+These are already done, just here for comparison.  Start with Gunslinger on down.
+
+Alchemist Low Perception; high Crafting; high Int, moderate or better Dex or Str; low to moderate HP; moderate attack with bombs. Abilities Infused alchemical items, Quick Bomber if a bomber alchemist, a few other alchemist abilities; it's usually easier to give the alchemist their bomb items rather than use Quick Alchemy on the spot.
+
+Barbarian High Athletics; high Str, high to moderate Con; high AC; high Fortitude; high HP; moderate attack and extreme damage (when raging). Abilities Rage, instinct ability and related feats, raging resistance
+
+Bard Moderate Occultism, high Performance, high Charisma-based skills; high Cha; low Fortitude, moderate to high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities spontaneous occult spellcasting as a bard of their level, composition spells, muse feats
+
+Champion Low Perception; moderate Religion; high Str or Dex, moderate Cha; extreme AC; low Reflex; moderate attack and high damage. Abilities Blessing of the devoted and related feats, cause, champion's aura, devotion spells, exalted reaction, feats based on cause, sanctification, Shield Block, Smite
+
+Cleric (Cloistered Cleric) High Perception; high Religion, moderate or high skill themed to deity; low AC; high Wis; low Fortitude, high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities Prepared divine spellcasting as a cleric of their level; divine font; domain spells
+
+Cleric (Warpriest) Moderate Perception; moderate Religion, moderate or high skill themed to deity; high Str, moderate Wis; high AC; low Reflex, high Will; high spell DC. Abilities prepared divine spellcasting as a cleric of their level; divine font, Shield Block
+
+Druid High Perception; high Nature, moderate or high skill from order; high Wis; high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities Prepared primal spellcasting as a druid of their level; order ability, order feats, and order spell for their order; Shield Block; add an animal to the encounter for animal order
+
+Fighter High Acrobatics or Athletics; high Str or Dex; high AC; low Will; high attack and high damage. Abilities Bravery, Reactive Strike, Shield Block, a few fighter abilities and feats associated with a combat style
+
+Investigator High Perception; high Society, high methodology skill, plus more skills than usual; high Int; low Fortitude, high Will; low to moderate HP; moderate attack and low to moderate damage before strategic strike plus high damage with strategic strike. Abilities Pursue a Lead, Devise a Stratagem, methodology action
+
+Monk High Acrobatics, Athletics, or both; high Str or Dex, moderate Wis; high or extreme AC; moderate attack and high damage. Abilities Flurry of Blows, metal strikes, mystic strikes, perfected form, stance and related feats, qi abilities
+
+Oracle High Religion, high mystery skill, moderate or high skill themed to deity; high Cha; low AC; low Fortitude, high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities Spontaneous divine spellcasting as an oracle of their level; oracle mystery and related spells, revelation spells, curse, skill, and oracle feats
+
+Ranger High Perception; moderate Nature and moderate to high Survival; high Str or Dex; high AC; moderate attack and high damage (or for a simpler ranger, remove Hunt Prey, and just use high attack and high damage). Abilities Hunt Prey, hunter's edge, nature's edge, masterful hunter, swift prey, companion or combat style and related feats
+
+Rogue High Perception; high Stealth and Thievery, plus more skills than usual; high Dex (or key attribute for a specific rogue's racket); high AC; low Fortitude, high Reflex; low to moderate HP; moderate attack and low to moderate damage before sneak attack plus high or extreme damage with sneak attack. Abilities Sneak attack, surprise attack, deny advantage, debilitating strike, master strike, rogue's racket and related feats
+
+Sorcerer Low Perception; moderate bloodline skills and high Charisma-based bloodline skills; high Cha; low AC; low Fortitude; low HP; low accuracy; high to extreme spell DC. Abilities Spontaneous spellcasting of a tradition based on bloodline as a sorcerer of their level, bloodline and related feats and spells
+
+Swashbuckler High Perception; high Acrobatics, plus high style skill; high Dex; high AC; low Fortitude, high Reflex; moderate HP; moderate attack and low to moderate damage before precise strike plus high or extreme damage with precise strike. Abilities Confident finisher, panache, precise strike, stylish combatant, swashbuckler's style (plus exemplary finisher at 9th level)
+
+Witch Low Perception; high patron skill; high Int; low AC; low Fortitude; low HP; low accuracy; high to extreme spell DC. Abilities prepared spellcasting of a tradition based on patron as a witch of their level, familiar, witch's patron and related cantrip, hex, and spells
+
+Wizard Low Perception; high Arcana; high Int; low AC; low Fortitude; low HP; low accuracy; high to extreme spell DC. Abilities prepared arcane spellcasting as a wizard of their level, Drain Bonded Item, school spell, and curriculum spells
+
+---
+
+Gunslinger High Perception; high skill based on Way; high Dex; moderate AC; low Will; high Reflex; low HP; high attack and extreme damage with guns; Slinger's Reload; Initial Deed; Gunslinger way, abilities associated with combat style and feats (Sword and Pistol or Dual-Weapon Reload)
+
+Inventor Low Perception; high Crafting; high Int; high AC (Extreme if Armor Innovation); low to moderate HP; Overdrive, Explode, Shield Block; moderate attack and high damage (Extreme damage for weapon innovation); add a construct to the encounter for construct innovation; Inventor innovation, modifications to gear to reflect modifications
+
+Magus Low Perception; high Arcana; high Str or Dex, moderate or high Int; high AC; low to moderate HP; moderate accuracy; high to extreme spell DC; prepared arcane spellcasting as a magus of their level; conflux spells; Spellstrike, Arcane Cascade; Magus hybrid study abilities
+
+Summoner Low Perception; moderate to high Eidolon skills; high Cha; low AC; low Reflex; high Will; moderate HP; high spell DC; spontaneous spellcasting (determined by the type of eidolon) as a summoner of their level; link spells; add an eidolon to the encounter of the appropriate type; Manifest Eidolon, Share Senses, Act Together
+
+Thaumaturge High Perception; moderate Arcana, Nature, Occult, and Religion; high Cha; high AC; low to moderate HP; high Fortitude; low Reflex; moderate attack and high damage with Exploit Vulnerability. Abilities Exploit Vulnerability, Implement, Implement's Empowerment
+
+Kineticist (Air) Low to moderate Perception; high Nature, moderate Stealth; high Con; moderate AC; high to extreme Fortitude, high Reflex, low Will; moderate HP; high accuracy with blasts and moderate damage; high to extreme spell DC (standing in for class DC). Abilities Two-action Elemental Blast (use Strikes for one-action Elemental Blast, electricity or slashing damage, 60 feet), Channel Elements, +10-foot status bonus to Speed while its kinetic aura is active, Air impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist
+
+Kineticist (Earth) Low to moderate Perception; high Nature, moderate Athletics; high Con; high AC; high to extreme Fortitude, high Reflex, low Will; moderate HP; high accuracy with blasts and moderate damage; high to extreme spell DC (standing in for class DC). Abilities Two-action Elemental Blast (use Strikes for one-action Elemental Blast, bludgeoning or piercing damage, 30 feet), Channel Elements, armor of earth (counted in its AC), enemies moving away from it within its kinetic aura treat the ground as difficult terrain, Earth impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist
+
+Kineticist (Fire) Low to moderate Perception; high Nature, moderate Intimidation; high Con; moderate AC; high to extreme Fortitude, high Reflex, low Will; low HP; high accuracy with blasts and high damage; high to extreme spell DC (standing in for class DC). Abilities Two-action Elemental Blast (use Strikes for one-action Elemental Blast, fire damage, 60 feet), Channel Elements, Fire impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist
+
+Kineticist (Metal) Low to moderate Perception; high Nature, moderate Crafting; high Con; high AC; high to extreme Fortitude, high Reflex, low Will; moderate HP; high accuracy with blasts and moderate damage; high to extreme spell DC (standing in for class DC). Abilities Two-action Elemental Blast (use Strikes for one-action Elemental Blast, piercing or slashing damage, 30 feet), Channel Elements, armor of metal (counted in its AC), a reaction that deals acid, electricity or piercing damage equal to half its level to an attacker, Metal impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist
+
+Kineticist (Water) Low to moderate Perception; high Nature, moderate Athletics; high Con; moderate AC; high to extreme Fortitude, high Reflex, low Will; moderate HP; high accuracy with blasts and low to moderate damage; extreme spell DC (standing in for class DC). Abilities Two-action Elemental Blast (use Strikes for one-action Elemental Blast, bludgeoning or cold damage, 30 feet), Channel Elements, its blasts can move a creature 5 to 10 feet, Water impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist
+
+Kineticist (Wood) Low to moderate Perception; high Nature, moderate Survival; high Con; moderate AC; high to extreme Fortitude, high Reflex, low Will; high HP; high accuracy with blasts and low to moderate damage; high to extreme spell DC (standing in for class DC). Abilities Two-action Elemental Blast (use Strikes for one-action Elemental Blast, bludgeoning or vitality damage, 30 feet), Channel Elements, allies in its kinetic aura gain temporary HP each turn, Wood impulse feats. Junctions: pick one, maybe two, of the element's gate junctions (impulse, aura, critical blast, elemental resistance, skill) for the stat block rather than stacking them all; more is a GM's option for a tougher kineticist
+
+Exemplar Moderate Perception; high Religion; high Str or Dex; moderate AC; moderate Fortitude, low Reflex, high Will; high HP; high accuracy and high damage.  Abilities Weapon Ikon appropriate for weapon used, a Body Ikon or Worn Ikon of choice, Reactive Strike, Ikon abilities from chosen Ikons and feats related to chosen Ikons
+
+Guardian Moderate Perception; high Athletics; high Str; high to extreme AC; high Fortitude, low Reflex; high HP; resistance to physical damage based on level; moderate accuracy; moderate damage. Abilities Shield Block, Intercept Attack, one extra reaction each round to use for any reaction specified in statblock (two extra reactions at level 7 or higher), Taunt
+
+Runesmith Low Perception; high Crafting or Performance, high choice of Arcana, Nature, Occultism, or Religion; high Int; moderate AC; high Fortitude, low Reflex; low to moderate HP; moderate to high accuracy; high damage; high to extreme spell DC.  Abilities Trace Rune, Invoke Rune, selection of runes appropriate for their level, Shield Block, runesmith feats appropriate for fighting style (Engraving Strike, Fortifying Knock, or Remote Detonation), Rune-Singer if Performance based
+
+Necromancer (Reaper) Moderate Perception; moderate Occultism; high Str or Dex; moderate AC; high Fortitude, low Reflex, moderate Will; moderate HP; moderate accuracy, moderate to high damage; high spell DC. Abilities Prepared occult spellcasting as a necromancer of their level; grave spells, Create Thrall (one thrall and Strike in same action), max cap of 3 thralls
+
+Necromancer (Puppeteer) Low Perception; high Occultism; high Int, low AC; high Fortitude, low Reflex, moderate Will; low to moderate HP; low accuracy; high to extreme spell DC.  Abilities Prepared occult spellcasting as a necromancer of their level; grave spells, Create Thrall (two thralls, command thrall to move in same action), max cap of 4 thralls
+
+Animist Moderate Perception; high Religion, moderate or high Nature or Occultism; high Wis; moderate AC; moderate Fortitude, low Reflex, high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities Prepared divine spellcasting as an animist of their level, with a few spells from one apparition's list mixed in; that apparition's vessel spell; one animistic practice ability (Circle of Spirits for Liturgist, Relinquish Control for Medium, Apparition Sense for Seer, or Spirit Familiar for Shaman, adding the familiar to the encounter)
+
+Psychic Low Perception; high Occultism; high Int or Cha (based on subconscious mind); low AC; low Fortitude, moderate Reflex, high Will; low HP; low accuracy and high or extreme damage with spells; high to extreme spell DC. Abilities Spontaneous occult spellcasting as a psychic of their level; two psi cantrips from one conscious mind (including its unique surface cantrip) and their amps, with 2 Focus Points (3 at 5th level) to spend on amps; psyche always unleashed (already counted in its damage, and never stupefied by it); the subconscious mind's psyche action
+
+Commander High Perception; high Warfare Lore, moderate Society; high Int, moderate Str; high AC; low Fortitude, moderate Reflex, high Will; moderate HP; moderate accuracy and moderate damage. Abilities Commander's banner (aura giving allies within 30 feet a +1 status bonus to Will saves and DCs against fear), three tactics appropriate for their level (one used per round, allies in the encounter count as squadmates), Drilled Reactions, Shield Block

@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "druid",
+ "name": "Druid",
+ "list": "class",
+ "order": 110,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Perception; high Nature, moderate or high skill from order; high Wis; high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities: Prepared primal spellcasting as a druid of their level; order ability, order feats, and order spell for their order; Shield Block; add an animal to the encounter for animal order",
+ "benchmarks": {
+  "perception": ["high"],
+  "nature": ["high"],
+  "wisdom": ["high"],
+  "will": ["high"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "High Perception.",
+  "skills": "High Nature; a moderate or high skill from its order.",
+  "attributes": "High Wisdom.",
+  "defense": "High Will; low to moderate HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Prepared primal spellcasting as a druid of its level: {maxrank}. Order spell.",
+  "specials": "Order ability and order feats; Shield Block; add an animal to the encounter for animal order."
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "animist",
+ "name": "Animist",
+ "list": "class",
+ "order": 102,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Moderate Perception; high Religion, moderate or high Nature or Occultism; high Wis; moderate AC; moderate Fortitude, low Reflex, high Will; low to moderate HP; low accuracy; high to extreme spell DC. Abilities: Prepared divine spellcasting as an animist of their level, with a few spells from one apparition's list mixed in; that apparition's vessel spell; one animistic practice ability (Circle of Spirits for Liturgist, Relinquish Control for Medium, Apparition Sense for Seer, or Spirit Familiar for Shaman, adding the familiar to the encounter)",
+ "benchmarks": {
+  "perception": ["moderate"],
+  "religion": ["high"],
+  "wisdom": ["high"],
+  "ac": ["moderate"],
+  "fortitude": ["moderate"],
+  "reflex": ["low"],
+  "will": ["high"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Moderate Perception.",
+  "skills": "High Religion; moderate or high Nature or Occultism.",
+  "attributes": "High Wisdom.",
+  "defense": "Moderate AC; moderate Fortitude, low Reflex, high Will; low to moderate HP.",
+  "offense": "Low attack bonus.",
+  "spells": "High to extreme spell DC. Prepared divine spellcasting as an animist of its level: {maxrank}, with a few spells from one apparition's list mixed in. That apparition's vessel spell.",
+  "specials": "One animistic practice ability: Circle of Spirits (Liturgist), Relinquish Control (Medium), Apparition Sense (Seer) or Spirit Familiar (Shaman, adding the familiar to the encounter)."
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "fighter (dex)",
+ "name": "Fighter",
+ "variant": "Dexterity",
+ "list": "class",
+ "order": 114,
+ "source": "Pathfinder GM Core, \"Building Creatures\", Class Road Maps, via Archives of Nethys: https://2e.aonprd.com/Rules.aspx?ID=2874",
+ "license": "ORC License: Paizo's Pathfinder GM Core is ORC licensed material.",
+ "rules": "High Acrobatics or Athletics; high Str or Dex; high AC; low Will; high attack and high damage. Abilities: Bravery, Reactive Strike, Shield Block, a few fighter abilities and feats associated with a combat style",
+ "benchmarks": {
+  "acrobatics": ["high"],
+  "dexterity": ["high"],
+  "ac": ["high"],
+  "will": ["low"]
+ },
+ "notes": {
+  "skills": "High Acrobatics or Athletics (set: Acrobatics).",
+  "attributes": "High Strength or Dexterity.",
+  "defense": "High AC; low Will.",
+  "offense": "High attack bonus and high damage.",
+  "specials": "Bravery, Reactive Strike, Shield Block, a few fighter abilities and feats associated with a combat style."
+ }
+}

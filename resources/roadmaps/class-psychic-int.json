@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "psychic (int)",
+ "name": "Psychic",
+ "variant": "Intelligence",
+ "list": "class",
+ "order": 133,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low Perception; high Occultism; high Int or Cha (based on subconscious mind); low AC; low Fortitude, moderate Reflex, high Will; low HP; low accuracy and high or extreme damage with spells; high to extreme spell DC. Abilities: Spontaneous occult spellcasting as a psychic of their level; two psi cantrips from one conscious mind (including its unique surface cantrip) and their amps, with 2 Focus Points (3 at 5th level) to spend on amps; psyche always unleashed (already counted in its damage, and never stupefied by it); the subconscious mind's psyche action",
+ "benchmarks": {
+  "perception": ["low"],
+  "occultism": ["high"],
+  "intelligence": ["high"],
+  "ac": ["low"],
+  "fortitude": ["low"],
+  "reflex": ["moderate"],
+  "will": ["high"],
+  "hp": ["low"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "High Occultism.",
+  "attributes": "High Intelligence (subconscious mind: Gathered Lore or Precise Discipline).",
+  "defense": "Low AC; low Fortitude, moderate Reflex, high Will; low HP.",
+  "offense": "Low attack bonus; high or extreme damage with spells.",
+  "spells": "High to extreme spell DC. Spontaneous occult spellcasting as a psychic of its level: {maxrank}. Two psi cantrips from one conscious mind (Distant Grasp, Infinite Eye, Oscillating Wave, Silent Whisper, Tangible Dream or Unbound Step), including its unique surface cantrip, and their amps, with 2 Focus Points (3 at 5th level) to spend on amps.",
+  "specials": "Its psyche is always unleashed (already counted in its damage, and never stupefied by it); the subconscious mind's psyche action."
+ }
+}

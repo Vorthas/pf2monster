@@ -1,0 +1,31 @@
+{
+ "format": 1,
+ "kind": "roadmap",
+ "id": "runesmith",
+ "name": "Runesmith",
+ "list": "class",
+ "order": 138,
+ "source": "Written by Vorthas for Monster Builder for Pathfinder 2e, after Pathfinder GM Core's Class Road Maps (\"Building Creatures\")",
+ "license": "GPL-3.0-or-later, like the rest of this app; the Pathfinder rules terms it uses are Paizo's ORC-licensed material.",
+ "rules": "Low Perception; high Crafting or Performance, high choice of Arcana, Nature, Occultism, or Religion; high Int; moderate AC; high Fortitude, low Reflex; low to moderate HP; moderate to high accuracy; high damage; high to extreme spell DC. Abilities: Trace Rune, Invoke Rune, selection of runes appropriate for their level, Shield Block, runesmith feats appropriate for fighting style (Engraving Strike, Fortifying Knock, or Remote Detonation), Rune-Singer if Performance based",
+ "benchmarks": {
+  "perception": ["low"],
+  "crafting": ["high"],
+  "intelligence": ["high"],
+  "ac": ["moderate"],
+  "fortitude": ["high"],
+  "reflex": ["low"],
+  "hp": ["low", "moderate"],
+  "spelldc": ["high", "extreme"],
+  "spellattack": ["high", "extreme"]
+ },
+ "notes": {
+  "perception": "Low Perception.",
+  "skills": "High Crafting or Performance (set: Crafting); high Arcana, Nature, Occultism or Religion, its choice.",
+  "attributes": "High Intelligence.",
+  "defense": "Moderate AC; high Fortitude, low Reflex; low to moderate HP.",
+  "offense": "Moderate to high attack bonus and high damage.",
+  "spells": "High to extreme spell DC, standing in for its class DC: its runes work like spells, but it has no spellcasting.",
+  "specials": "Trace Rune, Invoke Rune, a selection of runes suited to its level, Shield Block; runesmith feats suited to its fighting style (Engraving Strike, Fortifying Knock or Remote Detonation); Rune-Singer if it uses Performance."
+ }
+}
