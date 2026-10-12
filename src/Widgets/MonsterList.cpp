@@ -256,44 +256,44 @@ bool MonsterList::matches(const Entry &entry) const
 }
 
 // A group per subfolder, then the monsters in the folder itself (folders
-// first, as in a file manager), each sorted by name. Only those matching
-// the filter and selected tags.
+// first, as in a file manager), each sorted by name. Two levels deep, as in
+// the Collection menu: a group per top folder, inside it one per folder
+// below that, deeper folders named by their path ("Darkness/Owb"). Only
+// those matching the filter and selected tags.
 void MonsterList::rebuildTree()
 {
     const QSignalBlocker block(tree_);
     tree_->clear();
-    QMap<QString, std::vector<const Entry *>> groups; // relative folder -> entries
+    using Group = std::vector<const Entry *>;
+    QMap<QString, QMap<QString, Group>> groups; // top folder -> rest of path -> entries
     const QDir root(folder_);
     for (const Entry &entry : entries_)
     {
         if (matches(entry))
         {
-            groups[root.relativeFilePath(QFileInfo(entry.path).absolutePath())].push_back(&entry);
+            const QString path = root.relativeFilePath(QFileInfo(entry.path).absolutePath());
+            const qsizetype slash = path.indexOf(QLatin1Char('/'));
+            groups[path.left(slash)][slash < 0 ? QString() : path.mid(slash + 1)].push_back(&entry);
         }
     }
     QTreeWidgetItem *currentItem = nullptr;
-    // The subfolders in order, then the folder itself (".").
-    QStringList order = groups.keys();
-    order.sort(Qt::CaseInsensitive);
-    if (order.removeOne(QStringLiteral(".")))
-    {
-        order.append(QStringLiteral("."));
-    }
-    for (const QString &key : order)
-    {
-        std::vector<const Entry *> &group = groups[key];
+    const auto sortedKeys = [](QStringList keys) {
+        keys.sort(Qt::CaseInsensitive);
+        return keys;
+    };
+    // A folder's row: bold, not selectable, open.
+    const auto addFolder = [](QTreeWidgetItem *item) {
+        QFont bold = item->font(0);
+        bold.setBold(true);
+        item->setFont(0, bold);
+        item->setFlags(Qt::ItemIsEnabled);
+        item->setExpanded(true);
+        return item;
+    };
+    const auto addEntries = [&](QTreeWidgetItem *parent, Group &group) {
         std::sort(group.begin(), group.end(), [](const Entry *a, const Entry *b) {
             return QString::compare(a->name, b->name, Qt::CaseInsensitive) < 0;
         });
-        QTreeWidgetItem *parent = nullptr;
-        if (key != QLatin1String("."))
-        {
-            parent = new QTreeWidgetItem(tree_, {key});
-            QFont bold = parent->font(0);
-            bold.setBold(true);
-            parent->setFont(0, bold);
-            parent->setFlags(Qt::ItemIsEnabled);
-        }
         for (const Entry *entry : group)
         {
             auto *item = parent ? new QTreeWidgetItem(parent, {entry->name, entry->level})
@@ -311,10 +311,30 @@ void MonsterList::rebuildTree()
                 currentItem = item;
             }
         }
-        if (parent)
+    };
+    for (const QString &top : sortedKeys(groups.keys()))
+    {
+        if (top == QLatin1String("."))
         {
-            parent->setExpanded(true);
+            continue; // the folder's own monsters go last
         }
+        QMap<QString, Group> &subs = groups[top];
+        QTreeWidgetItem *topItem = addFolder(new QTreeWidgetItem(tree_, {top}));
+        for (const QString &sub : sortedKeys(subs.keys()))
+        {
+            if (!sub.isEmpty())
+            {
+                addEntries(addFolder(new QTreeWidgetItem(topItem, {sub})), subs[sub]);
+            }
+        }
+        if (subs.contains(QString()))
+        {
+            addEntries(topItem, subs[QString()]);
+        }
+    }
+    if (groups.contains(QStringLiteral(".")))
+    {
+        addEntries(nullptr, groups[QStringLiteral(".")][QString()]);
     }
     if (currentItem)
     {

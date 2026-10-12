@@ -46,6 +46,7 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
 
 - Handles entire collections of JSON files to load entire bestiaries.  The list is organized first by subfolders then monsters in the loaded folder.
   - An optional Monster List panel can be opened from View > Monster List to display all loaded JSON files in a tree as a panel on the main UI in the left-most column as opposed to viewing monsters from the Collection menu.
+  - Collections, the Find Monster, and Monster List will display up to two sub-folders in a tree, in case sorting by subtype becomes important (e.g. sorting an Elemental into an `Elemental/Fire` directory will show as Elemental > Fire within all three).
 - Files are identical to the website's own monster JSON, with custom additions, so they work both ways: anything saved here can be uploaded there.  Import from Website copies the site's JSON into your collection.
 - Live preview on a white background, updated as you type.
 - Creature levels -1 to 25 are supported, values for level 25 are extrapolated from from the existing tables and cross-referencing against all four of Paizo's official level 25 monsters.

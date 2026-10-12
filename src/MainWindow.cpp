@@ -788,33 +788,34 @@ void MainWindow::fillCollectionMenu()
     collectionMenu_->addSeparator();
 
     // A submenu per subfolder, by name, then the folder's own monsters
-    // (folders first, as in a file manager).
-    QMap<QString, std::vector<const MonsterList::Entry *>> groups;
+    // (folders first, as in a file manager). Two levels deep: a submenu per
+    // top folder, inside it one per folder below that, deeper folders named
+    // by their path ("Darkness/Owb").
+    using Group = std::vector<const MonsterList::Entry *>;
+    QMap<QString, QMap<QString, Group>> groups; // top folder -> rest of path -> monsters
     const QDir root(monsterList_->folder());
     for (const MonsterList::Entry &entry : monsterList_->entries())
     {
-        groups[root.relativeFilePath(QFileInfo(entry.path).absolutePath())].push_back(&entry);
+        const QString path = root.relativeFilePath(QFileInfo(entry.path).absolutePath());
+        const qsizetype slash = path.indexOf(QLatin1Char('/'));
+        groups[path.left(slash)][slash < 0 ? QString() : path.mid(slash + 1)].push_back(&entry);
     }
-    QStringList order = groups.keys();
-    order.sort(Qt::CaseInsensitive);
-    if (order.removeOne(QStringLiteral(".")))
-    {
-        order.append(QStringLiteral("."));
-    }
-    for (const QString &key : order)
-    {
-        std::vector<const MonsterList::Entry *> &group = groups[key];
+    const auto sortedKeys = [](QStringList keys) {
+        keys.sort(Qt::CaseInsensitive);
+        return keys;
+    };
+    const auto escaped = [](QString text) { return text.replace(QLatin1Char('&'), QStringLiteral("&&")); };
+    const auto addMonsters = [&](QMenu *into, Group &group) {
         std::sort(group.begin(), group.end(), [](const auto *a, const auto *b) {
             return QString::compare(a->name, b->name, Qt::CaseInsensitive) < 0;
         });
-        QMenu *into = key == QLatin1String(".") ? collectionMenu_ : collectionMenu_->addMenu(key);
         for (const MonsterList::Entry *entry : group)
         {
             const QString label = entry->level.isEmpty()
                                       ? entry->name
                                       : tr("%1 (%2)").arg(entry->name, entry->level);
-            QAction *action = into->addAction(QString(label).replace(QLatin1Char('&'), QStringLiteral("&&")),
-                                              this, [this, path = entry->path] { switchTo(path); });
+            QAction *action = into->addAction(escaped(label), this,
+                                              [this, path = entry->path] { switchTo(path); });
             action->setCheckable(true);
             action->setChecked(QFileInfo(entry->path).absoluteFilePath() == path_);
             if (!entry->tags.isEmpty())
@@ -822,6 +823,30 @@ void MainWindow::fillCollectionMenu()
                 action->setStatusTip(tr("Tags: %1").arg(entry->tags.join(QStringLiteral(", "))));
             }
         }
+    };
+    for (const QString &top : sortedKeys(groups.keys()))
+    {
+        if (top == QLatin1String("."))
+        {
+            continue; // the folder's own monsters go last
+        }
+        QMap<QString, Group> &subs = groups[top];
+        QMenu *topMenu = collectionMenu_->addMenu(escaped(top));
+        for (const QString &sub : sortedKeys(subs.keys()))
+        {
+            if (!sub.isEmpty())
+            {
+                addMonsters(topMenu->addMenu(escaped(sub)), subs[sub]);
+            }
+        }
+        if (subs.contains(QString()))
+        {
+            addMonsters(topMenu, subs[QString()]);
+        }
+    }
+    if (groups.contains(QStringLiteral(".")))
+    {
+        addMonsters(collectionMenu_, groups[QStringLiteral(".")][QString()]);
     }
     if (groups.isEmpty())
     {
