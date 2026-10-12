@@ -806,15 +806,17 @@ namespace monster
         const Stat &spellDc = statOf(m, "spelldc");
         const Stat &spellAttack = statOf(m, "spellattack");
         // Spellcasting: shown once it has a DC or attack, or spells (then
-        // with the benchmarks' DC and attack where those are empty).
+        // with the benchmarks' DC and attack where those are empty). A DC
+        // set without an attack is shown alone.
         const bool spells = hasSpells(m);
         if (spells || !spellDc.value.isEmpty() || !spellAttack.value.isEmpty())
         {
             const QString type = fieldText(m.spelltype).simplified();
+            const bool dcOnly = spellAttack.value.isEmpty() && !spellDc.value.isEmpty();
             entries << spellLine(titleCase(type.isEmpty() ? QStringLiteral("Spells")
                                                           : type + QStringLiteral(" Spells")),
                                  m.focuspoints, spellDc, shown(m, "spelldc", QString(), spells),
-                                 spellAttack, shown(m, "spellattack", QString(), spells),
+                                 spellAttack, dcOnly ? QString() : shown(m, "spellattack", QString(), spells),
                                  QString(), m.spells, m.cantriplevel, m.constant, level);
         }
         for (const SpellList &list : m.morespells)

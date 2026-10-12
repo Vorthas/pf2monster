@@ -157,7 +157,7 @@ namespace monster
         Value level = 0;     // the level the benchmarks are built from
         Value showlevel;     // the level shown, when it differs (empty: level)
         Value adjust = 0;    // the site's -5..+5 level adjustment
-        QString alignment = QStringLiteral("n");
+        QString alignment = QStringLiteral("-");
         QString size = QStringLiteral("medium");
         QString type = QStringLiteral("humanoid");
         QString creature;    // the label before the level ("CREATURE")

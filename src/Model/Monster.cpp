@@ -494,7 +494,9 @@ namespace monster
         m.level = takeValue(rest, QStringLiteral("level"), m.level);
         m.showlevel = takeValue(rest, QStringLiteral("showlevel"));
         m.adjust = takeValue(rest, QStringLiteral("adjust"), m.adjust);
-        m.alignment = takeText(rest, QStringLiteral("alignment"), m.alignment);
+        // A new monster has no alignment; the site's files without the key
+        // keep its old default, N.
+        m.alignment = takeText(rest, QStringLiteral("alignment"), QStringLiteral("n"));
         m.size = takeText(rest, QStringLiteral("size"), m.size);
         m.type = takeText(rest, QStringLiteral("type"), m.type);
         m.creature = takeText(rest, QStringLiteral("creature"));
