@@ -235,6 +235,15 @@ namespace monster
             const QJsonObject damageAdd = changes.value(QStringLiteral("strikeDamageAdd")).toObject();
             m.strikeDamageAll = damageAdd.value(QStringLiteral("all")).toString();
             m.strikeDamageMelee = damageAdd.value(QStringLiteral("melee")).toString();
+            // Any other key is a damage type ("piercing").
+            for (auto it = damageAdd.begin(); it != damageAdd.end(); ++it)
+            {
+                if (it.key() != QLatin1String("all") && it.key() != QLatin1String("melee"))
+                {
+                    m.strikeDamageByType.emplace_back(it.key(), it.value().toString());
+                }
+            }
+            m.languageExtras = readStrings(changes.value(QStringLiteral("languageExtras")));
             const QJsonObject skills = changes.value(QStringLiteral("skillBenchmarks")).toObject();
             for (auto it = skills.begin(); it != skills.end(); ++it)
             {
@@ -346,6 +355,8 @@ namespace monster
                 strike.fallbackScale = o.value(QStringLiteral("fallback")).toDouble();
                 strike.reachPlus = o.value(QStringLiteral("reachPlus")).toInt();
                 strike.replace = o.value(QStringLiteral("replace")).toBool();
+                strike.die = o.value(QStringLiteral("die")).toString().trimmed();
+                strike.mergeExtra = o.value(QStringLiteral("mergeExtra")).toBool();
                 m.strikes.push_back(strike);
             }
             for (const QJsonValue &v : root.value(QStringLiteral("choices")).toArray())
@@ -418,7 +429,7 @@ namespace monster
         const QSet<QString> kChangeKeys{
             "attributeMin", "attributeSet", "bonus", "bonusSkip", "convertStrike", "derivedSpeeds",
             "domainSpells", "editAbilities", "grow", "hp", "hpAbilities", "immunities", "innateSpells",
-            "items", "landSpeed", "landToFly", "languages", "languagesAlways", "level", "livingType",
+            "items", "landSpeed", "landToFly", "languageExtras", "languages", "languagesAlways", "level", "livingType",
             "lores", "newSkills", "rarity", "reach", "recallKnowledge", "removeLiving", "removeTraits",
             "renameStrikes", "replaceOrAdd", "replaceTraits", "resistances", "saveNote", "senses",
             "senseUpgrades", "size", "skillBenchmarks", "skillsToHighest", "speeds", "spellBonus",
@@ -427,7 +438,8 @@ namespace monster
         const QSet<QString> kAbilityKeys{"key", "name", "type", "actions", "traits", "description", "when"};
         const QSet<QString> kStrikeKeys{"key",   "name",       "type",  "traits",   "damageType",
                                         "attack", "damage",    "when",  "from",     "damageText",
-                                        "extra", "fallback",   "reachPlus", "replace"};
+                                        "extra", "fallback",   "reachPlus", "replace",
+                                        "die",   "mergeExtra"};
         const QSet<QString> kChoiceKeys{"key",  "type",    "label",    "note",      "placeholder",
                                         "default", "when", "minLevel", "itemsFrom", "items"};
         const QSet<QString> kItemKeys{"key", "label", "tip", "on", "minLevel", "changes"};
@@ -1703,6 +1715,107 @@ namespace monster
             return true;
         }
 
+        // A rider ("plus serpentfolk venom") onto a Strike's damage, joined
+        // to one it has as Paizo writes them: "plus Grab and serpentfolk
+        // venom", "plus 1d6 fire, Grab, and serpentfolk venom". Nothing if
+        // it has it already.
+        void joinRider(QString &damage, const QString &rider)
+        {
+            const QString text = rider.trimmed();
+            if (text.isEmpty() || addToRider(damage, text))
+            {
+                return;
+            }
+            const bool plus = text.startsWith(QLatin1String("plus "), Qt::CaseInsensitive);
+            const QString what = plus ? text.mid(5).trimmed() : text;
+            if (damage.contains(what, Qt::CaseInsensitive))
+            {
+                return;
+            }
+            static const QRegularExpression hasPlus(QStringLiteral(R"(\bplus\s)"), QRegularExpression::CaseInsensitiveOption);
+            const QRegularExpressionMatch found = hasPlus.match(damage);
+            QString out = damage.trimmed();
+            if (!plus || !found.hasMatch())
+            {
+                damage = out + QLatin1Char(' ') + text;
+                return;
+            }
+            // "plus A and B" -> "plus A, B, and C".
+            const qsizetype lastAnd = out.lastIndexOf(QLatin1String(" and "), -1, Qt::CaseInsensitive);
+            if (lastAnd > found.capturedStart())
+            {
+                out.replace(lastAnd, 5, QStringLiteral(", "));
+                damage = out + QStringLiteral(", and ") + what;
+            }
+            else
+            {
+                damage = out + QStringLiteral(" and ") + what;
+            }
+        }
+
+        // "telepathy 100 feet" after the languages' semicolon ("Aklo,
+        // Common; telepathy 100 feet"): added, or its amount raised if it
+        // has a smaller one. A line of only such things ("telepathy 30
+        // feet") counts them as after the semicolon.
+        void addLanguageExtra(QString &languages, const QString &extra)
+        {
+            const QString wanted = extra.trimmed();
+            if (wanted.isEmpty())
+            {
+                return;
+            }
+            const QString word = wanted.section(QLatin1Char(' '), 0, 0);
+            const qsizetype semi = languages.indexOf(QLatin1Char(';'));
+            QStringList head, extras;
+            for (const QString &item : (semi < 0 ? languages : languages.left(semi)).split(QLatin1Char(',')))
+            {
+                if (!item.trimmed().isEmpty())
+                {
+                    head << item.trimmed();
+                }
+            }
+            if (semi >= 0)
+            {
+                for (const QString &item : languages.mid(semi + 1).split(QLatin1Char(',')))
+                {
+                    if (!item.trimmed().isEmpty())
+                    {
+                        extras << item.trimmed();
+                    }
+                }
+            }
+            if (const qsizetype at = findItem(head, word); at >= 0)
+            {
+                extras << head.takeAt(at);
+            }
+            if (const qsizetype at = findItem(extras, word); at >= 0)
+            {
+                static const QRegularExpression number(QStringLiteral(R"(\d+)"));
+                const QRegularExpressionMatch has = number.match(extras[at]);
+                const std::optional<int> amount = firstNumber(wanted);
+                if (has.hasMatch() && amount && has.captured().toInt() < *amount)
+                {
+                    extras[at].replace(has.capturedStart(), has.capturedLength(), QString::number(*amount));
+                }
+            }
+            else
+            {
+                extras << wanted;
+            }
+            const QString list = head.join(QStringLiteral(", "));
+            languages = extras.isEmpty() ? list
+                        : list.isEmpty() ? extras.join(QStringLiteral(", "))
+                                         : list + QStringLiteral("; ") + extras.join(QStringLiteral(", "));
+        }
+
+        // The type of a Strike's damage: the word after its first roll
+        // ("1d6+5 piercing plus venom" -> "piercing"), or empty.
+        QString damageTypeOf(const QString &damage)
+        {
+            static const QRegularExpression type(QStringLiteral(R"(\d+d\d+(?:\s*[+-]\s*\d+(?!\s*d\d))?\s+([A-Za-z]+))"));
+            return type.match(damage).captured(1).toLower();
+        }
+
         // Its abilities that `edit` matches, changed (see
         // Modifier::EditAbility).
         void editAbilities(Monster &m, const Modifier::EditAbility &edit, const TextContext &context)
@@ -2137,6 +2250,18 @@ namespace monster
                     // "2d6+6 (13)": the dice without the average.
                     dice = roll.match(hint(Table::StrikeDamage, level, made.damageBenchmark).text).captured();
                 }
+                if (!made.die.isEmpty())
+                {
+                    // "2d4+9" with die "d6": "2d6+9".
+                    static const QRegularExpression size(QStringLiteral(R"((?<=\d)d\d+)"));
+                    const QString die = made.die.startsWith(QLatin1Char('d'), Qt::CaseInsensitive)
+                                            ? made.die.toLower()
+                                            : QStringLiteral("d") + made.die;
+                    if (const QRegularExpressionMatch match = size.match(dice); match.hasMatch())
+                    {
+                        dice.replace(match.capturedStart(), match.capturedLength(), die);
+                    }
+                }
                 strike.damage = made.damageType.isEmpty() ? dice : dice + QLatin1Char(' ') + made.damageType;
             }
             if (!made.extra.isEmpty())
@@ -2488,6 +2613,10 @@ namespace monster
                     }
                 }
             }
+            for (const QString &extra : mod.languageExtras)
+            {
+                addLanguageExtra(m.languages, expandOptions(choicesOf, options, extra, level));
+            }
             for (const QString &trait : mod.removeTraits)
             {
                 auto [items, rest] = splitList(m.traits);
@@ -2707,6 +2836,13 @@ namespace monster
                         }
                     }
                 }
+                for (const auto &[type, plus] : mod.strikeDamageByType)
+                {
+                    if (damageTypeOf(strike.damage) == type.trimmed().toLower())
+                    {
+                        joinRider(strike.damage, expandOptions(choicesOf, options, plus, level));
+                    }
+                }
             }
             for (const Modifier::Rename &r : mod.renameStrikes)
             {
@@ -2846,12 +2982,33 @@ namespace monster
                         return s.name.trimmed().compare(made.name, Qt::CaseInsensitive) == 0;
                     });
                 }
-                const bool has = std::any_of(m.strikes.begin(), m.strikes.end(), [&](const Strike &s) {
+                const auto existing = std::find_if(m.strikes.begin(), m.strikes.end(), [&](const Strike &s) {
                     return s.name.trimmed().compare(made.name, Qt::CaseInsensitive) == 0;
                 });
-                if (chosen(options, made.when) && !has)
+                if (!chosen(options, made.when))
                 {
-                    m.strikes.push_back(makeStrike(m, made, level));
+                    continue;
+                }
+                if (existing == m.strikes.end())
+                {
+                    // Melee before ranged, as Paizo prints them.
+                    Strike strike = makeStrike(m, made, level);
+                    const auto at = isMelee(strike) ? std::find_if(m.strikes.begin(), m.strikes.end(),
+                                                                   [](const Strike &s) { return !isMelee(s); })
+                                                    : m.strikes.end();
+                    m.strikes.insert(at, strike);
+                }
+                else if (made.mergeExtra)
+                {
+                    // Its own fangs get the venom (and finesse) instead.
+                    joinRider(existing->damage, made.extra);
+                    for (const QString &trait : splitList(made.traits).first)
+                    {
+                        if (findItem(splitList(existing->traits).first, trait) < 0)
+                        {
+                            addMissing(existing->traits, trait);
+                        }
+                    }
                 }
             }
             for (const Modifier::InnateSpell &spell : mod.innateSpells)

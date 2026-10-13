@@ -99,6 +99,8 @@ protected:
     void setUp(const QString &title);
     // Puts `advanced` in the Advanced box (Copy from Built-in).
     void setAdvanced(const QJsonObject &advanced);
+    // What the Advanced box holds (empty if it isn't valid JSON).
+    QJsonObject advanced() const;
     // The subclass's fields call it when the user edits them.
     void formEdited();
 

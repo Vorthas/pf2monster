@@ -165,6 +165,7 @@ private:
     QLineEdit *senses_ = nullptr;
     QLineEdit *languages_ = nullptr;
     QCheckBox *languagesAlways_ = nullptr;
+    QLineEdit *languageExtras_ = nullptr;
     // Speeds and size.
     QComboBox *landMode_ = nullptr;
     QSpinBox *landFeet_ = nullptr;

@@ -164,7 +164,11 @@ way; these are the rules if you do:
 - Every file starts with `"format": 1`.
 
 The app's own files (in the source code, under `resources/`) use exactly the
-same format, so they make good examples.
+same format, so they make good examples. So does `docs/examples/homebrew/`,
+a homebrew folder you can add as it is in **Homebrew > Homebrew Folders...**:
+it holds two serpentfolk ancestries (Zyss and Aapoph, in Monster >
+Adjustments > Ancestry > Serpentfolk), worked out from Monster Core's
+serpentfolk, with choices, Strikes and abilities.
 
 
 ## Adjustments and templates
@@ -272,6 +276,7 @@ An entry with only a `"type"` is added as written, without an amount
 | `senseUpgrades` | `{"darkvision": "greater darkvision"}`: a sense it has becomes another. |
 | `languages` | Languages added, only to a creature that has languages. |
 | `languagesAlways` | `true`: add `languages` even to a creature with none. |
+| `languageExtras` | `["telepathy 100 feet"]`: added after the semicolon in its Languages line ("Aklo, Common; telepathy 100 feet"), even to a creature with no languages. One it has with a smaller amount is raised. |
 | `landSpeed` | `{"set": 25}`, `{"add": 5}`, `{"max": 20}` (lowered to at most) or `{"min": 30}` (raised to at least). |
 | `speeds` | Typed: Speeds added, or raised to this (`{"type": "fly", "steps": [{"change": 30}]}`). |
 | `derivedSpeeds` | Speeds worked out from others: `{"type": "swim", "from": "land", "half": true, "min": 5, "onlyIfMissing": true}`. `"from"` can be `"fastest"`. |
@@ -292,7 +297,7 @@ An entry with only a `"type"` is added as written, without an amount
 | `lores` | `[{"name": "Stonekin Lore", "benchmark": "high"}]`: a Lore raised to a benchmark, or `"highest"` (its highest skill). |
 | `newSkills` | `[{"skill": "deception", "benchmark": "moderate", "ifHigh": "charisma", "better": "high", "note": "{+4} to lie"}]`: a skill it gains if it has none; `better` when the attribute `ifHigh` is high or extreme; `{+N}` in the note is its modifier plus N. |
 | `strikeTraits` | `{"all": ["magical"], "melee": ["unarmed"]}`: traits its Strikes gain. |
-| `strikeDamageAdd` | `{"all": "plus 1d6 fire", "melee": "plus 2d6 void"}`: added to its Strikes' damage. |
+| `strikeDamageAdd` | `{"all": "plus 1d6 fire", "melee": "plus 2d6 void"}`: added to its Strikes' damage. A damage type as the key adds it only to Strikes of that type, joined to any rider they have: `{"piercing": "plus serpentfolk venom"}` makes "1d6 piercing plus Grab" into "1d6 piercing plus Grab and serpentfolk venom". |
 | `strikeDie` | `"fire"`: one die of each Strike becomes this damage type (as the elemental adjustments). |
 | `renameStrikes` | `[{"from": "fist", "name": "claw", "damageFrom": "bludgeoning", "damageTo": "slashing"}]`. |
 | `convertStrike` | `{"name": "ghostly hand", "attack": 2, "traits": "agile, finesse, magical", "damageType": "void"}`: its best melee Strike becomes this. |
@@ -336,16 +341,19 @@ Each Strike in `"strikes"`:
 | `attack` | Attack benchmark when it isn't copied: `"extreme"`, `"high"`, `"moderate"` (default), `"low"`, or `"best"` (its best melee attack). |
 | `damage` | Damage benchmark when it isn't copied: `"extreme"`, `"high"`, `"moderate"` or `"low"` (default). |
 | `traits` | `"agile, finesse"`. |
+| `die` | The damage die it uses instead (`"d8"`): copied "2d4+9" becomes "2d8+9". |
 | `damageType` | `"slashing"`. |
 | `extra` | After the damage: `"plus Grab"`. |
 | `damageText` | Damage written out instead, with formulas: `"{=max(1, level / 3)}d8 void"`. |
 | `fallback` | With `"nonagile"`: when it has no non-agile Strike, its best Strike's damage times this (`1.3333`). |
 | `reachPlus` | A reach this many feet longer than its size's. |
 | `replace` | `true`: takes the place of a Strike of that name it already has. |
+| `mergeExtra` | `true`: if it has a Strike of that name already, that one gets the `traits` and `extra` (a serpentfolk's own fangs get the venom). |
 | `when` | See [Conditions](#conditions). |
 
 A Strike the monster already has (same name) isn't added again, unless
-`replace` is set.
+`replace` or `mergeExtra` is set. A new melee Strike goes before its ranged
+ones, as Paizo prints them.
 
 ### Choices
 

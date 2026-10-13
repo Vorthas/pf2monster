@@ -150,6 +150,12 @@ namespace monster
             // Takes the place of its Strike of that name (Failed Prophet's
             // fist), instead of leaving it be.
             bool replace = false;
+            // The die its damage uses ("d8"): a copied "2d4+9" becomes
+            // "2d8+9" (serpentfolk fangs from their best Strike).
+            QString die;
+            // If it has a Strike of that name already, that one gets
+            // `extra` and `traits` instead of it being left be.
+            bool mergeExtra = false;
         };
 
         // A choice the options dialog offers (resources/adjustments: "dialog":
@@ -320,6 +326,14 @@ namespace monster
         QStringList strikeTraitsAll, strikeTraitsMelee;
         // Added to each Strike's damage ("plus 1d6 {opt:energy}").
         QString strikeDamageAll, strikeDamageMelee;
+        // Added to the Strikes whose damage is of that type ("piercing" ->
+        // "plus serpentfolk venom"); joined to a rider it has already
+        // ("plus Grab and serpentfolk venom").
+        std::vector<std::pair<QString, QString>> strikeDamageByType;
+        // After the languages' semicolon, added if missing or raised to
+        // this amount ("telepathy 100 feet"), even to a creature without
+        // languages.
+        QStringList languageExtras;
         // Innate spells added to a spell list of that name ("Divine
         // Innate"), made if it has none, with the DC from the spell DC
         // table at `dc` for its level: "telekinetic haul (x3)" at the rank

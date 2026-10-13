@@ -1,0 +1,46 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "aapoph-serpentfolk",
+ "name": "Aapoph Serpentfolk",
+ "group": "Ancestry/Serpentfolk",
+ "dialog": "options",
+ "source": "Homebrew example, worked out from the serpentfolk in Pathfinder Monster Core (pg. 302-304: Aapoph Serpentfolk, Aapoph Granitescale), via Archives of Nethys: https://2e.aonprd.com/Monsters.aspx?ID=3182. Not a Paizo adjustment.",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "For an NPC. Replaces its ancestry trait with serpentfolk (or adds it) and adds mutant; Medium (or Large); adds Aklo, Sakvroth, telepathy 100 feet, darkvision, scent, Speed 25 feet if lower, poison resistance, a fangs Strike with serpentfolk venom, +2 status vs. mental; a tail Strike and Slithering Attack (option). Use Zyss or Aapoph, not both.",
+ "optional": "Aapophs are prone to mutations, which you can choose or roll on a d% (Monster Core's Aapoph Mutations; they have no rules of their own): 1-45 no mutation, 46-56 dual tail, 57-66 additional fangs, 67-84 hooded neck, 85-91 horns, 92-96 additional, vestigial head, 97-100 spiny scales.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "serpentfolk"},
+  "traits": ["humanoid", "mutant"],
+  "size": "medium",
+  "languagesAlways": true,
+  "languages": ["Aklo", "Sakvroth"],
+  "languageExtras": ["telepathy 100 feet"],
+  "senses": ["darkvision", "scent (imprecise) 30 feet"],
+  "landSpeed": {"min": 25},
+  "resistances": [{"type": "poison", "expr": "min(resmax, 5 * (1 + max(0, level) / 8))"}],
+  "saveNote": "+2 status vs. mental"
+ },
+ "choices": [
+  {"key": "size", "type": "choice", "label": "Size", "default": "medium", "note": "Some aapophs are mutated into larger forms.", "items": [
+   {"key": "medium", "label": "Medium"},
+   {"key": "large", "label": "Large", "changes": {"size": "large"}}
+  ]},
+  {"key": "venom", "type": "choice", "label": "Serpentfolk venom DC", "default": "hard", "note": "Aapophs have stronger venom than their zyss kin.", "items": [
+   {"key": "standard", "label": "Standard DC for its level"},
+   {"key": "hard", "label": "Hard DC for its level"}
+  ]},
+  {"key": "options", "type": "pick", "label": "Options", "items": [
+   {"key": "tail", "label": "Tail Strike and Slithering Attack (as the Aapoph Serpentfolk)"}
+  ]}
+ ],
+ "strikes": [
+  {"key": "fangs", "name": "fangs", "type": "Melee", "from": "best", "die": "d8", "traits": "", "damageType": "piercing", "extra": "plus serpentfolk venom", "mergeExtra": true},
+  {"key": "tail", "name": "tail", "type": "Melee", "from": "best", "die": "d6", "traits": "agile", "damageType": "bludgeoning", "extra": "plus Knockdown", "when": "options:tail"}
+ ],
+ "abilities": [
+  {"key": "serpentfolk-venom", "name": "Serpentfolk Venom", "type": "offense", "actions": "none", "traits": "poison", "description": "Saving Throw DC {dc:standard} Fortitude; Maximum Duration 6 rounds; Stage 1 1d4 poison damage and enfeebled 1 (1 round); Stage 2 2d4 poison damage and enfeebled 1 (1 round)", "when": "venom:standard"},
+  {"key": "serpentfolk-venom", "name": "Serpentfolk Venom", "type": "offense", "actions": "none", "traits": "poison", "description": "Saving Throw DC {dc:hard} Fortitude; Maximum Duration 6 rounds; Stage 1 1d4 poison damage and enfeebled 1 (1 round); Stage 2 2d4 poison damage and enfeebled 1 (1 round)", "when": "venom:hard"},
+  {"key": "slithering-attack", "name": "Slithering Attack", "type": "offense", "actions": "one", "traits": "", "description": "{Name} makes one weapon or fangs Strike and one tail Strike, each targeting a different creature. These attacks both count toward {name}'s multiple attack penalty, but the penalty doesn't increase until after {name} makes both attacks.", "when": "options:tail"}
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "zyss-serpentfolk",
+ "name": "Zyss Serpentfolk",
+ "group": "Ancestry/Serpentfolk",
+ "dialog": "options",
+ "source": "Homebrew example, worked out from the serpentfolk in Pathfinder Monster Core (pg. 302-305: Zyss Serpentfolk, Coil Spy, Bone Prophet), via Archives of Nethys: https://2e.aonprd.com/Monsters.aspx?ID=3181. Not a Paizo adjustment.",
+ "license": "ORC License: Paizo's Pathfinder Monster Core is ORC licensed material.",
+ "rules": "For an NPC. Replaces its ancestry trait with serpentfolk (or adds it); Medium; adds Aklo, Sakvroth, telepathy 100 feet, darkvision, scent, Speed 25 feet if lower, poison resistance, a fangs Strike with serpentfolk venom, Thin of Blood, +4 status vs. mental and +1 status vs. magic; occult innate spells and envenomed piercing weapons (options). Use Zyss or Aapoph, not both.",
+ "optional": "Some serpentfolk have other innate spells, usually illusions, mental spells or divinations (Monster Core's Serpentfolk Magic), by their minimum rank: 6th mislead, zealous conviction; 5th mind probe; 4th honeyed words; 3rd dream message, enthrall, mind reading; 2nd invisibility (self only); 1st mindlink, phantom pain.",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "serpentfolk"},
+  "traits": ["humanoid"],
+  "size": "medium",
+  "languagesAlways": true,
+  "languages": ["Aklo", "Sakvroth"],
+  "languageExtras": ["telepathy 100 feet"],
+  "senses": ["darkvision", "scent (imprecise) 30 feet"],
+  "landSpeed": {"min": 25},
+  "resistances": [{"type": "poison", "expr": "min(resmax, 5 * (1 + max(0, level) / 8))"}],
+  "saveNote": "+4 status vs. mental; +1 status to all saves vs. magic",
+  "innateSpells": [
+   {"list": "Occult Innate", "spell": "suggestion", "rank": "min(10, max(4, level / 2 + 1))", "dc": "own:high", "when": "options:spells"},
+   {"list": "Occult Innate", "spell": "illusory disguise (at will)", "rank": "1 + 2 * min(1, max(0, level - 3))", "dc": "own:high", "when": "options:spells"},
+   {"list": "Occult Innate", "spell": "blur (self only; at will)", "rank": "2", "dc": "own:high", "when": "options:spells"},
+   {"list": "Occult Innate", "spell": "ventriloquism (at will)", "rank": "1", "dc": "own:high", "when": "options:spells"}
+  ]
+ },
+ "choices": [
+  {"key": "venom", "type": "choice", "label": "Serpentfolk venom DC", "default": "standard", "note": "Most zyss use the standard DC for their level.", "items": [
+   {"key": "standard", "label": "Standard DC for its level"},
+   {"key": "hard", "label": "Hard DC for its level"}
+  ]},
+  {"key": "options", "type": "pick", "label": "Options", "items": [
+   {"key": "spells", "label": "Occult innate spells: suggestion, illusory disguise, blur, ventriloquism", "on": true},
+   {"key": "weapons", "label": "Envenomed weapons: its piercing Strikes add serpentfolk venom", "on": true, "changes": {"strikeDamageAdd": {"piercing": "plus serpentfolk venom"}}}
+  ]},
+  {"key": "disguise", "type": "check", "label": "Maintain Disguise (for an infiltrator, as the Coil Spy)", "default": false, "when": "options:spells"}
+ ],
+ "strikes": [
+  {"key": "fangs", "name": "fangs", "type": "Melee", "from": "best", "die": "d6", "traits": "finesse", "damageType": "piercing", "extra": "plus serpentfolk venom", "mergeExtra": true}
+ ],
+ "abilities": [
+  {"key": "thin-of-blood", "name": "Thin of Blood", "type": "defense", "actions": "none", "traits": "", "description": "{Name} recovers slowly from injuries. When {name} takes physical damage from a critical hit, they gain {=1 + max(0, level) / 8}d4 persistent bleed damage. They take a –2 circumstance penalty to flat checks to recover from persistent damage and saving throws against afflictions."},
+  {"key": "maintain-disguise", "name": "Maintain Disguise", "type": "general", "actions": "none", "traits": "", "description": "{Name} can maintain an ongoing illusory disguise as long as they are conscious without having to recast the spell; they need only Cast the Spell again to reassume their illusory disguise if they wish to change their appearance or if the active spell is dispelled. {Name} typically seeks privacy when they need to sleep, as an ongoing illusory disguise ends an hour after they fall unconscious.", "when": "disguise"},
+  {"key": "serpentfolk-venom", "name": "Serpentfolk Venom", "type": "offense", "actions": "none", "traits": "poison", "description": "Saving Throw DC {dc:standard} Fortitude; Maximum Duration 6 rounds; Stage 1 1d4 poison damage and enfeebled 1 (1 round); Stage 2 2d4 poison damage and enfeebled 1 (1 round)", "when": "venom:standard"},
+  {"key": "serpentfolk-venom", "name": "Serpentfolk Venom", "type": "offense", "actions": "none", "traits": "poison", "description": "Saving Throw DC {dc:hard} Fortitude; Maximum Duration 6 rounds; Stage 1 1d4 poison damage and enfeebled 1 (1 round); Stage 2 2d4 poison damage and enfeebled 1 (1 round)", "when": "venom:hard"}
+ ]
+}

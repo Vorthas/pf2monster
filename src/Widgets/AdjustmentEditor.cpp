@@ -230,7 +230,7 @@ namespace
     {
         static const QSet<QString> keys{"level",     "bonus",        "bonusSkip",      "strikeDamage", "hp",
                                         "spellBonus", "traits",      "removeTraits",   "replaceOrAdd", "rarity",
-                                        "senses",    "languages",    "languagesAlways", "landSpeed",   "speeds",
+                                        "senses",    "languages",    "languagesAlways", "languageExtras", "landSpeed", "speeds",
                                         "size",      "immunities",   "resistances",    "weaknesses",   "hpAbilities",
                                         "saveNote",  "items",        "skillBenchmarks", "lores"};
         return keys;
@@ -246,8 +246,8 @@ namespace
 
     const QSet<QString> &strikeFormKeys()
     {
-        static const QSet<QString> keys{"key",    "name",       "type",  "from", "attack",
-                                        "damage", "traits", "damageType", "extra", "when"};
+        static const QSet<QString> keys{"key",    "name",   "type",       "from",  "attack", "damage",
+                                        "traits", "die",    "damageType", "extra", "mergeExtra", "when"};
         return keys;
     }
 } // namespace
@@ -699,6 +699,11 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     languageLayout->addWidget(languagesAlways_);
     addRow(form, tr("Languages"), languageRow, QStringLiteral("languages"));
     fieldOf_.insert(QStringLiteral("languagesAlways"), languagesAlways_);
+    languageExtras_ = new QLineEdit;
+    languageExtras_->setPlaceholderText(tr("telepathy 100 feet"));
+    addRow(form, tr("After the languages"), languageExtras_, QStringLiteral("languageExtras"), true,
+           tr("After the semicolon in its Languages line (\"Aklo; telepathy 100 feet\"), even if it has no "
+              "languages; one it has with a smaller amount is raised"));
 
     // Speeds and size.
     form->addRow(heading(tr("Speeds and Size")));
@@ -809,10 +814,14 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
                               {"moderate", tr("moderate")}});
         auto *traits = new QLineEdit;
         traits->setPlaceholderText(tr("agile, finesse"));
+        auto *die = combo({{"", tr("as copied")}, {"d4", tr("d4")}, {"d6", tr("d6")}, {"d8", tr("d8")},
+                           {"d10", tr("d10")}, {"d12", tr("d12")}});
         auto *damageType = new QLineEdit;
         damageType->setPlaceholderText(tr("slashing"));
         auto *extra = new QLineEdit;
         extra->setPlaceholderText(tr("plus Grab"));
+        auto *mergeExtra = new QCheckBox(tr("if it has a Strike of this name, add the traits and "
+                                            "\"After the damage\" to it"));
         auto *when = new QLineEdit;
         when->setPlaceholderText(tr("empty: always; body:hands: only when that choice is picked"));
         QFormLayout *f = strikes_->fields();
@@ -822,8 +831,10 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
         f->addRow(tr("Attack (benchmarks)"), attack);
         f->addRow(tr("Damage (benchmarks)"), damage);
         f->addRow(tr("Traits"), traits);
+        f->addRow(tr("Damage die"), die);
         f->addRow(tr("Damage type"), damageType);
         f->addRow(tr("After the damage"), extra);
+        f->addRow(tr("Already has it"), mergeExtra);
         f->addRow(tr("Only when"), when);
         strikes_->bind(QStringLiteral("name"), name);
         strikes_->bind(QStringLiteral("type"), type);
@@ -833,6 +844,20 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
         strikes_->bind(QStringLiteral("traits"), traits);
         strikes_->bind(QStringLiteral("damageType"), damageType);
         strikes_->bind(QStringLiteral("extra"), extra);
+        strikes_->bind(QStringLiteral("die"), die);
+        strikes_->bindCustom(
+            mergeExtra, [mergeExtra](const QJsonObject &o) { mergeExtra->setChecked(o.value(QStringLiteral("mergeExtra")).toBool()); },
+            [mergeExtra](QJsonObject &o) {
+                if (mergeExtra->isChecked())
+                {
+                    o.insert(QStringLiteral("mergeExtra"), true);
+                }
+                else
+                {
+                    o.remove(QStringLiteral("mergeExtra"));
+                }
+            });
+        connect(mergeExtra, &QCheckBox::toggled, strikes_, [this] { strikes_->fieldEdited(); });
         strikes_->bind(QStringLiteral("when"), when);
     }
     strikes_->onEdited = edited;
@@ -951,7 +976,8 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
                        static_cast<QWidget *>(traits_), static_cast<QWidget *>(removeTraits_),
                        static_cast<QWidget *>(rarity_),
                        static_cast<QWidget *>(senses_), static_cast<QWidget *>(languages_),
-                       static_cast<QWidget *>(languagesAlways_), static_cast<QWidget *>(landMode_),
+                       static_cast<QWidget *>(languagesAlways_), static_cast<QWidget *>(languageExtras_),
+                       static_cast<QWidget *>(landMode_),
                        static_cast<QWidget *>(landFeet_), static_cast<QWidget *>(speeds_),
                        static_cast<QWidget *>(size_), static_cast<QWidget *>(immunities_),
                        static_cast<QWidget *>(resistances_), static_cast<QWidget *>(weaknesses_),
@@ -1220,6 +1246,7 @@ void AdjustmentEditor::fillForm(const QString &name, const QJsonObject &entry)
     senses_->setText(joinList(changes.value(QStringLiteral("senses"))));
     languages_->setText(joinList(changes.value(QStringLiteral("languages"))));
     languagesAlways_->setChecked(changes.value(QStringLiteral("languagesAlways")).toBool());
+    languageExtras_->setText(joinList(changes.value(QStringLiteral("languageExtras"))));
     const QJsonObject land = showsHere("landSpeed") ? changes.value(QStringLiteral("landSpeed")).toObject() : QJsonObject();
     landMode_->setCurrentIndex(land.isEmpty() ? 0 : std::max(0, landMode_->findData(land.begin().key())));
     landFeet_->setValue(land.isEmpty() ? 0 : land.begin().value().toInt());
@@ -1362,6 +1389,7 @@ QJsonObject AdjustmentEditor::readForm(QString *name) const
     {
         changes.insert(QStringLiteral("languagesAlways"), true);
     }
+    list("languageExtras", languageExtras_->text());
     if (!landMode_->currentData().toString().isEmpty() && shows(QStringLiteral("landSpeed")))
     {
         changes.insert(QStringLiteral("landSpeed"),
@@ -1556,6 +1584,11 @@ QList<HomebrewEditor::FieldProblem> AdjustmentEditor::checkForm() const
             problems.push_back({choices_, tr("A choice needs a key (what \"Only when\" names).")});
         }
         choiceKeys << key;
+    }
+    // Choices the form can't show are in the Advanced box.
+    for (const QJsonValue &v : advanced().value(QStringLiteral("choices")).toArray())
+    {
+        choiceKeys << v.toObject().value(QStringLiteral("key")).toString();
     }
     auto checkList = [&](ObjectListEditor *editor, const QString &what) {
         for (const QJsonValue &v : editor->items())

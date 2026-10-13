@@ -72,6 +72,12 @@ void HomebrewEditor::setAdvanced(const QJsonObject &advanced)
                                                : QString::fromUtf8(QJsonDocument(advanced).toJson(QJsonDocument::Indented)));
 }
 
+QJsonObject HomebrewEditor::advanced() const
+{
+    monster::HomebrewProblem problem;
+    return monster::parseHomebrewText(QString(), advanced_->toPlainText(), &problem).value_or(QJsonObject());
+}
+
 QJsonObject HomebrewEditor::advancedPart(const QJsonObject &entry) const
 {
     QJsonObject other;
