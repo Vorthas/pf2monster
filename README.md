@@ -63,6 +63,7 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
 - Statblock is rendered with all abilities in alphabetical order automatically, no need to manually reorder them.  Exceptions follow Paizo's printed statblocks, such as Mythic Power always appearing first in the offense section and automatic abilities in the Defense section come before reactions.
 - Non-combat level can be included for NPC statblocks where the core of the statblock is at one level, but specific skills are set to the recommended values of another level.
 - Inclusion of a Homebrew menu to manage homebrew adjustments, templates, roadmaps, domains, and traits.  See Homebrew Management below.
+  - Includes an example homebrew folder (`docs/examples/homebrew`) with Zyss and Aapoph serpentfolk ancestries worked out from Monster Core.
 
 ## Screenshots
 
