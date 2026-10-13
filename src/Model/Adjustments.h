@@ -102,7 +102,7 @@ namespace monster
             QString key; // unique within the adjustment
             QString name;
             QString type;    // general, defense, offense
-            QString actions; // none, one, two, three, free, reaction
+            QString actions; // none, one, two, three, "one to three", ..., free, reaction
             QString traits;
             QString description;
             // Only when this choice is made: "abilities:stench" (picked),

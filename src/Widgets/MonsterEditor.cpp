@@ -95,9 +95,17 @@ namespace
     const Choices &actionChoices()
     {
         static const Choices list{
-            {"none", "None"},         {"one", "One"},           {"two", "Two"},
-            {"three", "Three"},       {"free", "Free"},         {"reaction", "Reaction"},
-            {"1 minute", "1 minute"}, {"10 minutes", "10 minutes"}};
+            {"none", "None"},
+            {"one", "One"},
+            {"two", "Two"},
+            {"three", "Three"},
+            {"one to two", "One to Two"},
+            {"one to three", "One to Three"},
+            {"two to three", "Two to Three"},
+            {"free", "Free"},
+            {"reaction", "Reaction"},
+            {"1 minute", "1 minute"},
+            {"10 minutes", "10 minutes"}};
         return list;
     }
 

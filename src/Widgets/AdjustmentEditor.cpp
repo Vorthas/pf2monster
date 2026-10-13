@@ -763,7 +763,9 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
                             {"defense", tr("Defense")},
                             {"offense", tr("Offense")}});
         auto *actions = combo({{"none", tr("none")}, {"one", tr("1 action")}, {"two", tr("2 actions")},
-                               {"three", tr("3 actions")}, {"free", tr("free action")},
+                               {"three", tr("3 actions")}, {"one to two", tr("1 to 2 actions")},
+                               {"one to three", tr("1 to 3 actions")}, {"two to three", tr("2 to 3 actions")},
+                               {"free", tr("free action")},
                                {"reaction", tr("reaction")}});
         auto *traits = new QLineEdit;
         traits->setPlaceholderText(tr("aura, fire"));

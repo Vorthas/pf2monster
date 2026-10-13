@@ -223,6 +223,9 @@ namespace monster
             if (key == QLatin1String("one")) return QStringLiteral(":a:");
             if (key == QLatin1String("two")) return QStringLiteral(":aa:");
             if (key == QLatin1String("three")) return QStringLiteral(":aaa:");
+            if (key == QLatin1String("one to two")) return QStringLiteral(":a: to :aa:");
+            if (key == QLatin1String("one to three")) return QStringLiteral(":a: to :aaa:");
+            if (key == QLatin1String("two to three")) return QStringLiteral(":aa: to :aaa:");
             if (key == QLatin1String("free")) return QStringLiteral(":f:");
             if (key == QLatin1String("reaction")) return QStringLiteral(":r:");
             if (key.isEmpty() || key == QLatin1String("none")) return {};

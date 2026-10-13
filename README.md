@@ -49,6 +49,7 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
   - Collections, the Find Monster, and Monster List will display up to two sub-folders in a tree, in case sorting by subtype becomes important (e.g. sorting an Elemental into an `Elemental/Fire` directory will show as Elemental > Fire within all three).
 - Files are identical to the website's own monster JSON, with custom additions, so they work both ways: anything saved here can be uploaded there.  Import from Website copies the site's JSON into your collection.
 - Live preview on a white background, updated as you type.
+- Special ability action cost includes the One to Three, One to Two, and Two to Three actions options in addition to the regular, One, Two, Three, Free, and Reaction options.
 - Creature levels -1 to 25 are supported, values for level 25 are extrapolated from from the existing tables and cross-referencing against all four of Paizo's official level 25 monsters.
 - Road maps: the 13 from GM Core's Building Creatures (brute, soldier, spellcaster, skill paragon, ...) plus 44 class road maps covering all 29 classes released as of October 2026, under Monster > Roadmap.
 - Automated application of monster adjustments and templates, under the Monster menu.  Including the Mythic adjustment.

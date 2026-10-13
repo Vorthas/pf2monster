@@ -72,7 +72,8 @@ namespace monster
     {
         QString name = QStringLiteral("Ability");
         QString type = QStringLiteral("offense"); // general, offense, defense
-        // none, one, two, three, free, reaction, "1 minute", "10 minutes"
+        // none, one, two, three, "one to two", "one to three", "two to three",
+        // free, reaction, "1 minute", "10 minutes"
         QString actions = QStringLiteral("one");
         QString traits;
         QString range;

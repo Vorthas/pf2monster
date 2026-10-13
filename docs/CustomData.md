@@ -322,7 +322,7 @@ Each ability in `"abilities"`:
 | `key` | A short name, unique in this file (`"rock-hide"`). The editor makes one from the name. |
 | `name` | The ability's name. |
 | `type` | Where it goes: `"general"` (top of the statblock), `"defense"`, or `"offense"`. |
-| `actions` | `"none"`, `"one"`, `"two"`, `"three"`, `"free"` or `"reaction"`. |
+| `actions` | `"none"`, `"one"`, `"two"`, `"three"`, `"one to two"`, `"one to three"`, `"two to three"`, `"free"` or `"reaction"`. |
 | `traits` | `"aura, fire"`. |
 | `description` | Its text; see [Text placeholders](#text-placeholders). Bold labels like **Trigger**, **Effect**, **Frequency**, **Saving Throw** and **Critical Success** are made bold for you. A new line starts a new paragraph. |
 | `when` | Only made when a choice is made; see [Conditions](#conditions). |
