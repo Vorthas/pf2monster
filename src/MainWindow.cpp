@@ -3,6 +3,7 @@
 
 #include "MainWindow.h"
 
+#include "Appearance.h"
 #include "Model/Adjustments.h"
 #include "Model/Benchmarks.h"
 #include "Model/Homebrew.h"
@@ -56,6 +57,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <utility>
 
 namespace
 {
@@ -270,6 +272,37 @@ MainWindow::MainWindow()
             action->setChecked(action->data().toString() == current);
         }
     });
+    // The program's own colours (not the stat blocks'): dark, light or
+    // the desktop's Kvantum style.
+    QMenu *appearanceMenu = viewMenu->addMenu(tr("&Appearance"));
+    auto *appearances = new QActionGroup(this);
+    const std::pair<appearance::Mode, QString> modes[] = {
+        {appearance::Mode::Dark, tr("&Dark")},
+        {appearance::Mode::Light, tr("&Light")},
+        {appearance::Mode::Kvantum, tr("&Kvantum")},
+    };
+    for (const auto &[mode, name] : modes)
+    {
+        QAction *action = appearanceMenu->addAction(name);
+        action->setCheckable(true);
+        action->setChecked(mode == appearance::saved());
+        appearances->addAction(action);
+        connect(action, &QAction::triggered, this, [this, mode] {
+            if (appearance::choose(mode))
+            {
+                QMessageBox::information(this, tr("Appearance"),
+                                         tr("The new appearance takes effect the next time "
+                                            "the program starts."));
+            }
+        });
+        if (mode == appearance::Mode::Kvantum)
+        {
+            action->setEnabled(appearance::kvantumInstalled());
+            action->setStatusTip(action->isEnabled()
+                                     ? tr("The desktop's Kvantum style; takes effect at the next start")
+                                     : tr("Kvantum isn't installed"));
+        }
+    }
     // As in pf2scribe: for every monster, whatever its theme.
     compactAction_ = viewMenu->addAction(tr("&Compact Line Spacing"));
     compactAction_->setCheckable(true);

@@ -13,6 +13,8 @@ find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets)
 
 add_executable(pf2monster
     src/main.cpp
+    src/Appearance.cpp
+    src/Appearance.h
     src/MainWindow.cpp
     src/MainWindow.h
     src/Model/Adjustments.cpp

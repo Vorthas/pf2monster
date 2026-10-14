@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 Vorthas
 
+#include "Appearance.h"
 #include "MainWindow.h"
 #include "Rendering/Fonts.h"
 
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QPalette>
-#include <QStyle>
 
 namespace
 {
@@ -80,22 +80,19 @@ int main(int argc, char *argv[])
 {
     // Before the application: Qt reads the installed fonts when it starts.
     scribe::hideBrokenInstalledFonts();
-    // Fusion, with its own colours, whatever the desktop's style (e.g.
-    // Kvantum through QT_STYLE_OVERRIDE): its input boxes stand out from the
-    // form, and the app looks the same however it is launched. The override
-    // is dropped before the application exists, since a style loaded then
-    // leaves its palette behind even after Fusion replaces it.
-    qunsetenv("QT_STYLE_OVERRIDE");
-    QApplication app(argc, argv);
-    QApplication::setStyle(QStringLiteral("Fusion"));
-    QApplication::setPalette(QApplication::style()->standardPalette());
     // Where QSettings keeps options (~/.config/pf2monster/pf2monster.conf on
     // Linux), and the name shown in window titles.
     QApplication::setOrganizationName(QStringLiteral("pf2monster"));
     QApplication::setApplicationName(QStringLiteral("pf2monster"));
+    QApplication::setApplicationVersion(QStringLiteral(PF2MONSTER_VERSION));
+    // Fusion with dark or light colours (its input boxes stand out from the
+    // form, and the app looks the same however it is launched), or Kvantum:
+    // View > Appearance.
+    appearance::beforeApplication();
+    QApplication app(argc, argv);
+    appearance::afterApplication();
     QApplication::setApplicationDisplayName(
         QStringLiteral("Monster Builder for Pathfinder 2e"));
-    QApplication::setApplicationVersion(QStringLiteral(PF2MONSTER_VERSION));
     makeBackgroundsOpaque();
     app.installEventFilter(new OpaquePopupLists(&app));
 
