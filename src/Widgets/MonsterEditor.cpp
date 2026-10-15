@@ -596,7 +596,9 @@ MonsterEditor::MonsterEditor(QWidget *parent) : QWidget(parent)
         addStat(grid, 3, tr("Will"), QStringLiteral("will"));
         addLine(grid, 4, tr("Saves note"), [m]() -> QString & { return m().savenote; });
         addStat(grid, 5, tr("Hit Points"), QStringLiteral("hp"));
-        int row = 6;
+        addLine(grid, 6, tr("Hardness"), [m]() -> QString & { return m().hardness; })
+            ->setPlaceholderText(tr("9 (empty: none)"));
+        int row = 7;
         for (const auto &[label, key] : {std::pair{tr("Resistances"), "resistance"},
                                          std::pair{tr("Weaknesses"), "weakness"},
                                          std::pair{tr("Immunities"), "immunity"}})

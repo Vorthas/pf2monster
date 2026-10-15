@@ -209,6 +209,10 @@ namespace monster
         QString recallDifficulty;
         QStringList recallSkills;
 
+        // "9": shown after the HP as "**Hardness** 9" (an animated armor);
+        // empty for none. Not on the website: kept under "pf2monster".
+        QString hardness;
+
         std::vector<HpPart> hpParts;
         // The label of the creature's own HP line once it has parts.
         QString mainPart = QStringLiteral("body");

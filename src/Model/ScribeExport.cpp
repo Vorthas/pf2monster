@@ -763,6 +763,12 @@ namespace monster
         QString hpLine = QStringLiteral("**HP** %1%2").arg(
             shown(m, "hp", QStringLiteral("1")),
             labelled(m.hpParts.empty() ? QString() : m.mainPart, inside.join(QStringLiteral(", "))));
+        // "**HP** 20; **Hardness** 9; **Immunities** ...", as Monster Core
+        // prints an animated armor.
+        if (!m.hardness.trimmed().isEmpty())
+        {
+            hpLine += QStringLiteral("; **Hardness** ") + fieldText(m.hardness).simplified();
+        }
         for (const auto &[label, key] : {std::pair{"Immunities", "immunity"},
                                          std::pair{"Resistances", "resistance"},
                                          std::pair{"Weaknesses", "weakness"}})
