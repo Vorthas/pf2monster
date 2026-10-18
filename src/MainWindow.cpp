@@ -897,15 +897,24 @@ void MainWindow::findMonster()
     auto *layout = new QVBoxLayout(&dialog);
     // The list itself: its filter (name, trait, tag), tags and groups.
     auto *list = new MonsterList;
+    list->useTagTree();
     list->setFolder(monsterList_->folder());
     list->setCurrent(path_);
     layout->addWidget(list);
+    // The tags a third of the width at first, then as the user left them.
+    if (!list->tagSplitter()->restoreState(QSettings().value(kFindSplitKey).toByteArray()))
+    {
+        list->tagSplitter()->setSizes({1000, 2000});
+    }
+    connect(list->tagSplitter(), &QSplitter::splitterMoved, &dialog, [list] {
+        QSettings().setValue(kFindSplitKey, list->tagSplitter()->saveState());
+    });
     QString picked;
     connect(list, &MonsterList::monsterActivated, &dialog, [&](const QString &path) {
         picked = path;
         dialog.accept();
     });
-    dialog.resize(fontMetrics().averageCharWidth() * 50, fontMetrics().height() * 28);
+    dialog.resize(fontMetrics().averageCharWidth() * 80, fontMetrics().height() * 28);
     if (auto *filter = list->findChild<QLineEdit *>())
     {
         filter->setFocus();

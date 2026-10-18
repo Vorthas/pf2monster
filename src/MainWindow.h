@@ -183,6 +183,7 @@ private:
     static constexpr const char *kPanelSharesKey = "window/panelShares";
     static constexpr const char *kGeometryKey = "window/geometry";
     static constexpr const char *kListSplitKey = "window/listSplit";
+    static constexpr const char *kFindSplitKey = "window/findMonsterSplit";
     static constexpr const char *kShowListKey = "view/monsterList";
     static constexpr const char *kThemeKey = "view/lastTheme";
     static constexpr const char *kCompactKey = "view/compactSpacing";

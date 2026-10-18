@@ -33,6 +33,8 @@ add_executable(pf2monster
     src/Model/Roadmaps.h
     src/Model/ScribeExport.cpp
     src/Model/ScribeExport.h
+    src/Model/Tags.cpp
+    src/Model/Tags.h
     src/Model/TraitNotes.cpp
     src/Model/TraitNotes.h
     src/Rendering/Fonts.cpp
