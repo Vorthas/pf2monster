@@ -47,6 +47,7 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
 - Handles entire collections of JSON files to load entire bestiaries.  The list is organized first by subfolders then monsters in the loaded folder.
   - An optional Monster List panel can be opened from View > Monster List to display all loaded JSON files in a tree as a panel on the main UI in the left-most column as opposed to viewing monsters from the Collection menu.
   - Collections, the Find Monster, and Monster List will display up to two sub-folders in a tree, in case sorting by subtype becomes important (e.g. sorting an Elemental into an `Elemental/Fire` directory will show as Elemental > Fire within all three).
+- Tags added to statblocks can be namespaced, e.g. a tag input as "environment:cave" will show up in tree form as environment > cave in the Find Monster dialog.
 - Files are identical to the website's own monster JSON, with custom additions, so they work both ways: anything saved here can be uploaded there.  Import from Website copies the site's JSON into your collection.
 - Live preview on a white background, updated as you type.
 - Special ability action cost includes the One to Three, One to Two, and Two to Three actions options in addition to the regular, One, Two, Three, Free, and Reaction options.
