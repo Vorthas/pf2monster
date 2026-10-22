@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <limits>
 #include <tuple>
 
 namespace monster
@@ -1240,9 +1241,22 @@ namespace monster
                 return false;
             }
 
-            static int floorDiv(int a, int b)
+            // Deeper than any real formula; a file nesting brackets (or
+            // minus signs) further would otherwise exhaust the stack.
+            static constexpr int kMaxDepth = 32;
+
+            // Worked in 64 bits, so an int result too large to fit (an
+            // overflow, or INT_MIN / -1, which traps) reads as nullopt.
+            static std::optional<int> fits(qint64 v)
             {
-                const int q = a / b;
+                return v >= std::numeric_limits<int>::min() && v <= std::numeric_limits<int>::max()
+                           ? std::optional<int>(static_cast<int>(v))
+                           : std::nullopt;
+            }
+
+            static qint64 floorDiv(qint64 a, qint64 b)
+            {
+                const qint64 q = a / b;
                 return (a % b != 0 && ((a < 0) != (b < 0))) ? q - 1 : q;
             }
 
@@ -1254,12 +1268,12 @@ namespace monster
                     if (take(QLatin1Char('+')))
                     {
                         const std::optional<int> r = product();
-                        v = r ? std::optional<int>(*v + *r) : std::nullopt;
+                        v = r ? fits(qint64(*v) + *r) : std::nullopt;
                     }
                     else if (take(QLatin1Char('-')))
                     {
                         const std::optional<int> r = product();
-                        v = r ? std::optional<int>(*v - *r) : std::nullopt;
+                        v = r ? fits(qint64(*v) - *r) : std::nullopt;
                     }
                     else
                     {
@@ -1277,12 +1291,12 @@ namespace monster
                     if (take(QLatin1Char('*')))
                     {
                         const std::optional<int> r = atom();
-                        v = r ? std::optional<int>(*v * *r) : std::nullopt;
+                        v = r ? fits(qint64(*v) * *r) : std::nullopt;
                     }
                     else if (take(QLatin1Char('/')))
                     {
                         const std::optional<int> r = atom();
-                        v = r && *r != 0 ? std::optional<int>(floorDiv(*v, *r)) : std::nullopt;
+                        v = r && *r != 0 ? fits(floorDiv(*v, *r)) : std::nullopt;
                     }
                     else
                     {
@@ -1294,11 +1308,23 @@ namespace monster
 
             std::optional<int> atom()
             {
+                if (depth_ >= kMaxDepth)
+                {
+                    return std::nullopt;
+                }
+                ++depth_;
+                const std::optional<int> v = operand();
+                --depth_;
+                return v;
+            }
+
+            std::optional<int> operand()
+            {
                 skip();
                 if (take(QLatin1Char('-')))
                 {
                     const std::optional<int> v = atom();
-                    return v ? std::optional<int>(-*v) : std::nullopt;
+                    return v ? fits(-qint64(*v)) : std::nullopt;
                 }
                 if (take(QLatin1Char('(')))
                 {
@@ -1363,6 +1389,7 @@ namespace monster
             int level_;
             const Monster *monster_ = nullptr;
             qsizetype pos_ = 0;
+            int depth_ = 0;
         };
 
         // A choice's text for {opt:key}: the picked items' labels ("A and
