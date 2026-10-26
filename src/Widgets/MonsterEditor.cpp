@@ -10,6 +10,7 @@
 #include "Model/Roadmaps.h"
 #include "Model/TraitNotes.h"
 #include "Widgets/EntryList.h"
+#include "Widgets/TagCompleter.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -448,6 +449,7 @@ MonsterEditor::MonsterEditor(QWidget *parent) : QWidget(parent)
         // Tags: for sorting the collection, not shown in the statblock.
         auto *tags = new QLineEdit;
         tags->setPlaceholderText(tr("campaign, undead, ... (for finding monsters in the list)"));
+        tagCompleter_ = new TagCompleter(tags, TagCompleter::Mode::Tags);
         grid->addWidget(new QLabel(tr("Tags")), 8, 0);
         grid->addWidget(tags, 8, 1, 1, 4);
         connect(tags, &QLineEdit::textEdited, this, [this](const QString &text) {
@@ -984,6 +986,11 @@ void MonsterEditor::setCornerWidget(QWidget *widget)
 QSplitter *MonsterEditor::cornerSplitter() const
 {
     return firstColumn_;
+}
+
+void MonsterEditor::setKnownTags(const QStringList &tags)
+{
+    tagCompleter_->setTags(tags);
 }
 
 void MonsterEditor::setSectionsEnabled(bool enabled)

@@ -72,6 +72,8 @@ add_executable(pf2monster
     src/Widgets/OptionsDialog.cpp
     src/Widgets/OptionsDialog.h
     src/Widgets/PreviewWidget.cpp
+    src/Widgets/TagCompleter.cpp
+    src/Widgets/TagCompleter.h
     src/Widgets/PreviewWidget.h
 )
 

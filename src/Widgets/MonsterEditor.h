@@ -25,6 +25,7 @@ class QSpinBox;
 class QSplitter;
 class QToolButton;
 class QVBoxLayout;
+class TagCompleter;
 
 // The form that edits a monster: its identity, statistics, strikes and
 // special abilities, each statistic with its benchmark and the hint for it
@@ -49,6 +50,9 @@ public:
     void setCornerWidget(QWidget *widget);
     // The first column's splitter, to save and restore the handle.
     QSplitter *cornerSplitter() const;
+
+    // The collection's tags, suggested while typing in the Tags box.
+    void setKnownTags(const QStringList &tags);
 
 signals:
     void changed(); // the user changed the monster
@@ -129,6 +133,7 @@ private:
     std::array<QScrollArea *, kColumns> scrolls_{};
     std::array<QVBoxLayout *, kColumns> columnLayouts_{};
     QSplitter *firstColumn_ = nullptr;
+    TagCompleter *tagCompleter_ = nullptr;
     int columns_ = 0;
 
     QSpinBox *level_ = nullptr;

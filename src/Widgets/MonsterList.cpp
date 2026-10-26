@@ -5,6 +5,7 @@
 
 #include "Model/Monster.h"
 #include "Model/Tags.h"
+#include "Widgets/TagCompleter.h"
 
 #include <QContextMenuEvent>
 #include <QDir>
@@ -54,6 +55,7 @@ MonsterList::MonsterList(QWidget *parent) : QWidget(parent)
     filter_ = new QLineEdit;
     filter_->setPlaceholderText(tr("Filter: name, trait or tag"));
     filter_->setClearButtonEnabled(true);
+    filterCompleter_ = new TagCompleter(filter_, TagCompleter::Mode::Filter);
     layout->addWidget(filter_);
 
     // Tags as chips that wrap: selecting some shows only monsters with
@@ -167,7 +169,8 @@ bool MonsterList::readEntry(const QString &path, Entry *entry)
             const QJsonObject own = json.value(QLatin1String("pf2monster")).toObject();
             const bool complex =
                 monster::Hazard::fromJson(own.value(QLatin1String("hazard")).toObject(), entry->traits).complex;
-            entry->tags << (complex ? QStringLiteral("hazard:complex") : QStringLiteral("hazard:simple"));
+            entry->builtInTag = complex ? QStringLiteral("hazard:complex") : QStringLiteral("hazard:simple");
+            entry->tags << entry->builtInTag;
         }
     }
     return true;
@@ -291,13 +294,27 @@ void MonsterList::useTagTree()
     rebuildTree();
 }
 
-void MonsterList::rebuildTags()
+QStringList MonsterList::allTags(bool builtIn) const
 {
     QStringList all;
     for (const Entry &entry : entries_)
     {
-        all << entry.tags;
+        for (const QString &tag : entry.tags)
+        {
+            if (builtIn || tag != entry.builtInTag)
+            {
+                all << tag;
+            }
+        }
     }
+    return all;
+}
+
+void MonsterList::rebuildTags()
+{
+    const QStringList all = allTags(true);
+    filterCompleter_->setTags(all);
+    emit tagsChanged();
     tagKeys_ = monster::tagTreeKeys(all);
     plainTagKeys_.clear();
     for (const QString &tag : all)

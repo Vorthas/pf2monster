@@ -23,6 +23,7 @@ class QScrollArea;
 class QSpinBox;
 class QSplitter;
 class QVBoxLayout;
+class TagCompleter;
 
 // The form that edits a hazard (a monster whose type is "hazard", plan
 // section 13): its identity, Stealth and how to disable it, its defenses,
@@ -47,6 +48,9 @@ public:
     void setCornerWidget(QWidget *widget);
     // The first column's splitter, to save and restore the handle.
     QSplitter *cornerSplitter() const;
+
+    // The collection's tags, suggested while typing in the Tags box.
+    void setKnownTags(const QStringList &tags);
 
 signals:
     void changed(); // the user changed the hazard
@@ -100,6 +104,7 @@ private:
     std::array<QScrollArea *, kColumns> scrolls_{};
     std::array<QVBoxLayout *, kColumns> columnLayouts_{};
     QSplitter *firstColumn_ = nullptr;
+    TagCompleter *tagCompleter_ = nullptr;
     int columns_ = 0;
 
     QWidget *routineSection_ = nullptr;

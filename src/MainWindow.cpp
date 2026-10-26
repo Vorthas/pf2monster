@@ -165,6 +165,13 @@ MainWindow::MainWindow()
         QSettings().setValue(kListSplitKey, hazardEditor_->cornerSplitter()->saveState());
     });
     connect(hazardEditor_, &HazardEditor::changed, this, &MainWindow::edited);
+    // Both forms suggest the collection's own tags (not the hazards'
+    // built-in ones) in their Tags boxes.
+    connect(monsterList_, &MonsterList::tagsChanged, this, [this] {
+        const QStringList tags = monsterList_->allTags(false);
+        editor_->setKnownTags(tags);
+        hazardEditor_->setKnownTags(tags);
+    });
     editors_ = new QStackedWidget;
     editors_->addWidget(editor_);
     editors_->addWidget(hazardEditor_);

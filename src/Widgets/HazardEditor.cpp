@@ -5,6 +5,7 @@
 
 #include "Model/Benchmarks.h"
 #include "Widgets/EntryList.h"
+#include "Widgets/TagCompleter.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -337,6 +338,7 @@ HazardEditor::HazardEditor(QWidget *parent) : QWidget(parent)
         // Tags: for sorting the collection, not shown in the statblock.
         auto *tags = new QLineEdit;
         tags->setPlaceholderText(tr("campaign, dungeon, ... (for finding it in the list)"));
+        tagCompleter_ = new TagCompleter(tags, TagCompleter::Mode::Tags);
         grid->addWidget(new QLabel(tr("Tags")), 5, 0);
         grid->addWidget(tags, 5, 1, 1, 4);
         connect(tags, &QLineEdit::textEdited, this, [this](const QString &text) {
@@ -741,6 +743,11 @@ void HazardEditor::setCornerWidget(QWidget *widget)
 QSplitter *HazardEditor::cornerSplitter() const
 {
     return firstColumn_;
+}
+
+void HazardEditor::setKnownTags(const QStringList &tags)
+{
+    tagCompleter_->setTags(tags);
 }
 
 void HazardEditor::setSectionsEnabled(bool enabled)

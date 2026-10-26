@@ -12,6 +12,7 @@
 class QFileSystemWatcher;
 class QLineEdit;
 class QListWidget;
+class TagCompleter;
 class QMenu;
 class QSplitter;
 class QTimer;
@@ -55,10 +56,17 @@ public:
         QString path;
         QString name;
         QString level;
-        QStringList tags;
+        QStringList tags; // the file's, then builtInTag if any
         QString traits;
+        // A hazard's "hazard:simple" or "hazard:complex" (plan 13): for
+        // finding, not in the file.
+        QString builtInTag;
     };
     const std::vector<Entry> &entries() const { return entries_; }
+
+    // Every tag in the collection, as each file writes it (with
+    // `builtIn`, the hazards' "hazard:simple" / "hazard:complex" too).
+    QStringList allTags(bool builtIn) const;
 
     // Whether `path` holds a monster (a JSON object in the website's
     // format), and what the list shows for it.
@@ -68,6 +76,8 @@ signals:
     // The user picked the monster at `path` (clicked, chose it with the
     // keyboard, or pressed Enter in the filter for the first one shown).
     void monsterActivated(const QString &path);
+    // The collection's tags changed (after a scan): see allTags().
+    void tagsChanged();
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
@@ -90,6 +100,7 @@ private:
     QSet<QString> expandedTags_; // the tag tree's open namespaces
 
     QLineEdit *filter_ = nullptr;
+    TagCompleter *filterCompleter_ = nullptr;
     QListWidget *tags_ = nullptr;
     QTreeWidget *tagTree_ = nullptr; // with setTagTree(true)
     QSplitter *tagSplitter_ = nullptr;
