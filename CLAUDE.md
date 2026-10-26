@@ -23,9 +23,10 @@ the same user. Its `src/Rendering/` renders Paizo-style pages from Scribe
 markdown. The core idea here: turn a monster into a pf2scribe `item( ... )`
 block and render it with that code, which gives the preview, PNG/PDF export
 and the Scribe markdown export from one path. Plan section 4 lists what to
-copy. Code is COPIED into this project (decided); a shared library is a
-possible later refactor across both projects, not now. Read pf2scribe's code
-for reference freely; change pf2scribe only if the user asks.
+copy. Code is COPIED into this project (decided); the two projects stay
+separate, each easy to build and use on its own (no shared library; the
+user, 2026-10-26). Read pf2scribe's code for reference freely; change
+pf2scribe only if the user asks.
 
 ## How the user works
 
