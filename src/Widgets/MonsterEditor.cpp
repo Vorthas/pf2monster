@@ -939,7 +939,7 @@ QWidget *MonsterEditor::addSection(int group, int order, const QString &title,
     auto *close = new QToolButton;
     close->setText(QStringLiteral("×"));
     close->setAutoRaise(true);
-    close->setToolTip(tr("Hide this note (Monster > Roadmap > Clear Roadmap Notes removes them all)"));
+    close->setToolTip(tr("Hide this note (Creature or Hazard > Roadmap > Clear Roadmap Notes removes them all)"));
     grid->addWidget(heading, 0, 0);
     grid->addWidget(close, 0, 1, Qt::AlignRight | Qt::AlignTop);
     grid->addWidget(text, 1, 0, 1, 2);
@@ -1701,7 +1701,7 @@ QWidget *MonsterEditor::generatedRow(const monster::Special &place)
     }
     row->setEnabled(false);
     const bool mythic = !place.generated.contains(QLatin1Char(':'));
-    row->setToolTip(mythic ? tr("Made by Mythic: change it in Monster > Adjustments > Mythic... It can be "
+    row->setToolTip(mythic ? tr("Made by Mythic: change it in Creature or Hazard > Adjustments > Mythic... It can be "
                                 "moved among the other abilities.")
                            : tr("Made by the %1 adjustment: removing the adjustment removes it. It can "
                                 "be moved among the other abilities.")

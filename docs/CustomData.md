@@ -24,9 +24,9 @@ The **Homebrew** menu has an editor for each kind of homebrew:
 
 | Menu item | Makes |
 |---|---|
-| Adjustments and Templates... | Things you apply to a monster: an ancestry, a "Stonekin" or "Elite"-style change (Monster > Adjustments), or a template that remakes it, like a vampire (Monster > Templates). |
+| Adjustments and Templates... | Things you apply to a monster: an ancestry, a "Stonekin" or "Elite"-style change (Creature or Hazard > Adjustments), or a template that remakes it, like a vampire (Creature or Hazard > Templates). |
 | Domains... | Domains a Divine Warden can pick, with their domain spells. |
-| Road Maps... | Starting benchmarks for a kind of creature (Monster > Roadmap). |
+| Road Maps... | Starting benchmarks for a kind of creature (Creature or Hazard > Roadmap). |
 | Traits... | Your own traits: a note shown in the form for monsters with the trait, and the skills that identify them for Recall Knowledge. |
 
 Every editor works the same way:
@@ -166,8 +166,8 @@ way; these are the rules if you do:
 The app's own files (in the source code, under `resources/`) use exactly the
 same format, so they make good examples. So does `docs/examples/homebrew/`,
 a homebrew folder you can add as it is in **Homebrew > Homebrew Folders...**:
-it holds two serpentfolk ancestries (Zyss and Aapoph, in Monster >
-Adjustments > Ancestry > Serpentfolk), worked out from Monster Core's
+it holds two serpentfolk ancestries (Zyss and Aapoph, in Creature or
+Hazard > Adjustments > Ancestry > Serpentfolk), worked out from Monster Core's
 serpentfolk, with choices, Strikes and abilities.
 
 
@@ -209,7 +209,7 @@ darkvision, fire resistance growing with its level, and an ability.
 | Key | What it is |
 |---|---|
 | `format` | Always `1`. |
-| `kind` | `"adjustment"` (Monster > Adjustments) or `"template"` (Monster > Templates). Required. |
+| `kind` | `"adjustment"` (Creature or Hazard > Adjustments) or `"template"` (Creature or Hazard > Templates). Required. |
 | `id` | A short name without spaces or colons, unique among your homebrew (`"custom-stonekin"`). Monsters remember it, so don't change it once monsters use it. Required. |
 | `name` | What the menu shows. Required. |
 | `group` | The submenu it's in (`"Ancestry"`, `"Undead"`); `"Undead/Vampire"` for a submenu inside another. A submenu that doesn't exist yet is made, at any depth (`"Ancestry/My Campaign"` adds My Campaign inside Ancestry). Empty or left out: the menu itself. |
@@ -429,7 +429,7 @@ and `resmin` / `resmax` (the resistance table's ends for its level).
 ## Road maps
 
 One file each, in `roadmaps/`. A road map sets the benchmarks a creature of
-a role starts from (Monster > Roadmap) and shows notes in the form while
+a role starts from (Creature or Hazard > Roadmap) and shows notes in the form while
 it's applied.
 
 ```json

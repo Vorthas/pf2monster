@@ -417,8 +417,8 @@ QSet<QString> RoadmapEditor::formKeys() const
 
 void RoadmapEditor::buildForm(QFormLayout *form)
 {
-    form->addRow(hint(tr("A road map sets the benchmarks a creature of a role starts from (Monster > "
-                         "Roadmap), and shows its notes in the form. Statistics left at \"not set\" go "
+    form->addRow(hint(tr("A road map sets the benchmarks a creature of a role starts from (Creature or "
+                         "Hazard > Roadmap), and shows its notes in the form. Statistics left at \"not set\" go "
                          "to moderate (Perception, attributes, defenses) or stay as they are (skills).")));
     name_ = new QLineEdit;
     name_->setPlaceholderText(tr("Sage"));

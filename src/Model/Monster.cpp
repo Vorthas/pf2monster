@@ -219,6 +219,7 @@ namespace monster
         strike.attack = takeValue(rest, QStringLiteral("attack"));
         strike.traits = takeText(rest, QStringLiteral("traits"));
         strike.damage = takeText(rest, QStringLiteral("damage"));
+        strike.actions = takeText(rest, QStringLiteral("actions"));
         strike.extra = rest;
         return strike;
     }
@@ -231,6 +232,10 @@ namespace monster
         put(json, QStringLiteral("attack"), attack.toJson());
         put(json, QStringLiteral("traits"), traits);
         put(json, QStringLiteral("damage"), damage);
+        if (!actions.isEmpty())
+        {
+            put(json, QStringLiteral("actions"), actions);
+        }
         return json;
     }
 
@@ -320,17 +325,93 @@ namespace monster
         part.immunities = json.value(QStringLiteral("immunities")).toString();
         part.resistances = json.value(QStringLiteral("resistances")).toString();
         part.weaknesses = json.value(QStringLiteral("weaknesses")).toString();
+        part.hardness = json.value(QStringLiteral("hardness")).toVariant().toString();
+        part.bt = json.value(QStringLiteral("bt")).toVariant().toString();
+        part.noBt = json.value(QStringLiteral("noBt")).toBool();
         return part;
     }
 
     QJsonObject HpPart::toJson() const
     {
-        return QJsonObject{{QStringLiteral("name"), name},
-                           {QStringLiteral("hp"), hp},
-                           {QStringLiteral("note"), note},
-                           {QStringLiteral("immunities"), immunities},
-                           {QStringLiteral("resistances"), resistances},
-                           {QStringLiteral("weaknesses"), weaknesses}};
+        QJsonObject json{{QStringLiteral("name"), name},
+                         {QStringLiteral("hp"), hp},
+                         {QStringLiteral("note"), note},
+                         {QStringLiteral("immunities"), immunities},
+                         {QStringLiteral("resistances"), resistances},
+                         {QStringLiteral("weaknesses"), weaknesses}};
+        if (!hardness.isEmpty())
+        {
+            json.insert(QStringLiteral("hardness"), hardness);
+        }
+        if (!bt.isEmpty())
+        {
+            json.insert(QStringLiteral("bt"), bt);
+        }
+        if (noBt)
+        {
+            json.insert(QStringLiteral("noBt"), true);
+        }
+        return json;
+    }
+
+    // ------------------------------------------------------------- Hazard
+
+    Hazard Hazard::fromJson(const QJsonObject &json, const QString &traits)
+    {
+        Hazard hazard;
+        QJsonObject rest = json;
+        const QString complexity = takeText(rest, QStringLiteral("complexity"));
+        if (complexity.isEmpty())
+        {
+            // The website's files, and ones written by hand: a "complex"
+            // trait.
+            const QStringList list = traits.split(QLatin1Char(','));
+            hazard.complex = std::any_of(list.begin(), list.end(), [](const QString &trait) {
+                return trait.trimmed().compare(QLatin1String("complex"), Qt::CaseInsensitive) == 0;
+            });
+        }
+        else
+        {
+            hazard.complex = complexity == QLatin1String("complex");
+        }
+        hazard.disable = takeText(rest, QStringLiteral("disable"));
+        hazard.routineActions = takeText(rest, QStringLiteral("routineActions"));
+        hazard.routineTraits = takeText(rest, QStringLiteral("routineTraits"));
+        hazard.routine = takeText(rest, QStringLiteral("routine"));
+        hazard.reset = takeText(rest, QStringLiteral("reset"));
+        hazard.bt = takeText(rest, QStringLiteral("bt"));
+        if (rest.value(QStringLiteral("noBt")).isBool())
+        {
+            hazard.noBt = rest.take(QStringLiteral("noBt")).toBool();
+        }
+        hazard.acLabel = takeText(rest, QStringLiteral("acLabel"));
+        if (rest.value(QStringLiteral("defenses")).isArray())
+        {
+            hazard.defenses.clear();
+            for (const QJsonValue &v : rest.take(QStringLiteral("defenses")).toArray())
+            {
+                hazard.defenses << v.toString();
+            }
+        }
+        hazard.extra = rest;
+        return hazard;
+    }
+
+    QJsonObject Hazard::toJson() const
+    {
+        QJsonObject json = extra;
+        put(json, QStringLiteral("complexity"),
+            complex ? QStringLiteral("complex") : QStringLiteral("simple"));
+        put(json, QStringLiteral("disable"), disable);
+        put(json, QStringLiteral("routineActions"), routineActions);
+        put(json, QStringLiteral("routineTraits"), routineTraits);
+        put(json, QStringLiteral("routine"), routine);
+        put(json, QStringLiteral("reset"), reset);
+        put(json, QStringLiteral("bt"), bt);
+        put(json, QStringLiteral("noBt"), noBt);
+        put(json, QStringLiteral("acLabel"), acLabel);
+        put(json, QStringLiteral("defenses"), QJsonArray::fromStringList(defenses));
+        return json;
     }
 
     std::optional<HpPart> HpPart::fromNote(const QString &note)
@@ -387,6 +468,25 @@ namespace monster
         add(kSkills);
         add(kLores, true);
         add(kOtherStats);
+    }
+
+    Monster Monster::newHazard()
+    {
+        Monster m;
+        m.type = kHazardType;
+        m.size = QStringLiteral("-");
+        m.mainPart.clear();
+        // "Hazards are immune to anything an object is immune to unless
+        // specifically noted otherwise" (GM Core); nearly every one lists
+        // it. An ordinary value the user can remove.
+        m.stat(QStringLiteral("immunity")).value = QStringLiteral("object immunities");
+        // The hazard tables have extreme, high and low; high is "a
+        // baseline" (GM Core, Building Hazards).
+        for (const char *key : {"stealth", "ac", "fortitude", "reflex", "will"})
+        {
+            m.stat(QString::fromLatin1(key)).benchmark = QStringLiteral("high");
+        }
+        return m;
     }
 
     Stat &Monster::stat(const QString &key)
@@ -573,6 +673,16 @@ namespace monster
         {
             m.mainPart = m.own.take(QStringLiteral("mainPart")).toString();
         }
+        // A creature keeps a "hazard" key it has (written elsewhere) as it
+        // came.
+        if (m.isHazard())
+        {
+            m.hazard = Hazard::fromJson(m.own.take(QStringLiteral("hazard")).toObject(), m.traits);
+            if (!json.value(kOwnKey).toObject().contains(QStringLiteral("mainPart")))
+            {
+                m.mainPart.clear();
+            }
+        }
         // The places of the abilities adjustments make, among the others.
         for (const QJsonValue &v : m.own.take(QStringLiteral("generatedSpecials")).toArray())
         {
@@ -683,9 +793,17 @@ namespace monster
             ownData.insert(QStringLiteral("hpParts"), objectsToJson(hpParts));
             ownData.insert(QStringLiteral("mainPart"), mainPart);
         }
+        else if (isHazard() && !mainPart.isEmpty())
+        {
+            ownData.insert(QStringLiteral("mainPart"), mainPart);
+        }
         if (!hardness.isEmpty())
         {
             ownData.insert(QStringLiteral("hardness"), hardness);
+        }
+        if (isHazard())
+        {
+            ownData.insert(QStringLiteral("hazard"), hazard.toJson());
         }
         if (!theme.isEmpty())
         {

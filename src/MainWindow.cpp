@@ -12,6 +12,7 @@
 #include "Model/TraitNotes.h"
 #include "Rendering/Theme.h"
 #include "Widgets/AdjustmentEditor.h"
+#include "Widgets/HazardEditor.h"
 #include "Widgets/HomebrewEditors.h"
 #include "Widgets/HomebrewFoldersDialog.h"
 #include "Widgets/MonsterEditor.h"
@@ -27,6 +28,7 @@
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QDialog>
+#include <QStackedWidget>
 #include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QDir>
@@ -156,6 +158,16 @@ MainWindow::MainWindow()
     });
     connect(editor_, &MonsterEditor::changed, this, &MainWindow::edited);
     connect(editor_, &MonsterEditor::editModifierRequested, this, [this](int index) { editModifier(index); });
+    // Hazards have a form of their own; the monster list moves to whichever
+    // is shown (loadEditor()), the handle between them saved alike.
+    hazardEditor_ = new HazardEditor;
+    connect(hazardEditor_->cornerSplitter(), &QSplitter::splitterMoved, this, [this] {
+        QSettings().setValue(kListSplitKey, hazardEditor_->cornerSplitter()->saveState());
+    });
+    connect(hazardEditor_, &HazardEditor::changed, this, &MainWindow::edited);
+    editors_ = new QStackedWidget;
+    editors_->addWidget(editor_);
+    editors_->addWidget(hazardEditor_);
 
     preview_ = new PreviewWidget;
     preview_->setFitWidth(true);
@@ -173,7 +185,7 @@ MainWindow::MainWindow()
     preview_->setContextActions({copyAction, selectAllAction});
 
     splitter_ = new QSplitter;
-    splitter_->addWidget(editor_);
+    splitter_->addWidget(editors_);
     splitter_->addWidget(preview_);
     splitter_->setChildrenCollapsible(false);
     setCentralWidget(splitter_);
@@ -202,7 +214,9 @@ MainWindow::MainWindow()
 
     // File menu.
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    QAction *newAction = fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::newMonster);
+    QAction *newAction = fileMenu->addAction(tr("&New Creature"), QKeySequence::New, this, &MainWindow::newMonster);
+    fileMenu->addAction(tr("New &Hazard"), QKeySequence(tr("Ctrl+Shift+N")), this, &MainWindow::newHazard)
+        ->setStatusTip(tr("A new hazard: a trap, haunt or environmental danger (GM Core, Hazards)"));
     fileMenu->addAction(tr("&Open..."), QKeySequence::Open, this, &MainWindow::open);
     QAction *folderAction = fileMenu->addAction(tr("Open &Folder..."), this, &MainWindow::chooseFolder);
     QAction *importAction = fileMenu->addAction(tr("&Import from Website..."), this,
@@ -215,7 +229,7 @@ MainWindow::MainWindow()
     fileMenu->addSeparator();
     QAction *duplicateAction = fileMenu->addAction(tr("&Duplicate"), this, &MainWindow::duplicateMonster);
     QAction *deleteAction = fileMenu->addAction(tr("De&lete..."), this, &MainWindow::deleteMonster);
-    deleteAction->setStatusTip(tr("Move this monster's file to the trash"));
+    deleteAction->setStatusTip(tr("Move this file to the trash"));
     fileMenu->addSeparator();
     fileMenu->addAction(tr("Export Scribe &Markdown..."), this, &MainWindow::exportScribe);
     fileMenu->addAction(tr("Cop&y Scribe Markdown"), QKeySequence(tr("Ctrl+Shift+C")), this,
@@ -243,7 +257,7 @@ MainWindow::MainWindow()
     // View menu: the monster list panel, hidden unless asked for (the
     // Collection menu and Find Monster do its job without the room).
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
-    QAction *showList = viewMenu->addAction(tr("Monster &List"));
+    QAction *showList = viewMenu->addAction(tr("Creature or Hazard &List"));
     showList->setCheckable(true);
     showList->setStatusTip(tr("Show the collection as a list under the form"));
     showList->setChecked(QSettings().value(kShowListKey, false).toBool());
@@ -319,11 +333,12 @@ MainWindow::MainWindow()
     connect(collectionMenu_, &QMenu::aboutToShow, this, &MainWindow::fillCollectionMenu);
     fillCollectionMenu(); // so Find Monster's shortcut works before it's opened
 
-    // Monster menu.
-    QMenu *monsterMenu = menuBar()->addMenu(tr("&Monster"));
+    // Creature or Hazard menu.
+    QMenu *monsterMenu = menuBar()->addMenu(tr("C&reature or Hazard"));
     QAction *applyHints = monsterMenu->addAction(tr("Apply &Hints"), this, &MainWindow::applyHints);
     applyHints->setStatusTip(tr("Fill each empty Perception, attribute, AC, save and HP value "
-                                "with its benchmark's hint"));
+                                "with its benchmark's hint (a hazard's Stealth and the defenses "
+                                "it shows)"));
 
     // Roadmap: Base (GM Core's creature road maps) and Class (its class
     // road maps), each with a submenu for those with variants (Spellcaster,
@@ -353,7 +368,7 @@ MainWindow::MainWindow()
     homebrewMenu->addAction(tr("&Domains..."), this, [this] { editHomebrew(new DomainEditor(this)); })
         ->setStatusTip(tr("Make and edit homebrew domains (for Divine Warden)"));
     homebrewMenu->addAction(tr("&Road Maps..."), this, [this] { editHomebrew(new RoadmapEditor(this)); })
-        ->setStatusTip(tr("Make and edit homebrew road maps (Monster > Roadmap)"));
+        ->setStatusTip(tr("Make and edit homebrew road maps (Creature or Hazard > Roadmap)"));
     homebrewMenu->addAction(tr("&Traits..."), this, [this] { editHomebrew(new TraitEditor(this)); })
         ->setStatusTip(tr("Make and edit homebrew traits: their notes, and the skills that identify them"));
     homebrewMenu->addSeparator();
@@ -416,7 +431,7 @@ bool MainWindow::openFile(const QString &path)
     std::optional<monster::Monster> loaded = monster::Monster::load(path, &error);
     if (!loaded)
     {
-        QMessageBox::warning(this, tr("Open Monster"),
+        QMessageBox::warning(this, tr("Open Creature or Hazard"),
                              tr("Couldn't open %1:\n%2")
                                  .arg(QDir::toNativeSeparators(path), error));
         monsterList_->setCurrent(path_);
@@ -465,7 +480,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     if (event->type() == QEvent::ShortcutOverride)
     {
         auto *widget = qobject_cast<QWidget *>(watched);
-        if (widget && editor_->isAncestorOf(widget))
+        if (widget && editors_->isAncestorOf(widget))
         {
             const QKeySequence pressed(static_cast<QKeyEvent *>(event)->keyCombination());
             if (matchesAny(pressed, QKeySequence::Undo) || matchesAny(pressed, QKeySequence::Redo))
@@ -494,6 +509,22 @@ void MainWindow::newMonster()
     monsterList_->setCurrent(QString());
 }
 
+void MainWindow::newHazard()
+{
+    if (!maybeSave())
+    {
+        return;
+    }
+    monster_ = monster::Monster::newHazard();
+    monster_.theme = themeKey(newTheme_);
+    path_.clear();
+    saved_ = monster_.toJson();
+    savedName_.clear();
+    histories_.erase(QString());
+    showMonster();
+    monsterList_->setCurrent(QString());
+}
+
 void MainWindow::open()
 {
     if (!maybeSave())
@@ -501,7 +532,7 @@ void MainWindow::open()
         return;
     }
     const QString path = QFileDialog::getOpenFileName(
-        this, tr("Open Monster"), dialogFolder(), tr("Monsters (*.json);;All files (*)"));
+        this, tr("Open Creature or Hazard"), dialogFolder(), tr("Creatures and Hazards (*.json);;All files (*)"));
     if (!path.isEmpty())
     {
         QSettings().setValue(kLastFolderKey, QFileInfo(path).absolutePath());
@@ -545,7 +576,7 @@ bool MainWindow::save()
         const QString folder = monsterList_->folder();
         if (!QDir().mkpath(folder))
         {
-            QMessageBox::warning(this, tr("Save Monster"),
+            QMessageBox::warning(this, tr("Save Creature or Hazard"),
                                  tr("Couldn't create the folder %1.").arg(QDir::toNativeSeparators(folder)));
             return false;
         }
@@ -569,7 +600,7 @@ bool MainWindow::saveAs()
 {
     finishEdit();
     const QString start = path_.isEmpty() ? fileFor(dialogFolder(), monster_.name) : path_;
-    QString path = QFileDialog::getSaveFileName(this, tr("Save Monster"), start, tr("Monsters (*.json)"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Save Creature or Hazard"), start, tr("Creatures and Hazards (*.json)"));
     if (path.isEmpty())
     {
         return false;
@@ -587,7 +618,7 @@ bool MainWindow::saveTo(const QString &path)
     QString error;
     if (!monster_.save(path, &error))
     {
-        QMessageBox::warning(this, tr("Save Monster"),
+        QMessageBox::warning(this, tr("Save Creature or Hazard"),
                              tr("Couldn't save %1:\n%2")
                                  .arg(QDir::toNativeSeparators(path), error));
         return false;
@@ -627,7 +658,7 @@ void MainWindow::duplicateMonster()
     QString error;
     if (!copy.save(path, &error))
     {
-        QMessageBox::warning(this, tr("Duplicate Monster"),
+        QMessageBox::warning(this, tr("Duplicate Creature or Hazard"),
                              tr("Couldn't save %1:\n%2").arg(QDir::toNativeSeparators(path), error));
         return;
     }
@@ -637,11 +668,11 @@ void MainWindow::duplicateMonster()
 
 void MainWindow::deleteMonster()
 {
-    const QString name = monster_.name.trimmed().isEmpty() ? tr("this monster") : monster_.name.trimmed();
+    const QString name = monster_.name.trimmed().isEmpty() ? (monster_.isHazard() ? tr("this hazard") : tr("this creature")) : monster_.name.trimmed();
     if (path_.isEmpty())
     {
         // Never saved: nothing on disk, so only the unsaved monster goes.
-        if (modified_ && QMessageBox::question(this, tr("Delete Monster"),
+        if (modified_ && QMessageBox::question(this, tr("Delete Creature or Hazard"),
                                                tr("Discard %1? It was never saved.").arg(name)) !=
                              QMessageBox::Yes)
         {
@@ -651,7 +682,7 @@ void MainWindow::deleteMonster()
         newMonster();
         return;
     }
-    if (QMessageBox::question(this, tr("Delete Monster"),
+    if (QMessageBox::question(this, tr("Delete Creature or Hazard"),
                               tr("Move %1 (%2) to the trash?")
                                   .arg(name, QFileInfo(path_).fileName())) != QMessageBox::Yes)
     {
@@ -659,7 +690,7 @@ void MainWindow::deleteMonster()
     }
     if (!QFile::moveToTrash(path_))
     {
-        QMessageBox::warning(this, tr("Delete Monster"),
+        QMessageBox::warning(this, tr("Delete Creature or Hazard"),
                              tr("Couldn't move %1 to the trash.").arg(QDir::toNativeSeparators(path_)));
         return;
     }
@@ -687,7 +718,7 @@ bool MainWindow::maybeSave()
     const auto answer = QMessageBox::warning(
         this, tr("Unsaved Changes"),
         tr("%1 has unsaved changes. Save them?")
-            .arg(monster_.name.trimmed().isEmpty() ? tr("This monster") : monster_.name.trimmed()),
+            .arg(monster_.name.trimmed().isEmpty() ? (monster_.isHazard() ? tr("This hazard") : tr("This creature")) : monster_.name.trimmed()),
         QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
     if (answer == QMessageBox::Save)
     {
@@ -707,10 +738,49 @@ void MainWindow::showMonster()
 {
     editBurst_.stop();
     beforeEdit_ = monster_;
-    editor_->setMonster(&monster_);
+    loadEditor();
     updateModified();
     updateUndoActions();
     startBuild();
+}
+
+void MainWindow::loadEditor()
+{
+    const bool hazard = monster_.isHazard();
+    QWidget *form = hazard ? static_cast<QWidget *>(hazardEditor_) : editor_;
+    if (editors_->currentWidget() != form)
+    {
+        // The list moves from the other form, with the handle where it was
+        // saved (or the forms' own three quarters / one quarter).
+        if (hazard)
+        {
+            hazardEditor_->setCornerWidget(monsterList_);
+        }
+        else
+        {
+            editor_->setCornerWidget(monsterList_);
+        }
+        QSplitter *corner = hazard ? hazardEditor_->cornerSplitter() : editor_->cornerSplitter();
+        corner->restoreState(QSettings().value(kListSplitKey).toByteArray());
+        monsterList_->setVisible(QSettings().value(kShowListKey, false).toBool());
+        editors_->setCurrentWidget(form);
+    }
+    // Road maps, adjustments and templates are for creatures (plan 13).
+    for (QMenu *menu : {roadmapMenu_, adjustmentMenu_, templateMenu_})
+    {
+        menu->menuAction()->setEnabled(!hazard);
+    }
+    // The hidden form lets go of it.
+    if (hazard)
+    {
+        editor_->setMonster(nullptr);
+        hazardEditor_->setMonster(&monster_);
+    }
+    else
+    {
+        hazardEditor_->setMonster(nullptr);
+        editor_->setMonster(&monster_);
+    }
 }
 
 void MainWindow::updateModified()
@@ -765,7 +835,7 @@ void MainWindow::undo()
     monster_ = std::move(h.undo.back());
     h.undo.pop_back();
     beforeEdit_ = monster_;
-    editor_->setMonster(&monster_);
+    loadEditor();
     updateModified();
     updateUndoActions();
     startBuild();
@@ -783,7 +853,7 @@ void MainWindow::redo()
     monster_ = std::move(h.redo.back());
     h.redo.pop_back();
     beforeEdit_ = monster_;
-    editor_->setMonster(&monster_);
+    loadEditor();
     updateModified();
     updateUndoActions();
     startBuild();
@@ -806,7 +876,7 @@ void MainWindow::commitChange(monster::Monster before)
     }
     h.redo.clear();
     beforeEdit_ = monster_;
-    editor_->setMonster(&monster_); // show the new values
+    loadEditor(); // show the new values
     updateModified();
     updateUndoActions();
     startBuild();
@@ -815,7 +885,7 @@ void MainWindow::commitChange(monster::Monster before)
 void MainWindow::fillCollectionMenu()
 {
     collectionMenu_->clear(); // deletes its own actions, not File's shared ones
-    collectionMenu_->addAction(tr("&Find Monster..."), QKeySequence(tr("Ctrl+P")), this,
+    collectionMenu_->addAction(tr("&Find Creature or Hazard..."), QKeySequence(tr("Ctrl+P")), this,
                                &MainWindow::findMonster)
         ->setStatusTip(tr("Search the collection by name, trait or tag"));
     collectionMenu_->addSeparator();
@@ -883,7 +953,7 @@ void MainWindow::fillCollectionMenu()
     }
     if (groups.isEmpty())
     {
-        collectionMenu_->addAction(tr("(No monsters in this folder)"))->setEnabled(false);
+        collectionMenu_->addAction(tr("(Nothing in this folder)"))->setEnabled(false);
     }
     collectionMenu_->addSeparator();
     collectionMenu_->addAction(folderAction_);
@@ -893,7 +963,7 @@ void MainWindow::fillCollectionMenu()
 void MainWindow::findMonster()
 {
     QDialog dialog(this);
-    dialog.setWindowTitle(tr("Find Monster"));
+    dialog.setWindowTitle(tr("Find Creature or Hazard"));
     auto *layout = new QVBoxLayout(&dialog);
     // The list itself: its filter (name, trait, tag), tags and groups.
     auto *list = new MonsterList;
@@ -1454,7 +1524,7 @@ void MainWindow::exportPng()
 void MainWindow::importFromWebsite()
 {
     const QStringList paths = QFileDialog::getOpenFileNames(
-        this, tr("Import from Website"), dialogFolder(), tr("Monsters (*.json);;All files (*)"));
+        this, tr("Import from Website"), dialogFolder(), tr("Creatures and Hazards (*.json);;All files (*)"));
     if (paths.isEmpty())
     {
         return;

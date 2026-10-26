@@ -61,6 +61,11 @@ namespace monster
         Value attack;
         QString traits;
         QString damage;
+        // The action icon, as a special's ("one", "reaction", ...); empty
+        // for the default: one action for a creature, none for a hazard
+        // (GM Core prints most hazard Strikes without one). Written only
+        // when set.
+        QString actions;
         QJsonObject extra;
 
         static Strike fromJson(const QJsonObject &json);
@@ -104,6 +109,11 @@ namespace monster
         QString hp;
         QString note; // "void healing, head regrowth"
         QString immunities, resistances, weaknesses;
+        // Hazards only ("Spout Hardness 8, Spout HP 32 (BT 16)"): written
+        // only when set. An empty BT is half the HP; `noBt`: none at all
+        // (it can't be broken).
+        QString hardness, bt;
+        bool noBt = false;
 
         static HpPart fromJson(const QJsonObject &json);
         QJsonObject toJson() const;
@@ -133,6 +143,42 @@ namespace monster
         static SpellList fromJson(const QJsonObject &json);
         QJsonObject toJson() const;
     };
+
+    // What a hazard has that a creature doesn't (GM Core, Hazards). The
+    // rest of a hazard is the monster's own fields: Stealth is the
+    // "stealth" skill (the number the statblock shows: a DC for a simple
+    // hazard, the modifier for a complex one) with "minprof" its minimum
+    // proficiency, the description is in the statblock, reactions and
+    // actions are specials. Kept under "pf2monster" as "hazard".
+    struct Hazard
+    {
+        bool complex = false;
+        QString disable;
+        QString routineActions; // "4": "Routine (4 actions)"
+        // "auditory, mental": "Routine (1 action; auditory, mental)"
+        QString routineTraits;
+        QString routine;
+        QString reset;
+        QString bt;             // empty: half the HP
+        // No Broken Threshold: "HP 20; Immunities ..." (it can't be broken,
+        // GM Core; Starfinder's Caustic Nectar Spray).
+        bool noBt = false;
+        // Labels the AC: "Sensor AC 22; Fort +12, Ref +6" (Starfinder's
+        // Laser Web).
+        QString acLabel;
+        // The defenses the statblock shows: "ac", "fortitude", "reflex",
+        // "will", "hp" (Hardness, HP and BT). None for a hazard with no
+        // physical part.
+        QStringList defenses = {QStringLiteral("ac"), QStringLiteral("fortitude"),
+                                QStringLiteral("reflex"), QStringLiteral("hp")};
+        QJsonObject extra;
+
+        // `traits` decides the complexity when the file doesn't say.
+        static Hazard fromJson(const QJsonObject &json, const QString &traits);
+        QJsonObject toJson() const;
+    };
+
+    inline const QString kHazardType = QStringLiteral("hazard");
 
     // The statistics that are a Stat, by their JSON key, in the site's order.
     inline constexpr std::array kAbilities = {
@@ -214,8 +260,17 @@ namespace monster
         QString hardness;
 
         std::vector<HpPart> hpParts;
-        // The label of the creature's own HP line once it has parts.
+        // The label of the creature's own HP line once it has parts. A
+        // hazard's labels its Hardness and HP whenever it's set ("Trapdoor
+        // Hardness 9; Trapdoor HP 36"), and is empty unless set.
         QString mainPart = QStringLiteral("body");
+
+        // A hazard is a monster whose type is "hazard" (as the website
+        // marks one); `hazard` holds the rest.
+        bool isHazard() const { return type.compare(kHazardType, Qt::CaseInsensitive) == 0; }
+        Hazard hazard;
+        // A new, empty hazard.
+        static Monster newHazard();
 
         QString spelltype;
         Value focuspoints = 0;

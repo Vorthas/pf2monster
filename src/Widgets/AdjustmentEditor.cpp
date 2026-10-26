@@ -604,8 +604,8 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
 
     // General.
     form->addRow(heading(tr("General")));
-    kindCombo_ = combo({{"adjustment", tr("Adjustment (Monster > Adjustments)")},
-                        {"template", tr("Template (Monster > Templates)")}});
+    kindCombo_ = combo({{"adjustment", tr("Adjustment (Creature or Hazard > Adjustments)")},
+                        {"template", tr("Template (Creature or Hazard > Templates)")}});
     addRow(form, tr("Kind"), kindCombo_, QStringLiteral("kind"), false);
     name_ = new QLineEdit;
     name_->setPlaceholderText(tr("Stonekin"));

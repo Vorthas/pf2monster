@@ -28,6 +28,7 @@ namespace monster
         };
 
         // Read once, on first use (thread-safe as a function-local static).
+        // The hazard tables join the creature ones as "hazard.<name>".
         const Data &data()
         {
             static const Data loaded = [] {
@@ -40,6 +41,20 @@ namespace monster
                 }
                 const QJsonObject root = QJsonDocument::fromJson(file.readAll()).object();
                 d.tables = root.value(QStringLiteral("tables")).toObject();
+                QFile hazardFile(QStringLiteral(":/data/hazard-benchmarks.json"));
+                if (hazardFile.open(QIODevice::ReadOnly))
+                {
+                    const QJsonObject hazards =
+                        QJsonDocument::fromJson(hazardFile.readAll()).object().value(QStringLiteral("tables")).toObject();
+                    for (auto it = hazards.begin(); it != hazards.end(); ++it)
+                    {
+                        d.tables.insert(QStringLiteral("hazard.") + it.key(), it.value());
+                    }
+                }
+                else
+                {
+                    qWarning("hazard-benchmarks.json is missing from the resources");
+                }
                 const QJsonArray levels = root.value(QStringLiteral("levels")).toArray();
                 d.minLevel = levels.at(0).toInt(-1);
                 d.maxLevel = levels.at(1).toInt(24);
@@ -69,6 +84,15 @@ namespace monster
             case Table::SpellAttack: return QStringLiteral("spellAttack");
             case Table::AreaDamage: return QStringLiteral("areaDamage");
             case Table::SafeItem: return QStringLiteral("safeItem");
+            case Table::HazardStealthDisable: return QStringLiteral("hazard.stealthDisable");
+            case Table::HazardMinProficiency: return QStringLiteral("hazard.minProficiency");
+            case Table::HazardArmorClass: return QStringLiteral("hazard.ac");
+            case Table::HazardSave: return QStringLiteral("hazard.save");
+            case Table::HazardHardness: return QStringLiteral("hazard.hardness");
+            case Table::HazardHitPoints: return QStringLiteral("hazard.hp");
+            case Table::HazardAttack: return QStringLiteral("hazard.attack");
+            case Table::HazardDamage: return QStringLiteral("hazard.damage");
+            case Table::HazardDc: return QStringLiteral("hazard.dc");
             }
             return {};
         }
@@ -78,7 +102,8 @@ namespace monster
         {
             return table == Table::Attribute || table == Table::Perception ||
                    table == Table::Skill || table == Table::Save ||
-                   table == Table::StrikeAttack || table == Table::SpellAttack;
+                   table == Table::StrikeAttack || table == Table::SpellAttack ||
+                   table == Table::HazardSave || table == Table::HazardAttack;
         }
 
         QString show(int value, bool withSign)
@@ -177,6 +202,16 @@ namespace monster
         {
             names << QStringLiteral("terrible") << QStringLiteral("abysmal");
         }
+        // Perception's exception to High, asked for by its own name.
+        if (table == Table::HazardMinProficiency)
+        {
+            names.removeAll(QStringLiteral("highPerception"));
+        }
+        // Ranges with no benchmark.
+        if (table == Table::HazardHardness || table == Table::HazardHitPoints)
+        {
+            names.clear();
+        }
         return names;
     }
 
@@ -205,6 +240,12 @@ namespace monster
             h.min = row.at(1).toInt();
             h.value = h.max;
             h.text = QStringLiteral("%1–%2").arg(h.min).arg(h.max);
+        }
+        else if (table == Table::HazardHardness || table == Table::HazardHitPoints)
+        {
+            // [low, high]
+            h = range(row.at(0).toArray(), false, false);
+            h.valid = !row.isEmpty();
         }
         else if (table == Table::SafeItem)
         {
@@ -250,7 +291,8 @@ namespace monster
             }
             else if (cell.isArray())
             {
-                h = range(cell.toArray(), withSign, table == Table::Skill);
+                h = range(cell.toArray(), withSign,
+                          table == Table::Skill || table == Table::HazardStealthDisable);
                 if (skillTerrible)
                 {
                     h = number(h.min, withSign);
@@ -259,6 +301,11 @@ namespace monster
             else if (cell.isDouble())
             {
                 h = number(cell.toInt(), withSign);
+            }
+            else if (cell.isString()) // a proficiency rank: "trained"
+            {
+                h.valid = true;
+                h.text = cell.toString();
             }
             else
             {
@@ -269,8 +316,59 @@ namespace monster
         return h;
     }
 
+    std::optional<Table> hazardTableFor(const QString &statKey)
+    {
+        static const QHash<QString, Table> tables{
+            {QStringLiteral("stealth"), Table::HazardStealthDisable},
+            {QStringLiteral("minprof"), Table::HazardMinProficiency},
+            {QStringLiteral("ac"), Table::HazardArmorClass},
+            {QStringLiteral("fortitude"), Table::HazardSave},
+            {QStringLiteral("reflex"), Table::HazardSave},
+            {QStringLiteral("will"), Table::HazardSave},
+            {QStringLiteral("hp"), Table::HazardHitPoints},
+        };
+        if (const auto it = tables.find(statKey); it != tables.end())
+        {
+            return *it;
+        }
+        return std::nullopt;
+    }
+
     Hint statHint(const Monster &monster, const QString &statKey)
     {
+        if (monster.isHazard())
+        {
+            const std::optional<Table> table = hazardTableFor(statKey);
+            const Stat *stat = monster.findStat(statKey);
+            if (!table || !stat)
+            {
+                return {};
+            }
+            const int level = monster.level.number().value_or(0);
+            if (*table == Table::HazardMinProficiency)
+            {
+                // The rank to detect it is a Perception rank (GM Core's
+                // "expert for Perception" at levels 1-4).
+                const bool high = stat->benchmark.trimmed().compare(QLatin1String("high"),
+                                                                    Qt::CaseInsensitive) == 0;
+                return hint(*table, level, high ? QStringLiteral("highPerception")
+                                                : QStringLiteral("moderate"));
+            }
+            Hint h = hint(*table, level, stat->benchmark);
+            if (*table == Table::HazardStealthDisable && monster.hazard.complex && h.valid)
+            {
+                // A complex hazard lists its Stealth modifier: the DC - 10.
+                h.min -= 10;
+                h.max -= 10;
+                if (h.value)
+                {
+                    *h.value -= 10;
+                }
+                h.text = h.min == h.max ? show(h.min, true)
+                                        : QStringLiteral("%1 to %2").arg(show(h.max, true), show(h.min, true));
+            }
+            return h;
+        }
         const std::optional<Table> table = tableFor(statKey);
         const Stat *stat = monster.findStat(statKey);
         if (!table || !stat)
@@ -288,12 +386,21 @@ namespace monster
         return keys.contains(statKey);
     }
 
+    bool usesHint(const Monster &monster, const QString &statKey)
+    {
+        if (!monster.isHazard())
+        {
+            return usesHint(statKey);
+        }
+        return statKey == QLatin1String("stealth") || monster.hazard.defenses.contains(statKey);
+    }
+
     int applyHints(Monster &monster)
     {
         int filled = 0;
         for (auto &[key, stat] : monster.stats)
         {
-            if (!usesHint(key) || !stat.value.isEmpty())
+            if (!usesHint(monster, key) || !stat.value.isEmpty())
             {
                 continue;
             }

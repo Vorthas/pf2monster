@@ -18,6 +18,7 @@
 #include <optional>
 #include <vector>
 
+class HazardEditor;
 class MonsterEditor;
 class MonsterList;
 class PreviewWidget;
@@ -25,6 +26,7 @@ class QAction;
 class QMenu;
 class HomebrewEditor;
 class QSplitter;
+class QStackedWidget;
 
 // The main window: the editor (with the monster list in its lower-left
 // corner) and the statblock preview, side by side.
@@ -47,6 +49,7 @@ protected:
 
 private:
     void newMonster();
+    void newHazard();
     void open();
     void chooseFolder();
     bool save();
@@ -60,6 +63,9 @@ private:
     void switchTo(const QString &path);
     // Shows monster_ as just loaded or created: nothing to save.
     void showMonster();
+    // Shows the monster in its form: the hazard form for a hazard, the
+    // creature form otherwise, with the monster list under it.
+    void loadEditor();
     void updateModified();
     void updateTitle();
 
@@ -163,6 +169,8 @@ private:
     QAction *folderAction_ = nullptr;
     QAction *importAction_ = nullptr;
     MonsterEditor *editor_ = nullptr;
+    HazardEditor *hazardEditor_ = nullptr; // for a hazard (plan 13)
+    QStackedWidget *editors_ = nullptr;    // the two forms, one shown
     PreviewWidget *preview_ = nullptr;
 
     // One build thread that never ends while layouts exist: they keep using

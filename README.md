@@ -44,16 +44,16 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
 
 ## Features
 
-- Handles entire collections of JSON files to load entire bestiaries.  The list is organized first by subfolders then monsters in the loaded folder.
-  - An optional Monster List panel can be opened from View > Monster List to display all loaded JSON files in a tree as a panel on the main UI in the left-most column as opposed to viewing monsters from the Collection menu.
-  - Collections, the Find Monster, and Monster List will display up to two sub-folders in a tree, in case sorting by subtype becomes important (e.g. sorting an Elemental into an `Elemental/Fire` directory will show as Elemental > Fire within all three).
-- Tags added to statblocks can be namespaced, e.g. a tag input as "environment:cave" will show up in tree form as environment > cave in the Find Monster dialog.
+- Handles entire collections of JSON files to load entire bestiaries.  The list is organized first by subfolders then creatures and hazards in the loaded folder.
+  - An optional Creature or Hazard List panel can be opened from View > Creature or Hazard List to display all loaded JSON files in a tree as a panel on the main UI in the left-most column as opposed to viewing them from the Collection menu.
+  - Collections, Find Creature or Hazard, and the Creature or Hazard List will display up to two sub-folders in a tree, in case sorting by subtype becomes important (e.g. sorting an Elemental into an `Elemental/Fire` directory will show as Elemental > Fire within all three).
+- Tags added to statblocks can be namespaced, e.g. a tag input as "environment:cave" will show up in tree form as environment > cave in the Find Creature or Hazard dialog.
 - Files are identical to the website's own monster JSON, with custom additions, so they work both ways: anything saved here can be uploaded there.  Import from Website copies the site's JSON into your collection.
 - Live preview on a white background, updated as you type.
 - Special ability action cost includes the One to Three, One to Two, and Two to Three actions options in addition to the regular, One, Two, Three, Free, and Reaction options.
 - Creature levels -1 to 25 are supported, values for level 25 are extrapolated from from the existing tables and cross-referencing against all four of Paizo's official level 25 monsters.
-- Road maps: the 13 from GM Core's Building Creatures (brute, soldier, spellcaster, skill paragon, ...) plus 44 class road maps covering all 29 classes released as of October 2026, under Monster > Roadmap.
-- Automated application of monster adjustments and templates, under the Monster menu.  Including the Mythic adjustment.
+- Road maps: the 13 from GM Core's Building Creatures (brute, soldier, spellcaster, skill paragon, ...) plus 44 class road maps covering all 29 classes released as of October 2026, under Creature or Hazard > Roadmap.
+- Automated application of monster adjustments and templates, under the Creature or Hazard menu.  Including the Mythic adjustment.
   - Adjustments and templates can be stacked, repeats included, applied in the listed order and reorderable; a warning appears in the General section whenever more than one is applied.
   - Adjustments and templates are non-destructive; the form keeps the base creature as is and all modifications are made in the rendered statblock and are saved out when saving the statblock.
 - Some rules are left to the GM and are shown as notes instead of applied.
@@ -62,7 +62,7 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
 - Export options: Scribe markdown (to a file, or to the clipboard with Ctrl+Shift+C), PDF (statblock size or an A4 page) and PNG at 300 dpi.
 - Add Recall Knowledge DCs and skills automatically to a statblock in one of three possible locations.
 - Monsters with separate HP parts, such as hydras, can be created by clicking Add HP Part under the Defense section.  These HP parts are properly rendered in the statblock like Paizo's official hydra statblock.
-- Statblock is rendered with all abilities in alphabetical order automatically, no need to manually reorder them.  Exceptions follow Paizo's printed statblocks, such as Mythic Power always appearing first in the offense section and automatic abilities in the Defense section come before reactions.
+- Statblock is rendered with all abilities in alphabetical order automatically, no need to manually reorder them.  Exceptions follow Paizo's printed statblocks, such as Mythic Power always appearing first in the offense section and automatic abilities in the Defense section come before reactions.  Hazards keep their abilities in the order you list them, as Paizo orders them by when they happen.
 - Non-combat level can be included for NPC statblocks where the core of the statblock is at one level, but specific skills are set to the recommended values of another level.
 - Inclusion of a Homebrew menu to manage homebrew adjustments, templates, roadmaps, domains, and traits.  See Homebrew Management below.
   - Includes an example homebrew folder (`docs/examples/homebrew`) with Zyss and Aapoph serpentfolk ancestries worked out from Monster Core.

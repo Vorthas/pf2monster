@@ -148,8 +148,9 @@ namespace monster
 
         // An ability's description: like fieldText(), with the words Paizo
         // sets in bold ("Trigger", "Critical Success", ...) made bold, as
-        // the website does, and each line that starts in bold made its own
-        // paragraph (the degrees of success under a saving throw).
+        // the website does. Its lines stay line breaks inside the entry, so
+        // the degrees of success under a saving throw are indented under
+        // the ability as Paizo prints them (the user, 2026-10-26).
         QString descriptionText(const QString &raw)
         {
             static const QRegularExpression keywords(QStringLiteral(
@@ -158,19 +159,7 @@ namespace monster
                 R"(Frequency|Activate|Heightened \(\+\d+\)|\((?:1st|2nd|3rd|[4-9]th|10th)\))(?![\w*]))"));
             QString text = fieldText(raw);
             text.replace(keywords, QStringLiteral("**\\1**"));
-
-            QStringList lines = text.split(QLatin1Char('\n'));
-            QStringList out;
-            for (int i = 0; i < lines.size(); ++i)
-            {
-                if (i > 0 && lines[i].startsWith(QLatin1String("**")) &&
-                    !out.isEmpty() && !out.last().isEmpty())
-                {
-                    out << QString();
-                }
-                out << lines[i];
-            }
-            return out.join(QLatin1Char('\n'));
+            return text;
         }
 
         // A note in parentheses after a value, if there is one.
@@ -200,7 +189,7 @@ namespace monster
             {
                 return stat->value.text().trimmed();
             }
-            if (hinted || usesHint(statKey))
+            if (hinted || usesHint(m, statKey))
             {
                 if (const Hint h = statHint(m, statKey); h.valid && h.value)
                 {
@@ -259,7 +248,10 @@ namespace monster
             return line;
         }
 
-        QString strikeLine(const Strike &strike)
+        // `hazard`: no action icon unless the Strike has one set (GM Core
+        // prints most hazard Strikes without); a creature's default is one
+        // action.
+        QString strikeLine(const Strike &strike, bool hazard = false)
         {
             const QString type = strike.type.trimmed().isEmpty()
                                      ? QStringLiteral("Melee")
@@ -267,8 +259,14 @@ namespace monster
             // The name upright, as Paizo prints it; italics only where typed
             // (a magical weapon: "*+1 striking longsword*" or the site's
             // <i>...</i>).
-            QString line = QStringLiteral("**%1** :a: %2 %3")
-                               .arg(type, fieldText(strike.name).simplified(),
+            QString icon = actionIcon(strike.actions);
+            if (strike.actions.trimmed().isEmpty() && !hazard)
+            {
+                icon = QStringLiteral(":a:");
+            }
+            QString line = QStringLiteral("**%1**%2 %3 %4")
+                               .arg(type, icon.isEmpty() ? QString() : QLatin1Char(' ') + icon,
+                                    fieldText(strike.name).simplified(),
                                     withSign(strike.attack.isEmpty()
                                                  ? QStringLiteral("0")
                                                  : strike.attack.text().trimmed()));
@@ -444,10 +442,23 @@ namespace monster
                     }
                 }
             }
-            add(m.alignment.trimmed().toUpper());
-            add(titleCase(m.size.trimmed()));
+            if (!m.isHazard())
+            {
+                add(m.alignment.trimmed().toUpper());
+                add(titleCase(m.size.trimmed()));
+            }
             const qsizetype others = row.size(); // the type and the other traits
-            add(titleCase(m.type.trimmed()));
+            if (!m.isHazard())
+            {
+                add(titleCase(m.type.trimmed()));
+            }
+            else if (m.hazard.complex)
+            {
+                // Hazards with initiative and a routine have the complex
+                // trait (GM Core). Simple is a trait only where typed (the
+                // user: Paizo is inconsistent about it).
+                add(QStringLiteral("Complex"));
+            }
             for (const QString &t : traits)
             {
                 add(t);
@@ -469,6 +480,296 @@ namespace monster
                 return a.compare(b, Qt::CaseInsensitive) < 0;
             });
             return row.join(QLatin1Char(','));
+        }
+        // The item block: name, label and level, traits, then the entries,
+        // each its own paragraph; "-" is a rule.
+        QStringList itemBlock(const Monster &m, const QString &label, const QStringList &entries)
+        {
+            const QString shownLevel = m.showlevel.isEmpty() ? m.level.text().trimmed()
+                                                             : m.showlevel.text().trimmed();
+            QStringList lines;
+            lines << QStringLiteral("item(")
+                  << QStringLiteral("# ") + fieldText(m.name).simplified()
+                  << QStringLiteral("## %1 %2").arg(label, shownLevel) << QStringLiteral("-");
+            if (const QString traits = traitRow(m); !traits.isEmpty())
+            {
+                lines << QLatin1Char(';') + traits;
+            }
+            // Rules sit on their own line; other entries are separated by a
+            // blank line, so each is its own paragraph.
+            bool afterRule = true;
+            for (const QString &entry : entries)
+            {
+                const bool rule = entry == QLatin1String("-");
+                if (!afterRule && !rule)
+                {
+                    lines << QString();
+                }
+                lines << entry;
+                afterRule = rule;
+            }
+            lines << QStringLiteral(")");
+            return lines;
+        }
+
+        // "trapdoor" -> "Trapdoor": a part's name leading its labels.
+        QString capitalized(const QString &text)
+        {
+            QString out = text.trimmed();
+            if (!out.isEmpty())
+            {
+                out[0] = out[0].toUpper();
+            }
+            return out;
+        }
+
+        // Half the HP, rounded down (the Broken Threshold is "usually half
+        // the hazard's HP", GM Core); empty when the HP isn't a number.
+        QString halfHp(const QString &hp)
+        {
+            bool ok = false;
+            const int value = hp.trimmed().toInt(&ok);
+            return ok ? QString::number(static_cast<int>(std::floor(value / 2.0))) : QString();
+        }
+
+        // A hazard's statblock entries, as GM Core prints them (plan 13):
+        // Complexity, Stealth, Description; a rule; Disable, AC and saves,
+        // Hardness and HP, the reactions; a rule and the Routine, Speed,
+        // Strikes and actions (complex hazards, or any with a Routine); a
+        // rule and Reset. Abilities keep the order they're listed in.
+        QStringList hazardEntries(const Monster &m)
+        {
+            const Hazard &hz = m.hazard;
+            QStringList entries;
+            auto specialsOf = [&](const char *type) {
+                for (const Special &special : m.specials)
+                {
+                    if (special.type.compare(QLatin1String(type), Qt::CaseInsensitive) == 0)
+                    {
+                        entries << specialLine(special);
+                    }
+                }
+            };
+
+            if (!m.info.trimmed().isEmpty())
+            {
+                entries << fieldText(m.info);
+            }
+            entries << QStringLiteral("**Complexity** ") +
+                           (hz.complex ? QStringLiteral("Complex") : QStringLiteral("Simple"));
+
+            // "DC 20 (trained)" for a simple hazard, "+10 (trained)" for a
+            // complex one; then the note: one starting in lower case or "("
+            // follows after a space ("or DC 31 (master) to notice the
+            // control panel", "(or -10 ..."), one starting with "," or ";"
+            // as typed, anything else after "; " ("DC 22 (expert) to notice
+            // the water spouts").
+            const QString stealth = shown(m, "stealth", QString());
+            if (!stealth.isEmpty())
+            {
+                QString line = QStringLiteral("**Stealth** ") +
+                               (hz.complex ? withSign(stealth) : QStringLiteral("DC ") + stealth);
+                const QString rank = fieldText(statOf(m, "minprof").value.text()).simplified();
+                if (!rank.isEmpty())
+                {
+                    line += QStringLiteral(" (%1)").arg(rank);
+                }
+                const QString extra = fieldText(statOf(m, "stealth").note).simplified();
+                if (!extra.isEmpty())
+                {
+                    const QChar first = extra.at(0);
+                    if (first == QLatin1Char(',') || first == QLatin1Char(';'))
+                    {
+                        line += extra;
+                    }
+                    else if (first.isLower() || first == QLatin1Char('(') || first == QLatin1Char('*'))
+                    {
+                        line += QLatin1Char(' ') + extra;
+                    }
+                    else
+                    {
+                        line += QStringLiteral("; ") + extra;
+                    }
+                }
+                entries << line;
+            }
+            if (!m.description.trimmed().isEmpty())
+            {
+                entries << QStringLiteral("**Description** ") + fieldText(m.description);
+            }
+            specialsOf("general");
+            entries << QStringLiteral("-");
+
+            // Disabling and defenses.
+            if (!hz.disable.trimmed().isEmpty())
+            {
+                entries << QStringLiteral("**Disable** ") + fieldText(hz.disable);
+            }
+            QStringList saves;
+            for (const auto &[label, key] : {std::pair{"Fort", "fortitude"}, std::pair{"Ref", "reflex"},
+                                             std::pair{"Will", "will"}})
+            {
+                if (hz.defenses.contains(QLatin1String(key)))
+                {
+                    saves << QStringLiteral("**%1** %2%3").arg(QLatin1String(label),
+                                                               withSign(shown(m, key, QStringLiteral("0"))),
+                                                               note(statOf(m, key).note));
+                }
+            }
+            QStringList defense;
+            if (hz.defenses.contains(QLatin1String("ac")))
+            {
+                const QString acLead = hz.acLabel.trimmed().isEmpty()
+                                           ? QString()
+                                           : capitalized(fieldText(hz.acLabel).simplified()) + QLatin1Char(' ');
+                defense << QStringLiteral("**%1AC** %2%3").arg(acLead, shown(m, "ac", QStringLiteral("0")),
+                                                               note(statOf(m, "ac").note));
+            }
+            if (!saves.isEmpty())
+            {
+                defense << saves.join(QStringLiteral(", "));
+            }
+            if (!defense.isEmpty() && !m.savenote.trimmed().isEmpty())
+            {
+                defense << fieldText(m.savenote).simplified();
+            }
+            if (!defense.isEmpty())
+            {
+                entries << defense.join(QStringLiteral("; "));
+            }
+            if (hz.defenses.contains(QLatin1String("hp")))
+            {
+                // "**Hardness** 14; **HP** 56 (BT 28); **Immunities** ...";
+                // with parts each is labelled by its name ("**Trapdoor
+                // Hardness** 15; **Trapdoor HP** 60 (BT 30); **Spout
+                // Hardness** 8; ..."). An HP note typed in parentheses goes in
+                // the label ("**HP (per mannequin)** 70 (BT 35)"), any other
+                // after the BT ("**Sensor HP** 7 (BT 3) each"). No BT when
+                // there's none (`noBt`: "**HP** 20; **Immunities** ...").
+                QStringList items;
+                auto addPart = [&](const QString &name, const QString &hardness, const QString &hp,
+                                   const QString &hpNote, const QString &bt, bool noBt) {
+                    const QString lead = name.trimmed().isEmpty()
+                                             ? QString()
+                                             : capitalized(fieldText(name).simplified()) + QLatin1Char(' ');
+                    if (!hardness.trimmed().isEmpty())
+                    {
+                        items << QStringLiteral("**%1Hardness** %2").arg(lead, fieldText(hardness).simplified());
+                    }
+                    if (!hp.trimmed().isEmpty())
+                    {
+                        const QString threshold = noBt                    ? QString()
+                                                  : bt.trimmed().isEmpty() ? halfHp(hp)
+                                                                           : fieldText(bt).simplified();
+                        const QString noteText = fieldText(hpNote).simplified();
+                        const bool inLabel = noteText.startsWith(QLatin1Char('('));
+                        items << QStringLiteral("**%1HP%2** %3%4%5")
+                                     .arg(lead, inLabel ? QLatin1Char(' ') + noteText : QString(),
+                                          fieldText(hp).simplified(),
+                                          threshold.isEmpty() ? QString() : QStringLiteral(" (BT %1)").arg(threshold),
+                                          inLabel || noteText.isEmpty() ? QString() : QLatin1Char(' ') + noteText);
+                    }
+                };
+                auto addLists = [&](const QString &immunities, const QString &weaknesses,
+                                    const QString &resistances) {
+                    // GM Core's hazard format: Immunities, Weaknesses,
+                    // Resistances.
+                    for (const auto &[label, list] : {std::pair{"Immunities", immunities},
+                                                      std::pair{"Weaknesses", weaknesses},
+                                                      std::pair{"Resistances", resistances}})
+                    {
+                        if (!list.trimmed().isEmpty())
+                        {
+                            items << QStringLiteral("**%1** %2").arg(
+                                QLatin1String(label), qstrcmp(label, "Resistances") == 0
+                                                          ? resistanceText(list)
+                                                          : fieldText(list).simplified());
+                        }
+                    }
+                };
+                addPart(m.mainPart, m.hardness, shown(m, "hp", QString()),
+                        statOf(m, "hp").note, hz.bt, hz.noBt);
+                for (const HpPart &part : m.hpParts)
+                {
+                    addPart(part.name, part.hardness, part.hp, part.note, part.bt, part.noBt);
+                    addLists(part.immunities, part.weaknesses, part.resistances);
+                }
+                addLists(statOf(m, "immunity").value.text(), statOf(m, "weakness").value.text(),
+                         statOf(m, "resistance").value.text());
+                if (!items.isEmpty())
+                {
+                    entries << items.join(QStringLiteral("; "));
+                }
+            }
+            specialsOf("defense");
+
+            // What it does on its turns. A simple hazard's Strikes and
+            // actions follow its reaction with no rule (GM Core's Spear
+            // Launcher).
+            QStringList offense;
+            if (!hz.routine.trimmed().isEmpty() || !hz.routineActions.trimmed().isEmpty())
+            {
+                QStringList head;
+                const QString count = hz.routineActions.trimmed();
+                bool number = false;
+                const int n = count.toInt(&number);
+                if (number)
+                {
+                    head << (n == 1 ? QStringLiteral("1 action") : QStringLiteral("%1 actions").arg(n));
+                }
+                else if (!count.isEmpty())
+                {
+                    head << fieldText(count).simplified();
+                }
+                if (!hz.routineTraits.trimmed().isEmpty())
+                {
+                    head << fieldText(hz.routineTraits).simplified();
+                }
+                QString line = QStringLiteral("**Routine**");
+                if (!head.isEmpty())
+                {
+                    line += QStringLiteral(" (%1)").arg(head.join(QStringLiteral("; ")));
+                }
+                if (const QString text = descriptionText(hz.routine); !text.isEmpty())
+                {
+                    line += QLatin1Char(' ') + text;
+                }
+                offense << line;
+            }
+            if (!m.speed.trimmed().isEmpty())
+            {
+                offense << QStringLiteral("**Speed** ") + fieldText(m.speed).simplified();
+            }
+            for (const Strike &strike : m.strikes)
+            {
+                offense << strikeLine(strike, true);
+            }
+            for (const Special &special : m.specials)
+            {
+                if (special.type.compare(QLatin1String("offense"), Qt::CaseInsensitive) == 0)
+                {
+                    offense << specialLine(special);
+                }
+            }
+            if (!offense.isEmpty())
+            {
+                if (hz.complex || !hz.routine.trimmed().isEmpty() || !hz.routineActions.trimmed().isEmpty())
+                {
+                    entries << QStringLiteral("-");
+                }
+                entries << offense;
+            }
+            if (!hz.reset.trimmed().isEmpty())
+            {
+                entries << QStringLiteral("-") << QStringLiteral("**Reset** ") + fieldText(hz.reset);
+            }
+            // No rule left hanging at the end (a hazard with nothing after
+            // its description).
+            while (!entries.isEmpty() && entries.last() == QLatin1String("-"))
+            {
+                entries.removeLast();
+            }
+            return entries;
         }
     } // namespace
 
@@ -545,7 +846,9 @@ namespace monster
             const bool withPlus = table && (*table == Table::Attribute || *table == Table::Perception ||
                                             *table == Table::Skill || *table == Table::Save ||
                                             *table == Table::SpellAttack);
-            out += withPlus && !value.isEmpty() ? withSign(value) : value;
+            const bool hazardDc = monster.isHazard() && key == QLatin1String("stealth") &&
+                                  !monster.hazard.complex;
+            out += withPlus && !hazardDc && !value.isEmpty() ? withSign(value) : value;
         }
         out += QStringView(text).mid(at);
         return out;
@@ -585,10 +888,19 @@ namespace monster
         {
             expand(special.description);
         }
+        if (m.isHazard())
+        {
+            for (QString *field : {&m.hazard.disable, &m.hazard.routine, &m.hazard.reset})
+            {
+                expand(*field);
+            }
+            // The description is in the statblock.
+            const QString label = m.creature.trimmed().isEmpty() ? QStringLiteral("Hazard")
+                                                                 : fieldText(m.creature).simplified();
+            return itemBlock(m, label, hazardEntries(m)).join(QLatin1Char('\n')) + QLatin1Char('\n');
+        }
 
         const int level = m.level.number().value_or(0);
-        const QString shownLevel = m.showlevel.isEmpty() ? m.level.text().trimmed()
-                                                         : m.showlevel.text().trimmed();
         const QString label = m.creature.trimmed().isEmpty() ? QStringLiteral("Creature")
                                                              : fieldText(m.creature).simplified();
 
@@ -857,28 +1169,7 @@ namespace monster
         specialsOf("offense");
 
 
-        QStringList lines;
-        lines << QStringLiteral("item(")
-              << QStringLiteral("# ") + fieldText(m.name).simplified()
-              << QStringLiteral("## %1 %2").arg(label, shownLevel) << QStringLiteral("-");
-        if (const QString traits = traitRow(m); !traits.isEmpty())
-        {
-            lines << QLatin1Char(';') + traits;
-        }
-        // Rules sit on their own line; other entries are separated by a
-        // blank line, so each is its own paragraph.
-        bool afterRule = true;
-        for (const QString &entry : entries)
-        {
-            const bool rule = entry == QLatin1String("-");
-            if (!afterRule && !rule)
-            {
-                lines << QString();
-            }
-            lines << entry;
-            afterRule = rule;
-        }
-        lines << QStringLiteral(")");
+        QStringList lines = itemBlock(m, label, entries);
 
         // The description follows the statblock as ordinary text, as on the
         // website (and in the book's body font), below a horizontal rule

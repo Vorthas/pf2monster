@@ -55,6 +55,8 @@ add_executable(pf2monster
     src/Widgets/AdjustmentEditor.h
     src/Widgets/EntryList.cpp
     src/Widgets/EntryList.h
+    src/Widgets/HazardEditor.cpp
+    src/Widgets/HazardEditor.h
     src/Widgets/HomebrewEditor.cpp
     src/Widgets/HomebrewEditor.h
     src/Widgets/HomebrewEditors.cpp
@@ -131,6 +133,7 @@ qt_add_resources(pf2monster "pf2monster_data"
     PREFIX "/data"
     BASE "${CMAKE_SOURCE_DIR}/resources"
     FILES "${CMAKE_SOURCE_DIR}/resources/benchmarks.json" "${CMAKE_SOURCE_DIR}/resources/dcs.json"
+          "${CMAKE_SOURCE_DIR}/resources/hazard-benchmarks.json"
           "${CMAKE_SOURCE_DIR}/resources/traits.json" "${CMAKE_SOURCE_DIR}/resources/domains.json"
           "${CMAKE_SOURCE_DIR}/resources/recall-knowledge.json" "${CMAKE_SOURCE_DIR}/resources/ancestry-traits.json"
           "${CMAKE_SOURCE_DIR}/resources/credits.html" ${PF2MONSTER_RULES_FILES})

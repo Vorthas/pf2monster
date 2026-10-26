@@ -3,6 +3,7 @@
 
 #include "Widgets/MonsterList.h"
 
+#include "Model/Monster.h"
 #include "Model/Tags.h"
 
 #include <QContextMenuEvent>
@@ -64,13 +65,13 @@ MonsterList::MonsterList(QWidget *parent) : QWidget(parent)
     tags_->setSelectionMode(QAbstractItemView::MultiSelection);
     tags_->setSpacing(2);
     tags_->setMaximumHeight(fontMetrics().height() * 4);
-    tags_->setToolTip(tr("Show only monsters with the selected tags\n"
+    tags_->setToolTip(tr("Show only creatures and hazards with the selected tags\n"
                          "(of tags in one namespace, such as environment:..., any one will do)"));
     layout->addWidget(tags_);
 
     tree_ = new QTreeWidget;
     tree_->setColumnCount(2);
-    tree_->setHeaderLabels({tr("Monster"), tr("Level")});
+    tree_->setHeaderLabels({tr("Creature or Hazard"), tr("Level")});
     tree_->header()->setStretchLastSection(false);
     tree_->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree_->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
@@ -159,6 +160,15 @@ bool MonsterList::readEntry(const QString &path, Entry *entry)
             }
         }
         entry->traits = json.value(QLatin1String("traits")).toString();
+        // Hazards get a built-in tag for finding them ("hazard:simple",
+        // "hazard:complex"; plan 13), kept here only, never in the file.
+        if (json.value(QLatin1String("type")).toString().compare(monster::kHazardType, Qt::CaseInsensitive) == 0)
+        {
+            const QJsonObject own = json.value(QLatin1String("pf2monster")).toObject();
+            const bool complex =
+                monster::Hazard::fromJson(own.value(QLatin1String("hazard")).toObject(), entry->traits).complex;
+            entry->tags << (complex ? QStringLiteral("hazard:complex") : QStringLiteral("hazard:simple"));
+        }
     }
     return true;
 }
@@ -223,7 +233,7 @@ void MonsterList::useTagTree()
     tagTree_ = new QTreeWidget;
     tagTree_->setHeaderHidden(true);
     tagTree_->setUniformRowHeights(true);
-    tagTree_->setToolTip(tr("Show only monsters with the checked tags\n"
+    tagTree_->setToolTip(tr("Show only creatures and hazards with the checked tags\n"
                             "(of tags in one namespace, such as environment:..., any one will do;\n"
                             "a namespace means any tag in it)"));
     tagTree_->setContextMenuPolicy(Qt::CustomContextMenu);

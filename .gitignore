@@ -19,6 +19,7 @@ fonts/*
 # reference exports stay local.
 samples/
 test/
+HAZARDS_TEST/
 
 # Screenshots, images and site exports at the project root
 /*.png
