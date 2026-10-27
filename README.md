@@ -56,6 +56,7 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
 - Automated application of monster adjustments and templates, under the Creature or Hazard menu.  Including the Mythic adjustment.
   - Adjustments and templates can be stacked, repeats included, applied in the listed order and reorderable; a warning appears in the General section whenever more than one is applied.
   - Adjustments and templates are non-destructive; the form keeps the base creature as is and all modifications are made in the rendered statblock and are saved out when saving the statblock.
+- Automate application of the Proficiency Without Level variant Rule from GM Core.
 - Some rules are left to the GM and are shown as notes instead of applied.
 - References in text such as `[ac]`, `[dex]`, `[dc]`, `[fort]`, and `%` for the creature's name are all replaced in the rendered statblock automatically.
 - Renders the statblock in either the Pathfinder 2e theme or the Starfinder 2e theme (difference being mainly the color of the traits boxes).
