@@ -1075,6 +1075,13 @@ namespace monster
         QString hpLine = QStringLiteral("**HP** %1%2").arg(
             shown(m, "hp", QStringLiteral("1")),
             labelled(m.hpParts.empty() ? QString() : m.mainPart, inside.join(QStringLiteral(", "))));
+        // "**HP** 125, regeneration 20 (deactivated by electricity or fire);
+        // **Weaknesses** ...", as Monster Core prints a troll: after
+        // the note, not inside it.
+        if (!m.regeneration.trimmed().isEmpty())
+        {
+            hpLine += QStringLiteral(", regeneration ") + fieldText(m.regeneration).simplified();
+        }
         // "**HP** 20; **Hardness** 9; **Immunities** ...", as Monster Core
         // prints an animated armor.
         if (!m.hardness.trimmed().isEmpty())

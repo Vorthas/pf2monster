@@ -665,6 +665,7 @@ namespace monster
         {
             m.hpParts.push_back(HpPart::fromJson(v.toObject()));
         }
+        m.regeneration = m.own.take(QStringLiteral("regeneration")).toString();
         m.hardness = m.own.take(QStringLiteral("hardness")).toString();
         m.theme = m.own.take(QStringLiteral("theme")).toString();
         m.recallKnowledge = m.own.take(QStringLiteral("recallKnowledge")).toString();
@@ -796,6 +797,10 @@ namespace monster
         else if (isHazard() && !mainPart.isEmpty())
         {
             ownData.insert(QStringLiteral("mainPart"), mainPart);
+        }
+        if (!regeneration.isEmpty())
+        {
+            ownData.insert(QStringLiteral("regeneration"), regeneration);
         }
         if (!hardness.isEmpty())
         {

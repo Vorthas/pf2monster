@@ -255,6 +255,11 @@ namespace monster
         QString recallDifficulty;
         QStringList recallSkills;
 
+        // "20 (deactivated by acid or fire)": shown after the HP and its
+        // note as ", regeneration 20 (deactivated by acid or fire)" (a
+        // troll); empty for none. Not on the website: kept under
+        // "pf2monster".
+        QString regeneration;
         // "9": shown after the HP as "**Hardness** 9" (an animated armor);
         // empty for none. Not on the website: kept under "pf2monster".
         QString hardness;
