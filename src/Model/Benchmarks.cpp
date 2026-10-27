@@ -355,17 +355,16 @@ namespace monster
                                                 : QStringLiteral("moderate"));
             }
             Hint h = hint(*table, level, stat->benchmark);
-            if (*table == Table::HazardStealthDisable && monster.hazard.complex && h.valid)
+            const bool stealthModifier = *table == Table::HazardStealthDisable && monster.hazard.complex;
+            if (stealthModifier)
             {
                 // A complex hazard lists its Stealth modifier: the DC - 10.
-                h.min -= 10;
-                h.max -= 10;
-                if (h.value)
-                {
-                    *h.value -= 10;
-                }
-                h.text = h.min == h.max ? show(h.min, true)
-                                        : QStringLiteral("%1 to %2").arg(show(h.max, true), show(h.min, true));
+                h = lowered(h, 10, true);
+            }
+            if (monster.withoutLevel && (*table == Table::HazardStealthDisable ||
+                                         *table == Table::HazardArmorClass || *table == Table::HazardSave))
+            {
+                h = lowered(h, monster.withoutLevel, stealthModifier || *table == Table::HazardSave);
             }
             return h;
         }
@@ -375,7 +374,32 @@ namespace monster
         {
             return {};
         }
-        return hint(*table, monster.hintLevel(statKey), stat->benchmark);
+        const Hint h = hint(*table, monster.hintLevel(statKey), stat->benchmark);
+        if (monster.withoutLevel && (*table == Table::Perception || *table == Table::Skill ||
+                                     *table == Table::ArmorClass || *table == Table::Save ||
+                                     *table == Table::SpellDc || *table == Table::SpellAttack))
+        {
+            return lowered(h, monster.withoutLevel,
+                           *table != Table::ArmorClass && *table != Table::SpellDc);
+        }
+        return h;
+    }
+
+    Hint lowered(Hint h, int by, bool withSign)
+    {
+        if (!h.valid)
+        {
+            return h;
+        }
+        h.min -= by;
+        h.max -= by;
+        if (h.value)
+        {
+            *h.value -= by;
+        }
+        h.text = h.min == h.max ? show(h.min, withSign)
+                                : QStringLiteral("%1 to %2").arg(show(h.max, withSign), show(h.min, withSign));
+        return h;
     }
 
     bool usesHint(const QString &statKey)

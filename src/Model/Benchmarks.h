@@ -72,7 +72,12 @@ namespace monster
     // follow it) and with its benchmark. A hazard's come from the hazard
     // tables ("stealth", "minprof", "ac", the saves, "hp"); a complex
     // hazard's Stealth is the modifier, the DC - 10 (GM Core).
+    // With the monster's withoutLevel set (Proficiency without Level), the
+    // hints of statistics that include proficiency are that much lower.
     Hint statHint(const Monster &monster, const QString &statKey);
+
+    // `h` with `by` taken off its value and range ends, its text redone.
+    Hint lowered(Hint h, int by, bool withSign);
 
     // The table a hazard's statistic uses; nullopt for those without one.
     std::optional<Table> hazardTableFor(const QString &statKey);

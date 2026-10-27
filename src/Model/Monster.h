@@ -254,6 +254,11 @@ namespace monster
         // hard", Society); not saved.
         QString recallDifficulty;
         QStringList recallSkills;
+        // In the statblock's copy with Proficiency without Level on (GM
+        // Core): the level taken off every statistic that includes
+        // proficiency, which their hints and the Recall Knowledge DC take
+        // off too; 0 otherwise. Not saved.
+        int withoutLevel = 0;
 
         // "20 (deactivated by acid or fire)": shown after the HP and its
         // note as ", regeneration 20 (deactivated by acid or fire)" (a

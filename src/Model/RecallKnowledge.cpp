@@ -89,6 +89,9 @@ namespace monster
                 }
             }
         }
+        // Proficiency without Level takes the level off these DCs too (GM
+        // Core: "subtract the level from the DC tables").
+        adjust -= m.withoutLevel;
         rk.dc = base + adjust;
         rk.unspecificLore = levelDc(level, QStringLiteral("easy")) + adjust;
         rk.specificLore = levelDc(level, QStringLiteral("very easy")) + adjust;

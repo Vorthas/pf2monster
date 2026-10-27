@@ -14,7 +14,11 @@ namespace monster
     // Scribe document. Lines in the order of Paizo's statblocks (and the
     // website's): identity and senses, defense, offense. Empty statistics
     // are left out. The description follows the block as ordinary text.
-    QString toScribe(const Monster &monster);
+    // `withoutLevel`: GM Core's Proficiency without Level variant, the
+    // monster's level taken off Perception, skills, AC, saves, Strike and
+    // spell attacks, spell DCs, the DCs typed in its abilities (not flat
+    // checks) and Recall Knowledge; nothing below level 1.
+    QString toScribe(const Monster &monster, bool withoutLevel = false);
 
     // The website's references in `text`: "[ac]", "[athletics]", "[dex]",
     // "[dc]" ... become what the statblock shows for that statistic (its

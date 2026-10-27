@@ -771,6 +771,128 @@ namespace monster
             }
             return entries;
         }
+
+        // GM Core's Proficiency without Level: the level the statblock shows
+        // taken off each statistic that includes a proficiency bonus (and,
+        // through withoutLevel, their hints and Recall Knowledge). Values
+        // that aren't a number stay as typed; so does an empty Strike
+        // attack. Level 0 and below change nothing (Archives of Nethys'
+        // level -1 creatures are the same with it on).
+        void takeOffLevel(Monster &m)
+        {
+            const int level = m.showlevel.number().value_or(m.level.number().value_or(0));
+            if (level <= 0)
+            {
+                return;
+            }
+            m.withoutLevel = level;
+            auto lower = [level](Value &value) {
+                if (const std::optional<int> number = value.number())
+                {
+                    value = Value(*number - level);
+                }
+            };
+            QStringList keys{QStringLiteral("perception"), QStringLiteral("ac"),
+                             QStringLiteral("fortitude"),  QStringLiteral("reflex"),
+                             QStringLiteral("will"),       QStringLiteral("spellattack"),
+                             QStringLiteral("spelldc")};
+            for (const char *key : kSkills)
+            {
+                keys << QString::fromLatin1(key);
+            }
+            keys << m.loreKeys();
+            for (auto &[key, stat] : m.stats)
+            {
+                if (keys.contains(key) && !stat.value.isEmpty())
+                {
+                    lower(stat.value);
+                }
+            }
+            for (Strike &strike : m.strikes)
+            {
+                if (!strike.attack.isEmpty())
+                {
+                    lower(strike.attack);
+                }
+            }
+            for (SpellList &list : m.morespells)
+            {
+                for (Stat *stat : {&list.spellattack, &list.spelldc})
+                {
+                    if (!stat->value.isEmpty())
+                    {
+                        lower(stat->value);
+                    }
+                }
+            }
+
+            // The DCs typed in the text ("DC 34 Fortitude", "DC 18
+            // Thievery"), but not flat checks, which have no proficiency
+            // (a d20 against the DC, nothing added): "DC 5 flat check",
+            // "a DC 11 flat check", "flat check DC 15", "flat check (DC
+            // 11)". Before the references are worked out, so "[dc]" isn't
+            // lowered twice.
+            static const QRegularExpression typedDc(QStringLiteral(R"(\bDC (\d+)\b)"));
+            static const QRegularExpression flatAfter(QStringLiteral(R"(^\s*\)?\s*flat\b)"),
+                                                      QRegularExpression::CaseInsensitiveOption);
+            static const QRegularExpression flatBefore(
+                QStringLiteral(R"(\bflat(?:\s+checks?)?\s*(?:\(|against|of|with\s+an?|at)?\s*$)"),
+                QRegularExpression::CaseInsensitiveOption);
+            auto lowerDcs = [level](QString &text) {
+                QString out;
+                qsizetype at = 0;
+                for (auto it = typedDc.globalMatch(text); it.hasNext();)
+                {
+                    const QRegularExpressionMatch match = it.next();
+                    const qsizetype start = match.capturedStart();
+                    const qsizetype from = std::max<qsizetype>(0, start - 40);
+                    if (flatAfter.matchView(QStringView(text).mid(match.capturedEnd())).hasMatch() ||
+                        flatBefore.matchView(QStringView(text).mid(from, start - from)).hasMatch())
+                    {
+                        continue;
+                    }
+                    out += QStringView(text).mid(at, match.capturedStart(1) - at);
+                    out += QString::number(match.captured(1).toInt() - level);
+                    at = match.capturedEnd(1);
+                }
+                if (at > 0)
+                {
+                    text = out + QStringView(text).mid(at);
+                }
+            };
+            for (auto &[key, stat] : m.stats)
+            {
+                lowerDcs(stat.note); // a hazard's "DC 22 (expert) to notice ..."
+            }
+            lowerDcs(m.savenote);
+            for (Special &special : m.specials)
+            {
+                lowerDcs(special.description);
+            }
+            for (Strike &strike : m.strikes)
+            {
+                lowerDcs(strike.damage);
+            }
+            lowerDcs(m.items);
+            lowerDcs(m.constant);
+            for (QString &spells : m.spells)
+            {
+                lowerDcs(spells);
+            }
+            for (SpellList &list : m.morespells)
+            {
+                lowerDcs(list.note);
+                lowerDcs(list.constant);
+                for (QString &spells : list.spells)
+                {
+                    lowerDcs(spells);
+                }
+            }
+            for (QString *field : {&m.hazard.disable, &m.hazard.routine, &m.hazard.reset})
+            {
+                lowerDcs(*field);
+            }
+        }
     } // namespace
 
     QString withSign(const QString &value)
@@ -854,13 +976,18 @@ namespace monster
         return out;
     }
 
-    QString toScribe(const Monster &input)
+    QString toScribe(const Monster &input, bool withoutLevel)
     {
-        // The applied adjustments first, then the references and % (in the
-        // fields the website works them out in) from the adjusted numbers;
-        // % is the name with the adjustments' prefixes in lower case
-        // ("experimental flame drake"), as their abilities say it.
+        // The applied adjustments first, then Proficiency without Level,
+        // then the references and % (in the fields the website works them
+        // out in) from those numbers; % is the name with the adjustments'
+        // prefixes in lower case ("experimental flame drake"), as their
+        // abilities say it.
         Monster m = adjusted(input);
+        if (withoutLevel)
+        {
+            takeOffLevel(m);
+        }
         Monster references = m;
         references.name = spokenName(m.name, input.name);
         auto expand = [&references](QString &field) { field = expandReferences(references, field); };
@@ -1156,7 +1283,7 @@ namespace monster
             {
                 if (const Hint h = hint(Table::SpellDc, level, list.spelldc.benchmark); h.valid && h.value)
                 {
-                    dc = QString::number(*h.value);
+                    dc = QString::number(*h.value - m.withoutLevel);
                 }
             }
             const QString name = fieldText(list.name).simplified();

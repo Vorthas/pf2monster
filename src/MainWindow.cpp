@@ -458,6 +458,18 @@ MainWindow::MainWindow()
     adjustmentMenu_ = monsterMenu->addMenu(tr("&Adjustments"));
     templateMenu_ = monsterMenu->addMenu(tr("&Templates"));
     fillModifierMenus();
+    // For every creature and hazard (the user: a campaign uses it or not);
+    // only the statblock and its exports change, never the form or file.
+    withoutLevelAction_ = monsterMenu->addAction(tr("Proficiency &without Level"));
+    withoutLevelAction_->setCheckable(true);
+    withoutLevelAction_->setStatusTip(tr("Stat blocks for GM Core's variant rule: the level taken off "
+                                         "Perception, skills, AC, saves, attacks and DCs, for every "
+                                         "creature and hazard"));
+    withoutLevelAction_->setChecked(QSettings().value(kWithoutLevelKey, false).toBool());
+    connect(withoutLevelAction_, &QAction::toggled, this, [this](bool on) {
+        QSettings().setValue(kWithoutLevelKey, on);
+        startBuild();
+    });
 
     // Homebrew: the user's own data (plan 9).
     QMenu *homebrewMenu = menuBar()->addMenu(tr("Home&brew"));
@@ -1555,7 +1567,7 @@ void MainWindow::exportScribe()
     }
     QSaveFile file(path);
     if (!file.open(QIODevice::WriteOnly) ||
-        file.write(monster::toScribe(monster_).toUtf8()) < 0 || !file.commit())
+        file.write(scribeText(monster_).toUtf8()) < 0 || !file.commit())
     {
         QMessageBox::warning(this, tr("Export Scribe Markdown"),
                              tr("Couldn't write %1:\n%2")
@@ -1599,7 +1611,7 @@ void MainWindow::exportPdf(bool a4)
     }
     rememberExportFolder(path);
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    const QString text = monster::toScribe(monster_);
+    const QString text = scribeText(monster_);
     const scribe::Theme theme = this->theme();
     const std::shared_ptr<scribe::PageLayout> layout =
         a4 ? monster::layoutStatblockOnA4(text, theme) : monster::layoutStatblock(text, theme);
@@ -1625,7 +1637,7 @@ void MainWindow::exportPng()
     rememberExportFolder(path);
     QApplication::setOverrideCursor(Qt::WaitCursor);
     const std::shared_ptr<scribe::PageLayout> layout =
-        monster::layoutStatblock(monster::toScribe(monster_), theme());
+        monster::layoutStatblock(scribeText(monster_), theme());
     const bool ok = layout && !layout->pages().empty() &&
                     monster::renderPage(*layout, 0, kPngDpi).save(path, "PNG");
     QApplication::restoreOverrideCursor();
@@ -1699,9 +1711,14 @@ QStringList MainWindow::importFiles(const QStringList &paths)
     return imported;
 }
 
+QString MainWindow::scribeText(const monster::Monster &monster) const
+{
+    return monster::toScribe(monster, withoutLevelAction_ && withoutLevelAction_->isChecked());
+}
+
 void MainWindow::copyScribe()
 {
-    QApplication::clipboard()->setText(monster::toScribe(monster_));
+    QApplication::clipboard()->setText(scribeText(monster_));
     statusBar()->showMessage(tr("Scribe markdown copied to the clipboard"), 5000);
 }
 
@@ -1718,7 +1735,7 @@ void MainWindow::startBuild()
     const int generation = ++generation_;
 
     builders_.start([this, generation, cancel = cancel_,
-                     text = monster::toScribe(previewMonster_ ? *previewMonster_ : monster_),
+                     text = scribeText(previewMonster_ ? *previewMonster_ : monster_),
                      theme = theme()] {
         std::shared_ptr<scribe::PageLayout> layout =
             monster::layoutStatblock(text, theme, cancel.get());

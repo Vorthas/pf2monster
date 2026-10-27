@@ -99,6 +99,9 @@ private:
     void setTheme(const QString &key);
     // The open monster's theme, with the spacing chosen under View.
     scribe::Theme theme() const;
+    // The monster's Scribe markdown, with Proficiency without Level when
+    // it's on.
+    QString scribeText(const monster::Monster &monster) const;
     void applyRoadmap(const QString &id);
     void clearRoadmap();
     void addModifier(const QString &id);
@@ -182,6 +185,7 @@ private:
     std::shared_ptr<scribe::PageLayout> layout_;
     QString newTheme_; // the theme last picked: new and imported monsters get it
     QAction *compactAction_ = nullptr;
+    QAction *withoutLevelAction_ = nullptr;
 
     // Each panel's share of the window's width (editor, preview).
     std::array<double, 2> panelShares_{0.73, 0.27};
@@ -195,6 +199,7 @@ private:
     static constexpr const char *kShowListKey = "view/monsterList";
     static constexpr const char *kThemeKey = "view/lastTheme";
     static constexpr const char *kCompactKey = "view/compactSpacing";
+    static constexpr const char *kWithoutLevelKey = "view/proficiencyWithoutLevel";
     static constexpr const char *kLastFolderKey = "files/lastFolder";
     static constexpr const char *kCollectionKey = "collection/folder";
     static constexpr const char *kLastMonsterKey = "collection/lastMonster";
