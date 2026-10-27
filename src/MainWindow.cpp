@@ -103,6 +103,103 @@ namespace
             .arg(QDir::toNativeSeparators(m.file), m.rules);
     }
 
+    // Homebrew in the Adjustments, Templates and Roadmap menus (the user,
+    // 2026-10-26): a submenu whose entries are all homebrew says so once
+    // ("Legend of Zelda (homebrew)"), its entries plain; a homebrew entry
+    // among built-in ones says so only when its name is a built-in one's
+    // too ("Shadowbound (homebrew)" beside Shadowbound). The menus are
+    // made with plain names, homebrew entries tagged (tagHomebrew()), then
+    // markHomebrew() names them.
+    const char *const kHomebrewName = "homebrewName"; // the plain name
+    const char *const kDialogDots = "dialogDots";     // "..." after it
+
+    void tagHomebrew(QAction *action, const QString &name, bool dialog)
+    {
+        action->setProperty(kHomebrewName, name);
+        action->setProperty(kDialogDots, dialog);
+    }
+
+    bool isHomebrew(const QAction *action)
+    {
+        return action->property(kHomebrewName).isValid();
+    }
+
+    // Whether everything in `menu`, submenus included, is homebrew (an
+    // empty menu isn't).
+    bool allHomebrew(const QMenu *menu)
+    {
+        bool any = false;
+        for (const QAction *action : menu->actions())
+        {
+            if (action->isSeparator())
+            {
+                continue;
+            }
+            if (action->menu() ? !allHomebrew(action->menu()) : !isHomebrew(action))
+            {
+                return false;
+            }
+            any = true;
+        }
+        return any;
+    }
+
+    // The names of the built-in entries in `menu` and its submenus, in
+    // lower case.
+    void builtInNames(const QMenu *menu, QSet<QString> &names)
+    {
+        for (const QAction *action : menu->actions())
+        {
+            if (action->menu())
+            {
+                builtInNames(action->menu(), names);
+            }
+            else if (!action->isSeparator() && !isHomebrew(action))
+            {
+                QString name = action->text();
+                name.remove(QLatin1Char('&'));
+                if (name.endsWith(QLatin1String("...")))
+                {
+                    name.chop(3);
+                }
+                names.insert(name.toLower());
+            }
+        }
+    }
+
+    void markHomebrew(QMenu *menu, const QSet<QString> &builtIn, bool insideMarked)
+    {
+        const QString suffix = QCoreApplication::translate("MainWindow", " (homebrew)");
+        for (QAction *action : menu->actions())
+        {
+            if (QMenu *sub = action->menu())
+            {
+                const bool whole = !insideMarked && allHomebrew(sub);
+                if (whole)
+                {
+                    sub->setTitle(sub->title() + suffix);
+                }
+                markHomebrew(sub, builtIn, insideMarked || whole);
+            }
+            else if (isHomebrew(action) && !insideMarked)
+            {
+                const QString name = action->property(kHomebrewName).toString();
+                if (builtIn.contains(name.toLower()))
+                {
+                    action->setText(name + suffix +
+                                    (action->property(kDialogDots).toBool() ? QStringLiteral("...") : QString()));
+                }
+            }
+        }
+    }
+
+    void markHomebrew(QMenu *root)
+    {
+        QSet<QString> builtIn;
+        builtInNames(root, builtIn);
+        markHomebrew(root, builtIn, false);
+    }
+
     QString defaultCollection()
     {
         return QDir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation))
@@ -1119,6 +1216,10 @@ void MainWindow::fillRoadmapMenu()
                 label = r.variant;
             }
             QAction *action = into->addAction(label, this, [this, id = r.id] { applyRoadmap(id); });
+            if (!r.file.isEmpty())
+            {
+                tagHomebrew(action, label, false);
+            }
             QString rules = r.rules;
             if (!rules.isEmpty())
             {
@@ -1130,6 +1231,7 @@ void MainWindow::fillRoadmapMenu()
             }
             action->setStatusTip(rules);
         }
+        markHomebrew(roadmapMenu);
         roadmapMenu->addSeparator();
         QAction *clear = roadmapMenu->addAction(tr("&Clear Roadmap Notes"), this, &MainWindow::clearRoadmap);
         clear->setStatusTip(tr("Remove the roadmap's notes from the form; the statistics stay as "
@@ -1178,8 +1280,12 @@ void MainWindow::fillModifierMenus()
                 continue;
             }
             const QString label = m.dialog.isEmpty() ? m.name : m.name + QStringLiteral("...");
-            menuFor(m.group)->addAction(label, this, [this, id = m.id] { addModifier(id); })
-                ->setStatusTip(statusTipOf(m));
+            QAction *action = menuFor(m.group)->addAction(label, this, [this, id = m.id] { addModifier(id); });
+            action->setStatusTip(statusTipOf(m));
+            if (!m.file.isEmpty())
+            {
+                tagHomebrew(action, m.name, !m.dialog.isEmpty());
+            }
         }
         // Each menu's submenus after its entries, below a separator.
         QSet<QMenu *> separated;
@@ -1196,6 +1302,7 @@ void MainWindow::fillModifierMenus()
             }
             into->addMenu(menu);
         }
+        markHomebrew(adjustmentMenu);
     }
 
     // Templates (creature families' "Creating a ..."): alphabetical, the
@@ -1216,7 +1323,12 @@ void MainWindow::fillModifierMenus()
         }
         auto addEntry = [this](QMenu *menu, const monster::Modifier *m) {
             const QString label = m->dialog.isEmpty() ? m->name : m->name + QStringLiteral("...");
-            menu->addAction(label, this, [this, id = m->id] { addModifier(id); })->setStatusTip(statusTipOf(*m));
+            QAction *action = menu->addAction(label, this, [this, id = m->id] { addModifier(id); });
+            action->setStatusTip(statusTipOf(*m));
+            if (!m->file.isEmpty())
+            {
+                tagHomebrew(action, m->name, !m->dialog.isEmpty());
+            }
         };
         // The menu for the group `path` ("" the Templates menu itself).
         std::function<void(QMenu *, const QString &)> fill = [&](QMenu *menu, const QString &path) {
@@ -1292,6 +1404,7 @@ void MainWindow::fillModifierMenus()
             }
         };
         fill(templateMenu, QString());
+        markHomebrew(templateMenu);
     }
 }
 

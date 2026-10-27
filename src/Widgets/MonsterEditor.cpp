@@ -1096,16 +1096,16 @@ void MonsterEditor::rebuildModifiers()
         auto *row = new QWidget;
         auto *layout = new QHBoxLayout(row);
         layout->setContentsMargins(0, 0, 0, 0);
-        QString text = modifier ? modifier->name : tr("%1 (not in this version)").arg(ids[i]);
+        QString text = modifier ? monster::shownName(*modifier) : tr("%1 (not in this version)").arg(ids[i]);
         if (const monster::MythicTemplate *t = monster::findMythicTemplate(
                 monster::modifierOptions(*monster_, i).value(QStringLiteral("template")).toString());
             t && modifier && modifier->dialog == QLatin1String("mythic"))
         {
-            text = tr("%1 (%2)").arg(modifier->name, t->name);
+            text = tr("%1 (%2)").arg(monster::shownName(*modifier), t->name);
         }
         if (modifier && !inEffect.value(i))
         {
-            text = tr("%1 (no effect at this level)").arg(modifier->name);
+            text = tr("%1 (no effect at this level)").arg(monster::shownName(*modifier));
         }
         auto *name = new QLabel(text);
         name->setEnabled(inEffect.value(i));

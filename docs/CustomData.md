@@ -211,7 +211,7 @@ darkvision, fire resistance growing with its level, and an ability.
 | `format` | Always `1`. |
 | `kind` | `"adjustment"` (Creature or Hazard > Adjustments) or `"template"` (Creature or Hazard > Templates). Required. |
 | `id` | A short name without spaces or colons, unique among your homebrew (`"custom-stonekin"`). Monsters remember it, so don't change it once monsters use it. Required. |
-| `name` | What the menu shows. Required. |
+| `name` | What the menu shows. Homebrew is marked "(homebrew)" once: on a submenu that holds only homebrew ("Legend of Zelda (homebrew)"), or on an entry among built-in ones whose name a built-in one also has ("Shadowbound (homebrew)"). Required. |
 | `group` | The submenu it's in (`"Ancestry"`, `"Undead"`); `"Undead/Vampire"` for a submenu inside another. A submenu that doesn't exist yet is made, at any depth (`"Ancestry/My Campaign"` adds My Campaign inside Ancestry). Empty or left out: the menu itself. |
 | `prefix` | Put before the monster's name (`"Stonekin"` makes "Stonekin guard"). |
 | `prefixInText` | `false`: the prefix shows in the title but not where abilities name the creature (as Elite and Weak do). Default `true`. |
@@ -457,7 +457,7 @@ it's applied.
 | `format` | `1`. |
 | `kind` | `"roadmap"`. Required. |
 | `id` | As for adjustments. Required. |
-| `name` | What the menu shows. Required. |
+| `name` | What the menu shows. Homebrew is marked "(homebrew)" once: on a submenu that holds only homebrew ("Legend of Zelda (homebrew)"), or on an entry among built-in ones whose name a built-in one also has ("Shadowbound (homebrew)"). Required. |
 | `variant` | Optional: road maps with the same name and different variants share a submenu ("Fighter > Strength, Dexterity"). |
 | `list` | `"base"` (Roadmap > Base) or `"class"` (Roadmap > Class). |
 | `rules` | Shown in the status bar. |

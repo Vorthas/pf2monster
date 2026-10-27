@@ -432,6 +432,12 @@ namespace monster
     // after: the adjustment's name ("Amphibious", "Mythic").
     QString generatedSource(const QString &generatedKey);
 
+    // The name the form's applied adjustments list shows: a homebrew one's
+    // with " (homebrew)" ("Goron (homebrew)"), so it's told apart from a
+    // built-in, even one of the same name (the user, 2026-10-26). The
+    // menus mark homebrew their own way (MainWindow's markHomebrew()).
+    QString shownName(const Modifier &modifier);
+
     // Every adjustment and template, in menu order: the built-in ones,
     // then the homebrew ones (Model/Homebrew.h).
     const std::vector<Modifier> &modifiers();

@@ -11,6 +11,7 @@
 #include "Model/Monster.h"
 #include "Model/ScribeExport.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QFile>
 #include <QHash>
@@ -3324,6 +3325,12 @@ namespace monster
         reloadTraitNotes();
         reloadRoadmaps();
         modifierStore() = load();
+    }
+
+    QString shownName(const Modifier &modifier)
+    {
+        return modifier.file.isEmpty() ? modifier.name
+                                       : QCoreApplication::translate("monster", "%1 (homebrew)").arg(modifier.name);
     }
 
     QString generatedSource(const QString &generatedKey)
