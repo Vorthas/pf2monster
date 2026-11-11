@@ -423,8 +423,12 @@ rounded down: `+ - * /`, parentheses, `min(a, b)` and `max(a, b)`. They can
 use `level`, the monster's statistics by key (`hp`, `spelldc`, `will`, ...),
 and `resmin` / `resmax` (the resistance table's ends for its level).
 
-`max(1, level / 2)` is half the level, rounded down, and at least 1.
-
+#### Common Formulas
+* `max(1, level / 2)` is half the level, rounded down, and at least 1.
+* `max(1, (level + 1) / 2)` is half the level, rounded up, and at least 1.  Useful for scaling cantrip-like abilities and what cantrips and Focus Spells scale to.
+* `max(1, (2 * level + 4) / 7)` counts starting at 1 and goes up at 5th, 9th, 12th, 16th, and 19th (and 23rd for monsters at that level).
+* `1 + min(1, max(0, level - 3)) + min(1, max(0, level - 11)) + min(1, max(0, level - 18))` counts starting at 1 and goes up at 4th, 12th and 19th, the levels of striking, greater striking and major striking runes. Useful for weapon-like damage dice on PC-style creatures, and for abilities that scale "as a weapon would".
+* `min(1, max(0, level - N + 1))` is 0 below level N and 1 from level N on. Add one for each level on a list to count any schedule, e.g. `1 +` steps at 4, 12 and 19 for the line above, as a general formula.
 
 ## Road maps
 
