@@ -15,6 +15,13 @@ source file starts with:
     // SPDX-License-Identifier: GPL-3.0-or-later
     // Copyright (C) 2026 Vorthas
 
+## PF2e apps (pf2monster, pf2scribe)
+- C++/Qt. A new statblock field must be wired through model, editor, render, save/load and export. Build and run the test harnesses after changes.
+- Statblock text follows Paizo style: inline ability labels after HP are lowercase (e.g., 'hardness 10', 'regeneration 15').
+- When a user preference conflicts with AoN wording (e.g., Recall Knowledge, flat-check phrasing), ask rather than defaulting to AoN.
+- For larger features, write a phased plan first. After implementing, update the plan and history docs.
+- Test theming and appearance changes in the real environment (with QT_STYLE_OVERRIDE set), not only offscreen.
+
 ## The sister project: pf2scribe
 
 `../PF2eScribeNative/` (added to sessions with `--add-dir`) is pf2scribe,
