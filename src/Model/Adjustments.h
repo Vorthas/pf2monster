@@ -124,6 +124,10 @@ namespace monster
             // Strike").
             QString from = QStringLiteral("best");
             QString type = QStringLiteral("Ranged");
+            // The type of Strike its numbers are copied from, when not its
+            // own ("Melee": a guardian's laser deals "damage equal to the
+            // creature's lowest melee Strike"). Empty: its own type.
+            QString fromType;
             QString traits;
             QString damageType;
             QString attackBenchmark = QStringLiteral("moderate");

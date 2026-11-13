@@ -204,6 +204,59 @@ darkvision, fire resistance growing with its level, and an ability.
 }
 ```
 
+### A second example: choices
+
+A Robot ancestry: it replaces its ancestry traits with robot and humanoid
+with construct, and adds darkvision. When it's applied, a dialog asks for
+its frame (Small, standard or Large) and whether it has flight thrusters
+(a fly Speed of 25 feet).
+
+In the editor's form:
+
+| Field | What to type |
+|---|---|
+| Other Speeds | `fly 25 when thrusters` |
+| Choices: a choice with key `frame`, kind "one of (a list)", default `standard` | Items:<br>`small: Small frame \| size small`<br>`standard: Standard frame`<br>`large: Large frame \| size large` |
+| Choices: a choice with key `thrusters`, kind "a checkbox" | (no items) |
+
+`when thrusters` at the end of the Speed line makes that Speed only when
+the thrusters checkbox is ticked. `| size large` after an item makes the
+creature Large when that item is picked. Everything before the `|` is what
+the dialog shows. Choose the standard frame and its size doesn't change.
+
+The same file, as written:
+
+```json
+{
+ "format": 1,
+ "kind": "adjustment",
+ "id": "robot",
+ "name": "Robot",
+ "group": "Ancestry",
+ "rules": "Replaces its ancestry traits with robot and humanoid with construct; adds darkvision, a frame size and optional flight.",
+ "dialog": "options",
+ "changes": {
+  "replaceOrAdd": {"any ancestry": "robot", "humanoid": "construct"},
+  "senses": ["darkvision"],
+  "speeds": [{"type": "fly", "steps": [{"change": 25}], "when": "thrusters"}]
+ },
+ "choices": [
+  {"key": "frame", "type": "choice", "label": "Frame", "default": "standard",
+   "items": [
+    {"key": "small", "label": "Small frame", "changes": {"size": "small"}},
+    {"key": "standard", "label": "Standard frame"},
+    {"key": "large", "label": "Large frame", "changes": {"size": "large"}}
+   ]},
+  {"key": "thrusters", "type": "check", "label": "Flight thrusters", "note": "A fly Speed of 25 feet."}
+ ]
+}
+```
+
+An ancestry with several heritages works the same way: make the heritages
+one choice (`heritage`), give each item its size, and end the lines that
+belong to one heritage with `when heritage:skywatcher`. Abilities and Strikes
+use their **Only when** field for the same thing.
+
 ### Main keys
 
 | Key | What it is |
@@ -256,6 +309,12 @@ on a choice:
 
 An entry with only a `"type"` is added as written, without an amount
 (`{"type": "strigoi weaknesses"}`).
+
+In the editor's form, each of these is one line: `fire 5`,
+`physical 5 (except silver)`, `fire {=max(1, level / 2)}`. Add `when` and a
+condition at the end to make it depend on a choice: `fly 25 when thrusters`,
+`fire 5 when frame:large` (see [Conditions](#conditions)). This works for
+Other Speeds, Resistances, Weaknesses and HP abilities.
 
 | Key | What it does |
 |---|---|
@@ -338,6 +397,7 @@ Each Strike in `"strikes"`:
 | `key`, `name` | As for abilities. |
 | `type` | `"Melee"` or `"Ranged"` (if left out: Ranged). |
 | `from` | Where its numbers come from: `"best"` (copies its best Strike of that type), `"lowest"` (its weakest), `"agile"` (its agile Strike's damage, else three-quarters of its best), `"nonagile"` (its best non-agile Strike's), or `"none"` (the benchmarks below). |
+| `fromType` | `"Melee"` or `"Ranged"`: the Strikes `from` copies, when not those of its own `type`. A ranged laser that "deals damage equal to the creature's lowest melee Strike" is `"type": "Ranged", "from": "lowest", "fromType": "Melee"`; it gets that Strike's attack and damage dice. |
 | `attack` | Attack benchmark when it isn't copied: `"extreme"`, `"high"`, `"moderate"` (default), `"low"`, or `"best"` (its best melee attack). |
 | `damage` | Damage benchmark when it isn't copied: `"extreme"`, `"high"`, `"moderate"` or `"low"` (default). |
 | `traits` | `"agile, finesse"`. |
@@ -366,7 +426,7 @@ With `"choices"`, applying it opens an options dialog (set `"dialog":
 | `type` | `"pick"` (several of, as checkboxes), `"choice"` (one of, as a list), `"check"` (one checkbox) or `"text"` (typed text). |
 | `label` | Its title in the dialog. |
 | `note` | A grey line under it. |
-| `items` | For pick and choice: `[{"key": "rock-hide", "label": "Rock Hide", "on": true}]`. `"on"`: ticked at first. An item can have `"tip"` (a tooltip), `"minLevel"` (offered only from that level, after the change) and `"changes"` (changes made only when it's picked, in the same format as the main `changes`). |
+| `items` | For pick and choice: `[{"key": "rock-hide", "label": "Rock Hide", "on": true}]`. `"on"`: ticked at first. An item can have `"tip"` (a tooltip), `"minLevel"` (offered only from that level, after the change) and `"changes"` (changes made only when it's picked, in the same format as the main `changes`). In the form's Items box, an item's size change is written after a `\|`: `large: Large frame \| size large`; other changes go in the Advanced box. |
 | `default` | For check (`true`/`false`), text or choice (an item's key). |
 | `placeholder` | For text: grey example text in the box. |
 | `minLevel` | For check: offered only from that level. |
@@ -379,7 +439,8 @@ A typed text choice can be used in texts as `{opt:key}`, and a prefix like
 ### Conditions
 
 `"when"` on an ability, Strike, choice, typed entry or derived Speed makes it
-depend on the options dialog:
+depend on the options dialog (in the form: the **Only when** field, or
+`when ...` at the end of a Speed, resistance, weakness or HP ability line):
 
 | Condition | True when |
 |---|---|

@@ -107,9 +107,31 @@ namespace
         return QJsonArray{QJsonObject{{QStringLiteral("change"), change}}};
     }
 
+    // A condition as typed at the end of a line ("fly 25 when
+    // heritage:skywatcher"): choice keys and items, "!" and "&".
+    const QString kWhenPattern = QStringLiteral(R"(!?[\w-]+(?::[\w-]+)?(?:\s*&\s*!?[\w-]+(?::[\w-]+)?)*)");
+
+    // The sizes a choice item can give ("| size large").
+    const QStringList kItemSizes{"tiny", "small", "medium", "large", "huge", "gargantuan"};
+
+    // An item line's "| size large" (any case), as the size; nullopt
+    // without a "|" or with something else after it.
+    std::optional<QString> itemSize(const QString &line)
+    {
+        static const QRegularExpression part(QStringLiteral(R"(\|\s*size\s+(\w+)\s*$)"),
+                                             QRegularExpression::CaseInsensitiveOption);
+        const QRegularExpressionMatch match = part.match(line);
+        if (!match.hasMatch() || !kItemSizes.contains(match.captured(1).toLower()))
+        {
+            return std::nullopt;
+        }
+        return match.captured(1).toLower();
+    }
+
     // A typed entry ("fire" resistance, "fly" Speed) as one line: "fire 5",
     // "fire {=max(1, level / 2)}", "physical 5 (except silver)", or "strigoi
-    // weaknesses" without an amount; nullopt if it can't be one line.
+    // weaknesses" without an amount, each with " when ..." at the end if
+    // it depends on a choice; nullopt if it can't be one line.
     std::optional<QString> typedLine(const QJsonValue &value)
     {
         if (value.isString())
@@ -119,7 +141,7 @@ namespace
         const QJsonObject o = value.toObject();
         for (auto it = o.begin(); it != o.end(); ++it)
         {
-            if (!QStringList{"type", "steps", "expr", "suffix"}.contains(it.key()))
+            if (!QStringList{"type", "steps", "expr", "suffix", "when"}.contains(it.key()))
             {
                 return std::nullopt;
             }
@@ -142,24 +164,53 @@ namespace
         {
             line += QLatin1Char(' ') + suffix;
         }
+        if (const QString when = o.value(QStringLiteral("when")).toString(); !when.isEmpty())
+        {
+            static const QRegularExpression whole(QStringLiteral("^(?:%1)$").arg(kWhenPattern));
+            if (!whole.match(when).hasMatch())
+            {
+                return std::nullopt; // not one the line could read back
+            }
+            line += QStringLiteral(" when ") + when;
+        }
         return line;
     }
 
     // The other way: a line to a typed entry; `amountNeeded` (Speeds):
     // nullopt without one.
-    std::optional<QJsonObject> typedFromLine(const QString &line, bool amountNeeded)
+    std::optional<QJsonObject> typedFromLine(const QString &typed, bool amountNeeded)
     {
+        // " when heritage:skywatcher" at the end: kept apart.
+        static const QRegularExpression whenPart(QStringLiteral(R"(\s+when\s+(%1)\s*$)").arg(kWhenPattern),
+                                                 QRegularExpression::CaseInsensitiveOption);
+        QString line = typed.trimmed();
+        QString when;
+        if (const QRegularExpressionMatch w = whenPart.match(line); w.hasMatch())
+        {
+            when = w.captured(1);
+            when.remove(QRegularExpression(QStringLiteral(R"(\s+)")));
+            line = line.left(w.capturedStart()).trimmed();
+        }
         static const QRegularExpression parts(QStringLiteral(R"(^(.+?)\s+(\d+|\{=[^{}]*\})(?:\s+(.*))?$)"));
-        const QRegularExpressionMatch match = parts.match(line.trimmed());
+        const QRegularExpressionMatch match = parts.match(line);
         if (!match.hasMatch())
         {
-            if (amountNeeded)
+            if (amountNeeded || line.isEmpty())
             {
                 return std::nullopt;
             }
-            return QJsonObject{{QStringLiteral("type"), line.trimmed()}};
+            QJsonObject plain{{QStringLiteral("type"), line}};
+            if (!when.isEmpty())
+            {
+                plain.insert(QStringLiteral("when"), when);
+            }
+            return plain;
         }
         QJsonObject o{{QStringLiteral("type"), match.captured(1).trimmed()}};
+        if (!when.isEmpty())
+        {
+            o.insert(QStringLiteral("when"), when);
+        }
         const QString amount = match.captured(2);
         if (amount.startsWith(QLatin1Char('{')))
         {
@@ -247,7 +298,8 @@ namespace
     const QSet<QString> &strikeFormKeys()
     {
         static const QSet<QString> keys{"key",    "name",   "type",       "from",  "attack", "damage",
-                                        "traits", "die",    "damageType", "extra", "mergeExtra", "when"};
+                                        "traits", "die",    "damageType", "extra", "mergeExtra", "when",
+                                        "fromType"};
         return keys;
     }
 } // namespace
@@ -445,7 +497,8 @@ void ObjectListEditor::bind(const QString &key, QComboBox *box)
     bindCustom(
         box,
         [box, key](const QJsonObject &o) {
-            const int at = box->findData(o.value(key).toString());
+            // Any case, as the adjustments read them ("melee" is Melee).
+            const int at = box->findData(o.value(key).toString(), Qt::UserRole, Qt::MatchFixedString);
             if (at >= 0)
             {
                 box->setCurrentIndex(at);
@@ -719,7 +772,8 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     landLayout->addWidget(landFeet_);
     landLayout->addStretch();
     addRow(form, tr("Land Speed"), landRow, QStringLiteral("landSpeed"));
-    speeds_ = lines(tr("fly 30 (one per line: a Speed it gains, or raises to this)"), 2);
+    speeds_ = lines(tr("fly 30 (one per line: a Speed it gains, or raises to this); fly 25 when winged: only when that "
+                         "choice is picked"), 2);
     addRow(form, tr("Other Speeds"), speeds_, QStringLiteral("speeds"));
     size_ = combo({{"", tr("unchanged")}, {"tiny", tr("Tiny")}, {"small", tr("Small")}, {"medium", tr("Medium")},
                    {"large", tr("Large")}, {"huge", tr("Huge")}, {"gargantuan", tr("Gargantuan")}});
@@ -730,7 +784,8 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     immunities_ = new QLineEdit;
     immunities_->setPlaceholderText(tr("fire, poison"));
     addRow(form, tr("Immunities"), immunities_, QStringLiteral("immunities"));
-    resistances_ = lines(tr("fire 5 / physical 5 (except silver) / fire {=max(1, level / 2)}: one per line"), 3);
+    resistances_ = lines(tr("fire 5 / physical 5 (except silver) / fire {=max(1, level / 2)}: one per line; add \"when "
+                              "frame:steel\" for only when that choice is picked"), 3);
     addRow(form, tr("Resistances"), resistances_, QStringLiteral("resistances"));
     weaknesses_ = lines(tr("cold 5: one per line"), 2);
     addRow(form, tr("Weaknesses"), weaknesses_, QStringLiteral("weaknesses"));
@@ -810,6 +865,8 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
                             {"agile", tr("its agile Strike's damage (else three-quarters)")},
                             {"nonagile", tr("its non-agile Strike's damage")},
                             {"none", tr("the benchmarks below")}});
+        auto *fromType = combo({{"", tr("its own type")}, {"Melee", tr("melee Strikes")},
+                                {"Ranged", tr("ranged Strikes")}});
         auto *attack = combo({{"", tr("moderate")}, {"best", tr("its best melee attack")}, {"extreme", tr("extreme")},
                               {"high", tr("high")}, {"low", tr("low")}});
         auto *damage = combo({{"", tr("low")}, {"extreme", tr("extreme")}, {"high", tr("high")},
@@ -830,6 +887,7 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
         f->addRow(tr("Name"), name);
         f->addRow(tr("Type"), type);
         f->addRow(tr("Its numbers"), from);
+        f->addRow(tr("Copied from"), fromType);
         f->addRow(tr("Attack (benchmarks)"), attack);
         f->addRow(tr("Damage (benchmarks)"), damage);
         f->addRow(tr("Traits"), traits);
@@ -841,6 +899,7 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
         strikes_->bind(QStringLiteral("name"), name);
         strikes_->bind(QStringLiteral("type"), type);
         strikes_->bind(QStringLiteral("from"), from);
+        strikes_->bind(QStringLiteral("fromType"), fromType);
         strikes_->bind(QStringLiteral("attack"), attack);
         strikes_->bind(QStringLiteral("damage"), damage);
         strikes_->bind(QStringLiteral("traits"), traits);
@@ -870,7 +929,10 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     form->addRow(heading(tr("Choices")));
     form->addRow(hint(tr("With choices, applying it opens a dialog. An ability or Strike whose \"Only when\" "
                          "names a choice (\"abilities:rock-hide\": the item rock-hide of the choice "
-                         "abilities; \"armored\": a checkbox choice) is made only when it's picked.")));
+                         "abilities; \"armored\": a checkbox choice) is made only when it's picked. So is a "
+                         "Speed, resistance, weakness or HP ability line ending in \"when\" and the choice "
+                         "(\"fly 25 when heritage:skywatcher\"). An item followed by \"| size large\" "
+                         "changes the size when it's picked.")));
     choices_ = new ObjectListEditor(tr("choice"), [](const QJsonObject &o) {
         const QString label = o.value(QStringLiteral("label")).toString();
         return label.isEmpty() ? o.value(QStringLiteral("key")).toString() : label;
@@ -885,7 +947,8 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
         label->setPlaceholderText(tr("Stonekin abilities"));
         auto *note = new QLineEdit;
         note->setPlaceholderText(tr("optional: a line under it"));
-        auto *items = lines(tr("*rock-hide: Rock Hide\nroll: Roll (one per line; * ticked at first)"), 4);
+        auto *items = lines(tr("*rock-hide: Rock Hide\nroll: Roll (one per line; * ticked at first)\n"
+                                "large: Large | size large (the size it becomes when picked)"), 4);
         auto *def = new QLineEdit;
         def->setPlaceholderText(tr("a checkbox: true; typed text: its default"));
         QFormLayout *f = choices_->fields();
@@ -906,9 +969,16 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
                 for (const QJsonValue &v : o.value(QStringLiteral("items")).toArray())
                 {
                     const QJsonObject item = v.toObject();
-                    out << (item.value(QStringLiteral("on")).toBool() ? QStringLiteral("*") : QString()) +
-                               item.value(QStringLiteral("key")).toString() + QStringLiteral(": ") +
-                               item.value(QStringLiteral("label")).toString();
+                    QString line = (item.value(QStringLiteral("on")).toBool() ? QStringLiteral("*") : QString()) +
+                                   item.value(QStringLiteral("key")).toString() + QStringLiteral(": ") +
+                                   item.value(QStringLiteral("label")).toString();
+                    if (const QString size =
+                            item.value(QStringLiteral("changes")).toObject().value(QStringLiteral("size")).toString();
+                        !size.isEmpty())
+                    {
+                        line += QStringLiteral(" | size ") + size;
+                    }
+                    out << line;
                 }
                 items->setPlainText(out.join(QLatin1Char('\n')));
             },
@@ -921,6 +991,14 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
                     {
                         item.insert(QStringLiteral("on"), true);
                         line = line.mid(1).trimmed();
+                    }
+                    // "large: Large | size large": the size it becomes when
+                    // picked. Anything else after "|" stays in the label,
+                    // for checkForm() to point out.
+                    if (const std::optional<QString> size = itemSize(line))
+                    {
+                        item.insert(QStringLiteral("changes"), QJsonObject{{QStringLiteral("size"), *size}});
+                        line = line.left(line.lastIndexOf(QLatin1Char('|'))).trimmed();
                     }
                     const qsizetype colon = line.indexOf(QLatin1Char(':'));
                     const QString label = colon < 0 ? line : line.mid(colon + 1).trimmed();
@@ -1052,7 +1130,7 @@ bool AdjustmentEditor::formShows(const QString &key, const QJsonValue &value, bo
         if (key == QLatin1String("choices"))
         {
             static const QSet<QString> choiceKeys{"key", "type", "label", "note", "default", "items"};
-            static const QSet<QString> itemKeys{"key", "label", "on"};
+            static const QSet<QString> itemKeys{"key", "label", "on", "changes"};
             for (const QJsonValue &v : value.toArray())
             {
                 const QJsonObject o = v.toObject();
@@ -1069,6 +1147,16 @@ bool AdjustmentEditor::formShows(const QString &key, const QJsonValue &value, bo
                     for (auto it = i.begin(); it != i.end(); ++it)
                     {
                         if (!itemKeys.contains(it.key()))
+                        {
+                            return false;
+                        }
+                    }
+                    // Its changes: only a size ("| size large").
+                    if (i.contains(QStringLiteral("changes")))
+                    {
+                        const QJsonObject changes = i.value(QStringLiteral("changes")).toObject();
+                        if (changes.size() != 1 ||
+                            !kItemSizes.contains(changes.value(QStringLiteral("size")).toString()))
                         {
                             return false;
                         }
@@ -1586,6 +1674,18 @@ QList<HomebrewEditor::FieldProblem> AdjustmentEditor::checkForm() const
             problems.push_back({choices_, tr("A choice needs a key (what \"Only when\" names).")});
         }
         choiceKeys << key;
+        // A "|" the Items box couldn't read ("| size large" is what it reads).
+        for (const QJsonValue &item : o.value(QStringLiteral("items")).toArray())
+        {
+            const QString label = item.toObject().value(QStringLiteral("label")).toString();
+            if (label.contains(QLatin1Char('|')))
+            {
+                problems.push_back({choices_, tr("\"%1\" (in %2's Items): after \"|\" only a size can follow, "
+                                                 "like \"| size large\" (tiny, small, medium, large, huge or "
+                                                 "gargantuan).")
+                                                  .arg(label, key)});
+            }
+        }
     }
     // Choices the form can't show are in the Advanced box.
     for (const QJsonValue &v : advanced().value(QStringLiteral("choices")).toArray())
@@ -1627,6 +1727,35 @@ QList<HomebrewEditor::FieldProblem> AdjustmentEditor::checkForm() const
     if (strikes_->isEnabled())
     {
         checkList(strikes_, tr("Strike"));
+    }
+    // "fly 25 when heritage:skywatcher": the same check for the lines.
+    for (QPlainTextEdit *edit : {speeds_, resistances_, weaknesses_, hpAbilities_})
+    {
+        if (!edit->isEnabled())
+        {
+            continue;
+        }
+        for (const QString &line : nonEmptyLines(edit->toPlainText()))
+        {
+            const std::optional<QJsonObject> o = typedFromLine(line, false);
+            const QString when = o ? o->value(QStringLiteral("when")).toString() : QString();
+            for (QString part : when.split(QLatin1Char('&'), Qt::SkipEmptyParts))
+            {
+                if (part.startsWith(QLatin1Char('!')))
+                {
+                    part = part.mid(1);
+                }
+                const QString key = part.section(QLatin1Char(':'), 0, 0);
+                if (!key.isEmpty() && !choiceKeys.contains(key))
+                {
+                    problems.push_back({edit,
+                                        tr("\"%1\" (in \"%2\") names no choice of this one; it would never "
+                                           "be made.")
+                                            .arg(when, line.trimmed()),
+                                        false});
+                }
+            }
+        }
     }
     for (const monster::Modifier &m : monster::modifiers())
     {

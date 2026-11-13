@@ -352,6 +352,7 @@ namespace monster
                 strike.damageBenchmark = o.value(QStringLiteral("damage")).toString(strike.damageBenchmark);
                 strike.when = o.value(QStringLiteral("when")).toString();
                 strike.from = o.value(QStringLiteral("from")).toString(strike.from);
+                strike.fromType = o.value(QStringLiteral("fromType")).toString().trimmed();
                 strike.damageText = o.value(QStringLiteral("damageText")).toString();
                 strike.extra = o.value(QStringLiteral("extra")).toString();
                 strike.fallbackScale = o.value(QStringLiteral("fallback")).toDouble();
@@ -441,7 +442,7 @@ namespace monster
         const QSet<QString> kStrikeKeys{"key",   "name",       "type",  "traits",   "damageType",
                                         "attack", "damage",    "when",  "from",     "damageText",
                                         "extra", "fallback",   "reachPlus", "replace",
-                                        "die",   "mergeExtra"};
+                                        "die",   "mergeExtra", "fromType"};
         const QSet<QString> kChoiceKeys{"key",  "type",    "label",    "note",      "placeholder",
                                         "default", "when", "minLevel", "itemsFrom", "items"};
         const QSet<QString> kItemKeys{"key", "label", "tip", "on", "minLevel", "changes"};
@@ -2176,13 +2177,15 @@ namespace monster
             auto agile = [](const Strike &s) {
                 return findItem(splitList(s.traits).first, QStringLiteral("agile")) >= 0;
             };
-            // Its Strike of that type that is best (highest attack) or
-            // lowest (least damage), among those `keep` allows.
+            // Its Strike of that type (or of `fromType`) that is best
+            // (highest attack) or lowest (least damage), among those `keep`
+            // allows.
+            const QString copyType = made.fromType.isEmpty() ? made.type : made.fromType;
             auto pick = [&](bool lowest, const std::function<bool(const Strike &)> &keep) -> const Strike * {
                 const Strike *found = nullptr;
                 for (const Strike &s : m.strikes)
                 {
-                    if (s.type.compare(made.type, Qt::CaseInsensitive) != 0 || !roll.match(s.damage).hasMatch() ||
+                    if (s.type.compare(copyType, Qt::CaseInsensitive) != 0 || !roll.match(s.damage).hasMatch() ||
                         !keep(s))
                     {
                         continue;
@@ -2695,6 +2698,17 @@ namespace monster
             }
             for (const Modifier::Typed &t : mod.hpAmounts)
             {
+                // Without an amount: added as written, when chosen
+                // ({"type": "void healing", "when": "undead"}).
+                if (t.plain())
+                {
+                    const QString ability = t.suffix.isEmpty() ? t.type : t.type + QLatin1Char(' ') + t.suffix;
+                    if (chosen(options, t.when) && !m.hpAbilities.contains(ability, Qt::CaseInsensitive))
+                    {
+                        m.hpAbilities << ability;
+                    }
+                    continue;
+                }
                 if (const int amount = typedAmount(t, before, level); amount > 0 && chosen(options, t.when))
                 {
                     QString list = m.hpAbilities.join(QStringLiteral(", "));

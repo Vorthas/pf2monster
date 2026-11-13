@@ -67,6 +67,7 @@ If the Pathfinder-Icons font is not installed, any `:a:`, `:aa:`, `:aaa:`, `:f:`
 - Non-combat level can be included for NPC statblocks where the core of the statblock is at one level, but specific skills are set to the recommended values of another level.
 - Inclusion of a Homebrew menu to manage homebrew adjustments, templates, roadmaps, domains, and traits.  See Homebrew Management below.
   - Includes an example homebrew folder (`docs/examples/homebrew`) with Zyss and Aapoph serpentfolk ancestries worked out from Monster Core.
+  - Homebrew adjustments can copy another type's Strikes (a ranged Strike using the lowest melee Strike's numbers), and choices can change a creature's size or add Speeds and defenses only for certain options.
 
 ## Screenshots
 
