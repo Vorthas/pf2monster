@@ -28,6 +28,9 @@
 #include <QVBoxLayout>
 
 #include <algorithm>
+#include <functional>
+#include <map>
+#include <memory>
 
 namespace
 {
@@ -491,31 +494,58 @@ bool MonsterList::matches(const Entry &entry) const
 }
 
 // A group per subfolder, then the monsters in the folder itself (folders
-// first, as in a file manager), each sorted by name. Two levels deep, as in
-// the Collection menu: a group per top folder, inside it one per folder
-// below that, deeper folders named by their path ("Darkness/Owb"). Only
-// those matching the filter and selected tags.
+// first, as in a file manager), each sorted by name. Three levels deep, as in
+// the Collection menu ("Humanoid / Human / Mercenary"); deeper folders get a
+// group at the third level named by their path ("Mercenary/Elite" beside
+// "Mercenary"). Only those matching the filter and selected tags.
 void MonsterList::rebuildTree()
 {
     const QSignalBlocker block(tree_);
     tree_->clear();
+    constexpr int kMaxDepth = 3;
     using Group = std::vector<const Entry *>;
-    QMap<QString, QMap<QString, Group>> groups; // top folder -> rest of path -> entries
+    struct CaseInsensitiveLess
+    {
+        bool operator()(const QString &a, const QString &b) const
+        {
+            const int order = QString::compare(a, b, Qt::CaseInsensitive);
+            return order != 0 ? order < 0 : a < b; // "a" and "A" stay apart
+        }
+    };
+    struct Node
+    {
+        std::map<QString, std::unique_ptr<Node>, CaseInsensitiveLess> folders;
+        Group entries;
+    };
+    Node tree;
     const QDir root(folder_);
     for (const Entry &entry : entries_)
     {
-        if (matches(entry))
+        if (!matches(entry))
         {
-            const QString path = root.relativeFilePath(QFileInfo(entry.path).absolutePath());
-            const qsizetype slash = path.indexOf(QLatin1Char('/'));
-            groups[path.left(slash)][slash < 0 ? QString() : path.mid(slash + 1)].push_back(&entry);
+            continue;
         }
+        const QString path = root.relativeFilePath(QFileInfo(entry.path).absolutePath());
+        QStringList parts = path == QLatin1String(".") ? QStringList() : path.split(QLatin1Char('/'));
+        if (parts.size() > kMaxDepth)
+        {
+            const QString rest = parts.mid(kMaxDepth - 1).join(QLatin1Char('/'));
+            parts = parts.mid(0, kMaxDepth - 1);
+            parts.append(rest);
+        }
+        Node *node = &tree;
+        for (const QString &part : parts)
+        {
+            std::unique_ptr<Node> &child = node->folders[part];
+            if (!child)
+            {
+                child = std::make_unique<Node>();
+            }
+            node = child.get();
+        }
+        node->entries.push_back(&entry);
     }
     QTreeWidgetItem *currentItem = nullptr;
-    const auto sortedKeys = [](QStringList keys) {
-        keys.sort(Qt::CaseInsensitive);
-        return keys;
-    };
     // A folder's row: bold, not selectable, open.
     const auto addFolder = [](QTreeWidgetItem *item) {
         QFont bold = item->font(0);
@@ -547,30 +577,15 @@ void MonsterList::rebuildTree()
             }
         }
     };
-    for (const QString &top : sortedKeys(groups.keys()))
-    {
-        if (top == QLatin1String("."))
+    const std::function<void(QTreeWidgetItem *, Node &)> addNode = [&](QTreeWidgetItem *parent, Node &node) {
+        for (auto &[name, child] : node.folders)
         {
-            continue; // the folder's own monsters go last
+            addNode(addFolder(parent ? new QTreeWidgetItem(parent, {name}) : new QTreeWidgetItem(tree_, {name})),
+                    *child);
         }
-        QMap<QString, Group> &subs = groups[top];
-        QTreeWidgetItem *topItem = addFolder(new QTreeWidgetItem(tree_, {top}));
-        for (const QString &sub : sortedKeys(subs.keys()))
-        {
-            if (!sub.isEmpty())
-            {
-                addEntries(addFolder(new QTreeWidgetItem(topItem, {sub})), subs[sub]);
-            }
-        }
-        if (subs.contains(QString()))
-        {
-            addEntries(topItem, subs[QString()]);
-        }
-    }
-    if (groups.contains(QStringLiteral(".")))
-    {
-        addEntries(nullptr, groups[QStringLiteral(".")][QString()]);
-    }
+        addEntries(parent, node.entries);
+    };
+    addNode(nullptr, tree);
     if (currentItem)
     {
         tree_->setCurrentItem(currentItem);

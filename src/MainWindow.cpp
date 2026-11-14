@@ -59,6 +59,8 @@
 
 #include <algorithm>
 #include <functional>
+#include <map>
+#include <memory>
 #include <utility>
 
 namespace
@@ -1007,22 +1009,50 @@ void MainWindow::fillCollectionMenu()
     collectionMenu_->addSeparator();
 
     // A submenu per subfolder, by name, then the folder's own monsters
-    // (folders first, as in a file manager). Two levels deep: a submenu per
-    // top folder, inside it one per folder below that, deeper folders named
-    // by their path ("Darkness/Owb").
+    // (folders first, as in a file manager). Up to kMaxMenuDepth levels of
+    // submenus ("Humanoid / Human / Mercenary"); deeper folders get a
+    // submenu at the deepest level named by their path, beside their parent
+    // ("Mercenary/Elite" next to "Mercenary" inside "Human").
+    constexpr int kMaxMenuDepth = 3;
     using Group = std::vector<const MonsterList::Entry *>;
-    QMap<QString, QMap<QString, Group>> groups; // top folder -> rest of path -> monsters
+    struct CaseInsensitiveLess
+    {
+        bool operator()(const QString &a, const QString &b) const
+        {
+            const int order = QString::compare(a, b, Qt::CaseInsensitive);
+            return order != 0 ? order < 0 : a < b; // "a" and "A" stay apart
+        }
+    };
+    struct Node
+    {
+        std::map<QString, std::unique_ptr<Node>, CaseInsensitiveLess> folders;
+        Group monsters;
+    };
+    Node tree;
     const QDir root(monsterList_->folder());
     for (const MonsterList::Entry &entry : monsterList_->entries())
     {
         const QString path = root.relativeFilePath(QFileInfo(entry.path).absolutePath());
-        const qsizetype slash = path.indexOf(QLatin1Char('/'));
-        groups[path.left(slash)][slash < 0 ? QString() : path.mid(slash + 1)].push_back(&entry);
+        QStringList parts = path == QLatin1String(".") ? QStringList() : path.split(QLatin1Char('/'));
+        if (parts.size() > kMaxMenuDepth)
+        {
+            // The deepest submenu gets the rest of the path as its name.
+            const QString rest = parts.mid(kMaxMenuDepth - 1).join(QLatin1Char('/'));
+            parts = parts.mid(0, kMaxMenuDepth - 1);
+            parts.append(rest);
+        }
+        Node *node = &tree;
+        for (const QString &part : parts)
+        {
+            std::unique_ptr<Node> &child = node->folders[part];
+            if (!child)
+            {
+                child = std::make_unique<Node>();
+            }
+            node = child.get();
+        }
+        node->monsters.push_back(&entry);
     }
-    const auto sortedKeys = [](QStringList keys) {
-        keys.sort(Qt::CaseInsensitive);
-        return keys;
-    };
     const auto escaped = [](QString text) { return text.replace(QLatin1Char('&'), QStringLiteral("&&")); };
     const auto addMonsters = [&](QMenu *into, Group &group) {
         std::sort(group.begin(), group.end(), [](const auto *a, const auto *b) {
@@ -1043,31 +1073,15 @@ void MainWindow::fillCollectionMenu()
             }
         }
     };
-    for (const QString &top : sortedKeys(groups.keys()))
-    {
-        if (top == QLatin1String("."))
+    const std::function<void(QMenu *, Node &)> addNode = [&](QMenu *into, Node &node) {
+        for (auto &[name, child] : node.folders)
         {
-            continue; // the folder's own monsters go last
+            addNode(into->addMenu(escaped(name)), *child);
         }
-        QMap<QString, Group> &subs = groups[top];
-        QMenu *topMenu = collectionMenu_->addMenu(escaped(top));
-        for (const QString &sub : sortedKeys(subs.keys()))
-        {
-            if (!sub.isEmpty())
-            {
-                addMonsters(topMenu->addMenu(escaped(sub)), subs[sub]);
-            }
-        }
-        if (subs.contains(QString()))
-        {
-            addMonsters(topMenu, subs[QString()]);
-        }
-    }
-    if (groups.contains(QStringLiteral(".")))
-    {
-        addMonsters(collectionMenu_, groups[QStringLiteral(".")][QString()]);
-    }
-    if (groups.isEmpty())
+        addMonsters(into, node.monsters);
+    };
+    addNode(collectionMenu_, tree);
+    if (tree.folders.empty() && tree.monsters.empty())
     {
         collectionMenu_->addAction(tr("(Nothing in this folder)"))->setEnabled(false);
     }
