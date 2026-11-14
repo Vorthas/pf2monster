@@ -268,6 +268,14 @@ namespace monster
         // "9": shown after the HP as "**Hardness** 9" (an animated armor);
         // empty for none. Not on the website: kept under "pf2monster".
         QString hardness;
+        // A troop's "66 (3 segments), 33 (2 segments)": shown after the HP
+        // as "**Thresholds** 66 (3 segments), ..." when the creature has
+        // the troop trait (kept, not shown, otherwise); empty for none.
+        // Not on the website: kept under "pf2monster".
+        QString thresholds;
+        // Whether the traits include "troop" (any case); with `added`, the
+        // ones adjustments added too.
+        bool isTroop(bool added = true) const;
 
         std::vector<HpPart> hpParts;
         // The label of the creature's own HP line once it has parts. A

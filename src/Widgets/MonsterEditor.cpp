@@ -271,6 +271,12 @@ MonsterEditor::MonsterEditor(QWidget *parent) : QWidget(parent)
         adjustedLevel_->setToolTip(tr("The level after the applied adjustments: the one the "
                                       "statblock shows"));
         levelRow->addWidget(adjustedLevel_);
+        // Troop: kept as the "Troop" trait, ticked while the traits have it;
+        // shows the Thresholds row (see updateTroop()).
+        troop_ = new QCheckBox(tr("Troop"));
+        troop_->setToolTip(tr("Adds or removes the troop trait, and shows the Thresholds row "
+                              "under Defense"));
+        levelRow->addWidget(troop_);
         levelRow->addStretch();
         grid->addLayout(levelRow, 1, 1, 1, 4);
 
@@ -400,6 +406,32 @@ MonsterEditor::MonsterEditor(QWidget *parent) : QWidget(parent)
         });
         connect(traits, &QLineEdit::textEdited, this, [this, split, store](const QString &text) {
             store(text, split(monster_->traits).second);
+            updateTroop();
+        });
+        // Ticking adds "Troop" at the end of the traits if they lack it;
+        // unticking takes every "troop" out.
+        connect(troop_, &QCheckBox::clicked, this, [this, traits, split, store](bool checked) {
+            if (checked == monster_->isTroop(false))
+            {
+                return; // nothing to change: leave the traits as typed
+            }
+            const auto [others, rare] = split(monster_->traits);
+            QStringList kept;
+            for (const QString &trait : others.split(QLatin1Char(','), Qt::SkipEmptyParts))
+            {
+                if (trait.trimmed().compare(QLatin1String("troop"), Qt::CaseInsensitive) != 0)
+                {
+                    kept << trait.trimmed();
+                }
+            }
+            if (checked)
+            {
+                kept << QStringLiteral("Troop");
+            }
+            const QString text = kept.join(QStringLiteral(", "));
+            traits->setText(text);
+            store(text, rare);
+            updateTroop();
         });
         loaders_.push_back([this, rarity, traits, split] {
             const auto [others, found] = split(monster_->traits);
@@ -600,9 +632,18 @@ MonsterEditor::MonsterEditor(QWidget *parent) : QWidget(parent)
         addStat(grid, 5, tr("Hit Points"), QStringLiteral("hp"));
         addLine(grid, 6, tr("Regeneration"), [m]() -> QString & { return m().regeneration; })
             ->setPlaceholderText(tr("20 (deactivated by acid or fire)"));
-        addLine(grid, 7, tr("Hardness"), [m]() -> QString & { return m().hardness; })
+        // Troops only: shown while the traits include "troop".
+        QLineEdit *thresholds = addLine(grid, 7, tr("Thresholds"),
+                                        [m]() -> QString & { return m().thresholds; });
+        thresholds->setPlaceholderText(tr("66 (3 segments), 33 (2 segments)"));
+        thresholds->setToolTip(tr("A troop's thresholds, shown after its HP (only with the "
+                                  "troop trait)"));
+        thresholds_ = thresholds;
+        thresholdsLabel_ = grid->itemAtPosition(7, 0)->widget();
+        loaders_.push_back([this] { updateTroop(); });
+        addLine(grid, 8, tr("Hardness"), [m]() -> QString & { return m().hardness; })
             ->setPlaceholderText(tr("9 (empty: none)"));
-        int row = 8;
+        int row = 9;
         for (const auto &[label, key] : {std::pair{tr("Resistances"), "resistance"},
                                          std::pair{tr("Weaknesses"), "weakness"},
                                          std::pair{tr("Immunities"), "immunity"}})
@@ -1364,6 +1405,14 @@ void MonsterEditor::rebuildStrikes()
 void MonsterEditor::rebuildSpecials()
 {
     specials_->rebuild(static_cast<int>(monster_->specials.size()));
+}
+
+void MonsterEditor::updateTroop()
+{
+    const bool troop = monster_ && monster_->isTroop(false);
+    troop_->setChecked(troop);
+    thresholds_->setVisible(troop);
+    thresholdsLabel_->setVisible(troop);
 }
 
 void MonsterEditor::updateNonCombat()

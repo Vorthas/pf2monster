@@ -533,6 +533,16 @@ namespace monster
         }
     } // namespace
 
+    bool Monster::isTroop(bool added) const
+    {
+        const auto troop = [](const QString &trait) {
+            return trait.trimmed().compare(QLatin1String("troop"), Qt::CaseInsensitive) == 0;
+        };
+        const QStringList own = traits.split(QLatin1Char(','), Qt::SkipEmptyParts);
+        return std::any_of(own.begin(), own.end(), troop) ||
+               (added && std::any_of(addedTraits.begin(), addedTraits.end(), troop));
+    }
+
     QStringList Monster::loreKeys() const
     {
         QStringList keys;
@@ -667,6 +677,7 @@ namespace monster
         }
         m.regeneration = m.own.take(QStringLiteral("regeneration")).toString();
         m.hardness = m.own.take(QStringLiteral("hardness")).toString();
+        m.thresholds = m.own.take(QStringLiteral("thresholds")).toString();
         m.theme = m.own.take(QStringLiteral("theme")).toString();
         m.recallKnowledge = m.own.take(QStringLiteral("recallKnowledge")).toString();
         m.recallLore = m.own.take(QStringLiteral("recallLore")).toBool();
@@ -805,6 +816,10 @@ namespace monster
         if (!hardness.isEmpty())
         {
             ownData.insert(QStringLiteral("hardness"), hardness);
+        }
+        if (!thresholds.isEmpty())
+        {
+            ownData.insert(QStringLiteral("thresholds"), thresholds);
         }
         if (isHazard())
         {

@@ -95,6 +95,8 @@ private:
     void updateRecallWarning();
     // Shows the "NC" boxes while the monster has a non-combat level.
     void updateNonCombat();
+    // Shows the Thresholds row while the traits include "troop".
+    void updateTroop();
     // The rows of the Lore skills past the website's two, and the button to
     // add one.
     void rebuildLores();
@@ -143,6 +145,9 @@ private:
     EntryList *hpParts_ = nullptr;
     QWidget *traitNotes_ = nullptr;
     QLineEdit *nonCombat_ = nullptr;
+    QCheckBox *troop_ = nullptr;
+    QWidget *thresholds_ = nullptr;
+    QWidget *thresholdsLabel_ = nullptr;
     std::vector<QCheckBox *> nonCombatBoxes_;
 
     // Where addStat() puts a row's loaders, hint updaters and "NC" box: the

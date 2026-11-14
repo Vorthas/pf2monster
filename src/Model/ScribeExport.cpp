@@ -1209,6 +1209,12 @@ namespace monster
         {
             hpLine += QStringLiteral(", regeneration ") + fieldText(m.regeneration).simplified();
         }
+        // "**HP** 99 (4 segments); **Thresholds** 66 (3 segments), 33 (2
+        // segments); **Hardness** 10; ...", as Paizo prints a troop.
+        if (m.isTroop() && !m.thresholds.trimmed().isEmpty())
+        {
+            hpLine += QStringLiteral("; **Thresholds** ") + fieldText(m.thresholds).simplified();
+        }
         // "**HP** 20; **Hardness** 9; **Immunities** ...", as Monster Core
         // prints an animated armor.
         if (!m.hardness.trimmed().isEmpty())
