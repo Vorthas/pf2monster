@@ -3,6 +3,7 @@
 
 #include "Widgets/HazardEditor.h"
 
+#include "Model/Adjustments.h"
 #include "Model/Benchmarks.h"
 #include "Widgets/EntryList.h"
 #include "Widgets/TagCompleter.h"
@@ -1070,8 +1071,21 @@ QWidget *HazardEditor::specialRow(int i)
     grid->addWidget(action, 0, 2);
     grid->addWidget(traits, 0, 3);
     grid->addWidget(description, 1, 0, 1, 4);
+    // Placeholders ({level}, {=...}) it can't work out, as the creature
+    // form shows them.
+    auto *placeholderWarning = new QLabel;
+    placeholderWarning->setWordWrap(true);
+    placeholderWarning->setTextFormat(Qt::RichText);
+    grid->addWidget(placeholderWarning, 2, 0, 1, 4);
     grid->setColumnStretch(0, 2);
     grid->setColumnStretch(3, 2);
+    auto checkPlaceholders = [this, placeholderWarning](const QString &text) {
+        const QStringList problems = text.contains(QLatin1Char('{')) || text.contains(QLatin1Char('}'))
+                                         ? monster::placeholderProblems(monster::adjusted(*monster_), text)
+                                         : QStringList();
+        showPlaceholderProblems(placeholderWarning, problems);
+    };
+    checkPlaceholders(special.description);
 
     auto at = [this, i]() -> monster::Special & { return monster_->specials[static_cast<size_t>(i)]; };
     connect(name, &QLineEdit::textEdited, this, [this, at](const QString &text) {
@@ -1090,9 +1104,10 @@ QWidget *HazardEditor::specialRow(int i)
         at().traits = text;
         emit changed();
     });
-    connect(description, &QPlainTextEdit::textChanged, this, [this, at, description] {
+    connect(description, &QPlainTextEdit::textChanged, this, [this, at, description, checkPlaceholders] {
         at().description = description->toPlainText();
         emit changed();
+        checkPlaceholders(at().description);
     });
     return row;
 }

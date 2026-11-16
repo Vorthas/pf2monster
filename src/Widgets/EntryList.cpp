@@ -225,3 +225,19 @@ void EntryList::dropEvent(QDropEvent *event)
         later([this, from, to] { emit moveRequested(from, to); });
     }
 }
+
+void showPlaceholderProblems(QLabel *label, const QStringList &problems)
+{
+    label->setVisible(!problems.isEmpty());
+    if (problems.isEmpty())
+    {
+        label->clear();
+        return;
+    }
+    QStringList escaped;
+    for (const QString &line : problems)
+    {
+        escaped << line.toHtmlEscaped();
+    }
+    label->setText(QObject::tr("<b>Worth checking:</b> %1").arg(escaped.join(QStringLiteral("<br>"))));
+}

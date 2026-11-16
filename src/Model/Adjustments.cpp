@@ -40,12 +40,20 @@ namespace monster
 
         // As % names it ("the experimental flame drake"; a proper name as it
         // is), with every prefix: in the abilities' text.
+        // What {name} becomes for that spoken name: "the guard", or a proper
+        // name as it is.
+        QString callItFor(const QString &spoken)
+        {
+            if (spoken.isEmpty())
+            {
+                return QStringLiteral("the creature");
+            }
+            return spoken.at(0).isLower() ? QStringLiteral("the ") + spoken : spoken;
+        }
+
         void nameAbilities(Monster &m, const QString &baseName)
         {
-            const QString spoken = spokenName(m.name, baseName);
-            const QString callIt = spoken.isEmpty()          ? QStringLiteral("the creature")
-                                   : spoken.at(0).isLower() ? QStringLiteral("the ") + spoken
-                                                            : spoken;
+            const QString callIt = callItFor(spokenName(m.name, baseName));
             const QString capital = callIt.left(1).toUpper() + callIt.mid(1);
             for (Special &s : m.specials)
             {
@@ -1204,6 +1212,33 @@ namespace monster
             return value.toString() == item;
         }
 
+        // A statistic's number as the statblock and [hp] show it: the one
+        // typed, else (left empty) its benchmark hint (the user,
+        // 2026-11-15: {=hp / 10} on a monster whose HP is the hint).
+        std::optional<int> statNumber(const Monster &m, const QString &key)
+        {
+            const Stat *stat = m.findStat(key);
+            if (!stat)
+            {
+                return std::nullopt;
+            }
+            if (!stat->value.text().trimmed().isEmpty())
+            {
+                // "-1" keeps its sign; text with a number in it ("50
+                // (head)", as {halfHp} always read it) gives that number.
+                if (const std::optional<int> n = stat->value.number())
+                {
+                    return n;
+                }
+                return firstNumber(stat->value.text());
+            }
+            if (const Hint h = statHint(m, key); h.valid && h.value)
+            {
+                return *h.value;
+            }
+            return std::nullopt;
+        }
+
         // A number from the level: "max(2, level)", "(level + 1) / 2". Integer
         // arithmetic, rounded down; nullopt if it can't be read.
         class Expression
@@ -1379,9 +1414,9 @@ namespace monster
                 }
                 if (monster_)
                 {
-                    if (const Stat *stat = monster_->findStat(word))
+                    if (monster_->findStat(word))
                     {
-                        return stat->value.number();
+                        return statNumber(*monster_, word);
                     }
                 }
                 return std::nullopt;
@@ -1670,12 +1705,9 @@ namespace monster
                 else if (inner.startsWith(QLatin1String("statdc:")) && c.monster)
                 {
                     // A save's or skill's DC: 10 + its modifier.
-                    if (const Stat *stat = c.monster->findStat(inner.mid(7)))
+                    if (const std::optional<int> n = statNumber(*c.monster, inner.mid(7)))
                     {
-                        if (const std::optional<int> n = stat->value.number())
-                        {
-                            made = QString::number(10 + *n);
-                        }
+                        made = QString::number(10 + *n);
                     }
                 }
                 else if (inner.startsWith(QLatin1String("opt:")) && c.mod)
@@ -3074,7 +3106,7 @@ namespace monster
             context.level = level;
             context.callIt = kCallIt;
             context.capital = kCallItCapital;
-            context.halfHp = firstNumber(m.stat(QStringLiteral("hp")).value.text()).value_or(0) / 2;
+            context.halfHp = statNumber(m, QStringLiteral("hp")).value_or(0) / 2;
             // Its other abilities' DCs (already raised by this one).
             context.abilityDc = highestAbilityDc(m).value_or(
                 hint(Table::SpellDc, level, QStringLiteral("high")).value.value_or(0));
@@ -3151,6 +3183,187 @@ namespace monster
         }
         words << base;
         return words.join(QLatin1Char(' '));
+    }
+
+    QString expandPlaceholders(const Monster &monster, const QString &text, const QString &spoken)
+    {
+        if (!text.contains(QLatin1Char('{')))
+        {
+            return text;
+        }
+        TextContext context;
+        context.monster = &monster;
+        // The level shown (adjusted() puts the new level there).
+        context.level = monster.showlevel.number().value_or(monster.level.number().value_or(0));
+        context.callIt = callItFor(spoken);
+        context.capital = context.callIt.left(1).toUpper() + context.callIt.mid(1);
+        context.halfHp = statNumber(monster, QStringLiteral("hp")).value_or(0) / 2;
+        context.abilityDc = highestAbilityDc(monster).value_or(
+            hint(Table::SpellDc, context.level, QStringLiteral("high")).value.value_or(0));
+        return expandText(text, context);
+    }
+
+    QStringList placeholderProblems(const Monster &monster, const QString &text)
+    {
+        QStringList problems;
+        if (!text.contains(QLatin1Char('{')) && !text.contains(QLatin1Char('}')))
+        {
+            return problems;
+        }
+        const int level = monster.showlevel.number().value_or(monster.level.number().value_or(0));
+        static const QRegularExpression brace(QStringLiteral(R"(\{([^{}]*)\})"));
+        static const QStringList kDifficulties{QStringLiteral("incredibly easy"), QStringLiteral("very easy"),
+                                               QStringLiteral("easy"),            QStringLiteral("standard"),
+                                               QStringLiteral("hard"),            QStringLiteral("very hard"),
+                                               QStringLiteral("incredibly hard")};
+        auto benchmarkProblem = [&](const QString &token, Table table, const QString &benchmark) {
+            if (!hint(table, level, benchmark).valid)
+            {
+                problems << QStringLiteral("%1: \"%2\" isn't a benchmark for that table (extreme, high, "
+                                           "moderate, ...).")
+                                .arg(token, benchmark);
+            }
+        };
+        QString rest = text; // what's left once the placeholders are taken out
+        for (auto it = brace.globalMatch(text); it.hasNext();)
+        {
+            const QRegularExpressionMatch match = it.next();
+            const QString token = match.captured(0);
+            const QString inner = match.captured(1);
+            rest.replace(token, QString());
+            static const QSet<QString> kPlain{QStringLiteral("name"), QStringLiteral("Name"),
+                                              QStringLiteral("halfHp"), QStringLiteral("level"),
+                                              QStringLiteral("abilitydc"), QStringLiteral("tradition")};
+            if (kPlain.contains(inner))
+            {
+                continue;
+            }
+            if (inner.startsWith(QLatin1Char('=')))
+            {
+                const qsizetype open = inner.count(QLatin1Char('('));
+                const qsizetype close = inner.count(QLatin1Char(')'));
+                if (open != close)
+                {
+                    problems << QStringLiteral("%1: the parentheses don't match (%2 \"(\" and %3 \")\").")
+                                    .arg(token)
+                                    .arg(open)
+                                    .arg(close);
+                }
+                else if (!Expression(inner.mid(1), level, &monster).value())
+                {
+                    problems << QStringLiteral("%1: can't be worked out. A formula can use numbers, level, its "
+                                               "statistics (hp, spelldc, will, ...), + - * /, parentheses, "
+                                               "min(a, b) and max(a, b); check for a typo, a statistic it "
+                                               "doesn't have, or a division by 0.")
+                                    .arg(token);
+                }
+            }
+            else if (inner.startsWith(QLatin1String("dc:")))
+            {
+                if (!kDifficulties.contains(inner.mid(3).trimmed().toLower()))
+                {
+                    problems << QStringLiteral("%1: \"%2\" isn't a DC difficulty (%3).")
+                                    .arg(token, inner.mid(3), kDifficulties.join(QStringLiteral(", ")));
+                }
+            }
+            else if (inner.startsWith(QLatin1String("spelldc:")))
+            {
+                benchmarkProblem(token, Table::SpellDc, inner.mid(8));
+            }
+            else if (inner.startsWith(QLatin1String("owndc:")))
+            {
+                benchmarkProblem(token, Table::SpellDc, inner.mid(6));
+            }
+            else if (inner.startsWith(QLatin1String("skill:")))
+            {
+                benchmarkProblem(token, Table::Skill, inner.mid(6));
+            }
+            else if (inner.startsWith(QLatin1String("spellattack:")))
+            {
+                benchmarkProblem(token, Table::SpellAttack, inner.mid(12));
+            }
+            else if (inner.startsWith(QLatin1String("area:")))
+            {
+                if (hint(Table::AreaDamage, level, inner.mid(5)).text.isEmpty())
+                {
+                    problems << QStringLiteral("%1: \"%2\" isn't an area damage column (limited, unlimited).")
+                                    .arg(token, inner.mid(5));
+                }
+            }
+            else if (inner.startsWith(QLatin1String("strikeattack:")) ||
+                     inner.startsWith(QLatin1String("strikedice:")))
+            {
+                const QString strikeName = inner.section(QLatin1Char(':'), 1).trimmed();
+                const bool named = std::any_of(monster.strikes.begin(), monster.strikes.end(), [&](const Strike &s) {
+                    return s.name.trimmed().compare(strikeName, Qt::CaseInsensitive) == 0;
+                });
+                if (!bestMelee(monster))
+                {
+                    problems << QStringLiteral("%1: it has no melee Strike to take it from.").arg(token);
+                }
+                else if (!named && strikeName != QLatin1String("best"))
+                {
+                    problems << QStringLiteral("%1: it has no Strike called \"%2\", so its best melee "
+                                               "Strike's is used.")
+                                    .arg(token, strikeName);
+                }
+            }
+            else if (inner.startsWith(QLatin1String("statdc:")))
+            {
+                if (!statNumber(monster, inner.mid(7)))
+                {
+                    problems << QStringLiteral("%1: it has no number for \"%2\" (fortitude, reflex, will, "
+                                               "perception, a skill, ...).")
+                                    .arg(token, inner.mid(7));
+                }
+            }
+            else if (inner.startsWith(QLatin1String("opt:")))
+            {
+                problems << QStringLiteral("%1: only works in an adjustment's text (it names one of its "
+                                           "choices).")
+                                .arg(token);
+            }
+            else if (inner.startsWith(QLatin1String("steps|")))
+            {
+                static const QRegularExpression step(QStringLiteral(R"(^\d+=)"));
+                const QStringList parts = inner.mid(6).split(QLatin1Char('|'));
+                for (qsizetype i = 1; i < parts.size(); ++i)
+                {
+                    if (!step.match(parts[i]).hasMatch())
+                    {
+                        problems << QStringLiteral("%1: \"%2\" should be a level, \"=\" and its text "
+                                                   "(\"5=2d6\").")
+                                        .arg(token, parts[i]);
+                        break;
+                    }
+                }
+            }
+            else if (Expression(inner, level, &monster).value())
+            {
+                // A formula without its "=" ("{level / 2}"; the user,
+                // 2026-11-15).
+                problems << QStringLiteral("%1 isn't a placeholder the app knows. If it's a formula, it may "
+                                           "be missing an \"=\": {=%2}.")
+                                .arg(token, inner);
+            }
+            else if (inner.contains(QRegularExpression(QStringLiteral(R"([-+*/()])"))))
+            {
+                problems << QStringLiteral("%1 isn't a placeholder the app knows. If it's a formula, it "
+                                           "needs an \"=\" at the start ({=level / 2}).")
+                                .arg(token);
+            }
+            else
+            {
+                problems << QStringLiteral("%1 isn't a placeholder the app knows, so it shows as typed.").arg(token);
+            }
+        }
+        if (rest.contains(QLatin1Char('{')) || rest.contains(QLatin1Char('}')))
+        {
+            problems << QStringLiteral("A \"{\" or \"}\" without its partner: placeholders are written "
+                                       "{like this}.");
+        }
+        problems.removeDuplicates(); // the same formula used twice
+        return problems;
     }
 
     QJsonObject optionsWithDefaults(const Modifier &modifier, const QJsonObject &options)

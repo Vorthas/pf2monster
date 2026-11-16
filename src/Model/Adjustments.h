@@ -428,6 +428,21 @@ namespace monster
     // (capitalized, "Sziskazha") as typed.
     QString spokenName(const QString &adjustedName, const QString &baseName);
 
+    // The adjustments' text placeholders ({level}, {=level / 2},
+    // {dc:hard}, {Name}, ... see Modifier::Ability) worked out for a
+    // monster's own text, from its numbers as they are and its shown level
+    // (call it on the adjusted monster). `spoken` is spokenName()'s result. {opt:...} and
+    // unknown braces stay as typed.
+    QString expandPlaceholders(const Monster &monster, const QString &text, const QString &spoken);
+
+    // What's wrong with the placeholders in a monster's own text, one
+    // plain-language line each ("{=max(1,(level + 1 / 2)}: the
+    // parentheses don't match ..."): ones that can't be worked out, typos
+    // in benchmark names, statistics or Strikes it doesn't have, {opt:...}
+    // (adjustments only), unknown names and an unclosed brace. Empty when
+    // there's nothing to check. Pass the adjusted monster.
+    QStringList placeholderProblems(const Monster &monster, const QString &text);
+
     // The applied entry's choices with each one not made yet at its
     // default (an options dialog's adjustment).
     QJsonObject optionsWithDefaults(const Modifier &modifier, const QJsonObject &options);

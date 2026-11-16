@@ -8,6 +8,7 @@
 #include <functional>
 
 class QFrame;
+class QLabel;
 class QVBoxLayout;
 
 // A list of entries (Strikes, abilities, spell lists) shown one under the
@@ -62,3 +63,7 @@ private:
     QList<QWidget *> separators_; // the lines between them
     QFrame *dropLine_ = nullptr;
 };
+
+// For a row's text box: "Worth checking:" and the problems found in it (the
+// placeholders of an ability's text), hidden when there are none.
+void showPlaceholderProblems(QLabel *label, const QStringList &problems);

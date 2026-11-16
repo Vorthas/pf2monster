@@ -473,6 +473,16 @@ worked out for each monster:
 | `{opt:key}` | A choice's text; `{opt:key\|lower}` in lower case, `{opt:key\|cap}` with a capital. |
 | `{tradition}` | Its magic tradition (arcane, divine, occult or primal), from a `"tradition"` choice or its traits. |
 
+These also work in a monster's own text, typed in the form: its abilities,
+description, Strike names, spells, items and languages (and a hazard's
+Disable, Routine and Reset). There they use the monster's level as the
+statblock shows it, so `{level}` goes up with Elite. `{opt:...}` only works
+in an adjustment. The form keeps what you typed, and so does the saved file;
+the statblock and its exports show the numbers. A placeholder that can't be
+worked out (a typo, parentheses that don't match, a statistic the monster
+doesn't have) shows as typed, and a **Worth checking** line under the
+ability's text says why.
+
 A lone `%` in a text is the monster's name, as on the website. For a percent
 sign, type `\%` in the editor (in a JSON file that's written `"\\%"`, since
 a backslash is doubled there).
@@ -482,7 +492,9 @@ a backslash is doubled there).
 Formulas (in `{=...}`, `"expr"` and `"rank"`) are whole-number arithmetic,
 rounded down: `+ - * /`, parentheses, `min(a, b)` and `max(a, b)`. They can
 use `level`, the monster's statistics by key (`hp`, `spelldc`, `will`, ...),
-and `resmin` / `resmax` (the resistance table's ends for its level).
+and `resmin` / `resmax` (the resistance table's ends for its level). A
+statistic left empty uses the benchmark value the statblock shows for it,
+as `[hp]` does.
 
 #### Common Formulas
 * `max(1, level / 2)` is half the level, rounded down, and at least 1.

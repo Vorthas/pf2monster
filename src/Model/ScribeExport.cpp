@@ -978,49 +978,62 @@ namespace monster
 
     QString toScribe(const Monster &input, bool withoutLevel)
     {
-        // The applied adjustments first, then Proficiency without Level,
-        // then the references and % (in the fields the website works them
-        // out in) from those numbers; % is the name with the adjustments'
+        // The applied adjustments first, then the adjustments' brace
+        // placeholders ({level}, {=level / 2}, {dc:hard}: the user,
+        // 2026-11-15) at the adjusted level, then Proficiency without Level
+        // (which lowers the DCs they made, as it does the ones typed), then
+        // the references and % (in the fields the website works them out
+        // in) from those numbers; % is the name with the adjustments'
         // prefixes in lower case ("experimental flame drake"), as their
-        // abilities say it.
+        // abilities say it. The braces go in the same fields.
         Monster m = adjusted(input);
+        const QString spoken = spokenName(m.name, input.name);
+        auto forEachTextField = [](Monster &target, const auto &fn) {
+            fn(target.description);
+            fn(target.items);
+            fn(target.languages);
+            fn(target.constant);
+            for (QString &spells : target.spells)
+            {
+                fn(spells);
+            }
+            for (SpellList &list : target.morespells)
+            {
+                fn(list.constant);
+                for (QString &spells : list.spells)
+                {
+                    fn(spells);
+                }
+            }
+            for (Strike &strike : target.strikes)
+            {
+                fn(strike.name);
+            }
+            for (Special &special : target.specials)
+            {
+                fn(special.description);
+            }
+            if (target.isHazard())
+            {
+                for (QString *field : {&target.hazard.disable, &target.hazard.routine, &target.hazard.reset})
+                {
+                    fn(*field);
+                }
+            }
+        };
+        {
+            const Monster source = m; // its numbers before any text changes
+            forEachTextField(m, [&](QString &field) { field = expandPlaceholders(source, field, spoken); });
+        }
         if (withoutLevel)
         {
             takeOffLevel(m);
         }
         Monster references = m;
-        references.name = spokenName(m.name, input.name);
-        auto expand = [&references](QString &field) { field = expandReferences(references, field); };
-        expand(m.description);
-        expand(m.items);
-        expand(m.languages);
-        expand(m.constant);
-        for (QString &spells : m.spells)
-        {
-            expand(spells);
-        }
-        for (SpellList &list : m.morespells)
-        {
-            expand(list.constant);
-            for (QString &spells : list.spells)
-            {
-                expand(spells);
-            }
-        }
-        for (Strike &strike : m.strikes)
-        {
-            expand(strike.name);
-        }
-        for (Special &special : m.specials)
-        {
-            expand(special.description);
-        }
+        references.name = spoken;
+        forEachTextField(m, [&references](QString &field) { field = expandReferences(references, field); });
         if (m.isHazard())
         {
-            for (QString *field : {&m.hazard.disable, &m.hazard.routine, &m.hazard.reset})
-            {
-                expand(*field);
-            }
             // The description is in the statblock.
             const QString label = m.creature.trimmed().isEmpty() ? QStringLiteral("Hazard")
                                                                  : fieldText(m.creature).simplified();
