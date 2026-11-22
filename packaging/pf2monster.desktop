@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Monster Builder for Pathfinder 2e
+GenericName=Creature Builder
+Comment=Build and export Pathfinder 2e creature statblocks
+Exec=pf2monster
+Icon=pf2monster
+Terminal=false
+Categories=Game;RolePlaying;
+Keywords=Pathfinder;PF2e;monster;creature;statblock;RPG;
