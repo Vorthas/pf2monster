@@ -191,8 +191,11 @@ namespace
             when.remove(QRegularExpression(QStringLiteral(R"(\s+)")));
             line = line.left(w.capturedStart()).trimmed();
         }
+        // Speeds can be lowered: "fly -10".
         static const QRegularExpression parts(QStringLiteral(R"(^(.+?)\s+(\d+|\{=[^{}]*\})(?:\s+(.*))?$)"));
-        const QRegularExpressionMatch match = parts.match(line);
+        static const QRegularExpression speedParts(
+            QStringLiteral(R"(^(.+?)\s+(-?\d+|\{=[^{}]*\})(?:\s+(.*))?$)"));
+        const QRegularExpressionMatch match = (amountNeeded ? speedParts : parts).match(line);
         if (!match.hasMatch())
         {
             if (amountNeeded || line.isEmpty())
@@ -225,6 +228,161 @@ namespace
             o.insert(QStringLiteral("suffix"), match.captured(3).trimmed());
         }
         return o;
+    }
+
+    // An "abilityDcs" entry as a line of the form ("-2", "+2 poison, spore
+    // when abilities:potent-poison"); nullopt if the line can't say it.
+    std::optional<QString> abilityDcLine(const QJsonValue &value)
+    {
+        const QJsonObject o = value.toObject();
+        for (auto it = o.begin(); it != o.end(); ++it)
+        {
+            if (!QStringList{"change", "match", "when"}.contains(it.key()))
+            {
+                return std::nullopt;
+            }
+        }
+        const int change = o.value(QStringLiteral("change")).toInt();
+        if (change == 0)
+        {
+            return std::nullopt;
+        }
+        QString line = change > 0 ? QStringLiteral("+%1").arg(change) : QString::number(change);
+        const QJsonValue match = o.value(QStringLiteral("match"));
+        QStringList words;
+        if (match.isArray())
+        {
+            for (const QJsonValue &w : match.toArray())
+            {
+                words << w.toString().trimmed();
+            }
+        }
+        else if (!match.toString().trimmed().isEmpty())
+        {
+            for (const QString &w : match.toString().split(QLatin1Char(',')))
+            {
+                words << w.trimmed();
+            }
+        }
+        if (!words.isEmpty())
+        {
+            line += QLatin1Char(' ') + words.join(QStringLiteral(", "));
+        }
+        if (const QString when = o.value(QStringLiteral("when")).toString(); !when.isEmpty())
+        {
+            static const QRegularExpression whole(QStringLiteral("^(?:%1)$").arg(kWhenPattern));
+            if (!whole.match(when).hasMatch())
+            {
+                return std::nullopt;
+            }
+            line += QStringLiteral(" when ") + when;
+        }
+        return line;
+    }
+
+    // The other way: nullopt for a line without a change ("+2", "-2").
+    std::optional<QJsonObject> abilityDcFromLine(const QString &text)
+    {
+        static const QRegularExpression whenPart(QStringLiteral(R"(\s+when\s+(%1)\s*$)").arg(kWhenPattern),
+                                                 QRegularExpression::CaseInsensitiveOption);
+        static const QRegularExpression parts(QStringLiteral(R"(^([+-]?\d+)(?:\s+(.+))?$)"));
+        QString line = text.trimmed();
+        QString when;
+        if (const QRegularExpressionMatch w = whenPart.match(line); w.hasMatch())
+        {
+            when = w.captured(1);
+            when.remove(QRegularExpression(QStringLiteral(R"(\s+)")));
+            line = line.left(w.capturedStart()).trimmed();
+        }
+        const QRegularExpressionMatch match = parts.match(line);
+        if (!match.hasMatch() || match.captured(1).toInt() == 0)
+        {
+            return std::nullopt;
+        }
+        QJsonObject o{{QStringLiteral("change"), match.captured(1).toInt()}};
+        QStringList words;
+        for (const QString &w : match.captured(2).split(QLatin1Char(',')))
+        {
+            if (!w.trimmed().isEmpty())
+            {
+                words << w.trimmed();
+            }
+        }
+        if (!words.isEmpty())
+        {
+            o.insert(QStringLiteral("match"), words.join(QStringLiteral(", ")));
+        }
+        if (!when.isEmpty())
+        {
+            o.insert(QStringLiteral("when"), when);
+        }
+        return o;
+    }
+
+    // "removeImmunities" as the form's line: "fire, cold when burnable".
+    // nullopt if an entry can't be written so.
+    std::optional<QString> removeImmunitiesLine(const QJsonValue &value)
+    {
+        static const QRegularExpression whole(QStringLiteral("^(?:%1)$").arg(kWhenPattern));
+        QStringList parts;
+        for (const QJsonValue &v : value.toArray())
+        {
+            if (v.isString())
+            {
+                if (v.toString().contains(QLatin1Char(',')))
+                {
+                    return std::nullopt;
+                }
+                parts << v.toString().trimmed();
+                continue;
+            }
+            const QJsonObject o = v.toObject();
+            for (auto it = o.begin(); it != o.end(); ++it)
+            {
+                if (it.key() != QLatin1String("type") && it.key() != QLatin1String("when"))
+                {
+                    return std::nullopt;
+                }
+            }
+            const QString type = o.value(QStringLiteral("type")).toString().trimmed();
+            const QString when = o.value(QStringLiteral("when")).toString();
+            if (type.isEmpty() || type.contains(QLatin1Char(',')) || (!when.isEmpty() && !whole.match(when).hasMatch()))
+            {
+                return std::nullopt;
+            }
+            parts << (when.isEmpty() ? type : type + QStringLiteral(" when ") + when);
+        }
+        return parts.join(QStringLiteral(", "));
+    }
+
+    // The other way: each comma-separated item, with "when ..." at its end
+    // made its condition.
+    QJsonArray removeImmunitiesFromLine(const QString &line)
+    {
+        static const QRegularExpression whenPart(QStringLiteral(R"(\s+when\s+(%1)\s*$)").arg(kWhenPattern),
+                                                 QRegularExpression::CaseInsensitiveOption);
+        QJsonArray out;
+        for (const QString &part : line.split(QLatin1Char(',')))
+        {
+            QString type = part.trimmed();
+            if (type.isEmpty())
+            {
+                continue;
+            }
+            if (const QRegularExpressionMatch w = whenPart.match(type); w.hasMatch())
+            {
+                QString when = w.captured(1);
+                when.remove(QRegularExpression(QStringLiteral(R"(\s+)")));
+                type = type.left(w.capturedStart()).trimmed();
+                if (!type.isEmpty())
+                {
+                    out.append(QJsonObject{{QStringLiteral("type"), type}, {QStringLiteral("when"), when}});
+                }
+                continue;
+            }
+            out.append(type);
+        }
+        return out;
     }
 
     bool linesShow(const QJsonValue &value)
@@ -281,9 +439,9 @@ namespace
     {
         static const QSet<QString> keys{"level",     "bonus",        "bonusSkip",      "strikeDamage", "hp",
                                         "spellBonus", "traits",      "removeTraits",   "replaceOrAdd", "rarity",
-                                        "senses",    "languages",    "languagesAlways", "languageExtras", "landSpeed", "speeds",
+                                        "senses",    "languages",    "languagesAlways", "languageExtras", "removeLanguages", "removeImmunities", "landSpeed", "speeds",
                                         "size",      "immunities",   "resistances",    "weaknesses",   "hpAbilities",
-                                        "saveNote",  "items",        "skillBenchmarks", "lores"};
+                                        "saveNote",  "items",        "skillBenchmarks", "lores", "abilityDcs"};
         return keys;
     }
 
@@ -717,6 +875,14 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     addRow(form, tr("HP change"), hp_, QStringLiteral("hp"));
     spellBonus_ = spin(-10, 10);
     addRow(form, tr("Spell DC and attack"), spellBonus_, QStringLiteral("spellBonus"));
+    abilityDcs_ = lines(tr("-2 (one per line: added to the DCs in the abilities it has); +2 poison, spore: only "
+                           "abilities with one of those traits or name words; add \"when\" and a choice to depend "
+                           "on it"),
+                        2);
+    addRow(form, tr("Ability DCs"), abilityDcs_, QStringLiteral("abilityDcs"), true,
+           tr("Raises or lowers the DCs written in the abilities it already has (not its spells, and not the "
+              "abilities this one adds). For each ability the first line that fits is used, so put the lines "
+              "with words before a line without"));
 
     // Traits.
     form->addRow(heading(tr("Traits")));
@@ -757,10 +923,15 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     addRow(form, tr("After the languages"), languageExtras_, QStringLiteral("languageExtras"), true,
            tr("After the semicolon in its Languages line (\"Aklo; telepathy 100 feet\"), even if it has no "
               "languages; one it has with a smaller amount is raised"));
+    removeLanguages_ = new QLineEdit;
+    removeLanguages_->setPlaceholderText(tr("all, or Common, telepathy"));
+    addRow(form, tr("Remove languages"), removeLanguages_, QStringLiteral("removeLanguages"), true,
+           tr("Languages it loses, before the ones above are added. \"all\" removes every one, telepathy and "
+              "everything after the semicolon too; \"telepathy\" removes \"telepathy 100 feet\""));
 
     // Speeds and size.
     form->addRow(heading(tr("Speeds and Size")));
-    landMode_ = combo({{"", tr("unchanged")}, {"set", tr("set to")}, {"add", tr("raised by")},
+    landMode_ = combo({{"", tr("unchanged")}, {"set", tr("set to")}, {"add", tr("raised by")}, {"lower", tr("lowered by")},
                        {"max", tr("at most")}, {"min", tr("at least")}});
     landFeet_ = spin(0, 200);
     landFeet_->setSingleStep(5);
@@ -772,8 +943,8 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     landLayout->addWidget(landFeet_);
     landLayout->addStretch();
     addRow(form, tr("Land Speed"), landRow, QStringLiteral("landSpeed"));
-    speeds_ = lines(tr("fly 30 (one per line: a Speed it gains, or raises to this); fly 25 when winged: only when that "
-                         "choice is picked"), 2);
+    speeds_ = lines(tr("fly 30 (one per line: a Speed it gains, or raises to this); fly -10: lowers it (never below 5 "
+                         "feet), all -10 every Speed; fly 25 when winged: only when that choice is picked"), 2);
     addRow(form, tr("Other Speeds"), speeds_, QStringLiteral("speeds"));
     size_ = combo({{"", tr("unchanged")}, {"tiny", tr("Tiny")}, {"small", tr("Small")}, {"medium", tr("Medium")},
                    {"large", tr("Large")}, {"huge", tr("Huge")}, {"gargantuan", tr("Gargantuan")}});
@@ -784,6 +955,12 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
     immunities_ = new QLineEdit;
     immunities_->setPlaceholderText(tr("fire, poison"));
     addRow(form, tr("Immunities"), immunities_, QStringLiteral("immunities"));
+    removeImmunities_ = new QLineEdit;
+    removeImmunities_->setPlaceholderText(tr("fire, or fire when burnable"));
+    addRow(form, tr("Remove immunities"), removeImmunities_, QStringLiteral("removeImmunities"), true,
+           tr("Immunities it loses (\"fire\" also removes \"fire (except magical)\"), before the immunities, "
+              "resistances and weaknesses above are added, so a weakness to fire can replace an immunity to it. "
+              "Add \"when\" and a choice to make one depend on it"));
     resistances_ = lines(tr("fire 5 / physical 5 (except silver) / fire {=max(1, level / 2)}: one per line; add \"when "
                               "frame:steel\" for only when that choice is picked"), 3);
     addRow(form, tr("Resistances"), resistances_, QStringLiteral("resistances"));
@@ -1052,14 +1229,15 @@ void AdjustmentEditor::buildForm(QFormLayout *form)
                        static_cast<QWidget *>(source_), static_cast<QWidget *>(level_),
                        static_cast<QWidget *>(bonus_), static_cast<QWidget *>(skipPerception_),
                        static_cast<QWidget *>(skipDcs_), static_cast<QWidget *>(strikeDamage_),
-                       static_cast<QWidget *>(hp_), static_cast<QWidget *>(spellBonus_),
+                       static_cast<QWidget *>(hp_), static_cast<QWidget *>(spellBonus_), static_cast<QWidget *>(abilityDcs_),
                        static_cast<QWidget *>(traits_), static_cast<QWidget *>(removeTraits_),
                        static_cast<QWidget *>(rarity_),
                        static_cast<QWidget *>(senses_), static_cast<QWidget *>(languages_),
                        static_cast<QWidget *>(languagesAlways_), static_cast<QWidget *>(languageExtras_),
+                       static_cast<QWidget *>(removeLanguages_),
                        static_cast<QWidget *>(landMode_),
                        static_cast<QWidget *>(landFeet_), static_cast<QWidget *>(speeds_),
-                       static_cast<QWidget *>(size_), static_cast<QWidget *>(immunities_),
+                       static_cast<QWidget *>(size_), static_cast<QWidget *>(immunities_), static_cast<QWidget *>(removeImmunities_),
                        static_cast<QWidget *>(resistances_), static_cast<QWidget *>(weaknesses_),
                        static_cast<QWidget *>(hpAbilities_), static_cast<QWidget *>(saveNote_),
                        static_cast<QWidget *>(items_), static_cast<QWidget *>(skills_),
@@ -1194,6 +1372,21 @@ bool AdjustmentEditor::formShows(const QString &key, const QJsonValue &value, bo
     {
         return linesShow(value);
     }
+    if (key == QLatin1String("removeImmunities"))
+    {
+        return removeImmunitiesLine(value).has_value();
+    }
+    if (key == QLatin1String("abilityDcs"))
+    {
+        for (const QJsonValue &v : value.toArray())
+        {
+            if (!abilityDcLine(v))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     if (key == QLatin1String("lores"))
     {
         for (const QJsonValue &v : value.toArray())
@@ -1327,6 +1520,15 @@ void AdjustmentEditor::fillForm(const QString &name, const QJsonObject &entry)
     strikeDamage_->setValue(changes.value(QStringLiteral("strikeDamage")).toInt());
     hp_->setValue(showsHere("hp") ? singleChange(changes.value(QStringLiteral("hp"))).value_or(0) : 0);
     spellBonus_->setValue(changes.value(QStringLiteral("spellBonus")).toInt());
+    QStringList dcLines;
+    if (showsHere("abilityDcs"))
+    {
+        for (const QJsonValue &v : changes.value(QStringLiteral("abilityDcs")).toArray())
+        {
+            dcLines << abilityDcLine(v).value_or(QString());
+        }
+    }
+    abilityDcs_->setPlainText(dcLines.join(QLatin1Char('\n')));
 
     traits_->setText(joinList(changes.value(QStringLiteral("traits"))));
     removeTraits_->setText(joinList(changes.value(QStringLiteral("removeTraits"))));
@@ -1337,13 +1539,22 @@ void AdjustmentEditor::fillForm(const QString &name, const QJsonObject &entry)
     languages_->setText(joinList(changes.value(QStringLiteral("languages"))));
     languagesAlways_->setChecked(changes.value(QStringLiteral("languagesAlways")).toBool());
     languageExtras_->setText(joinList(changes.value(QStringLiteral("languageExtras"))));
+    removeLanguages_->setText(joinList(changes.value(QStringLiteral("removeLanguages"))));
     const QJsonObject land = showsHere("landSpeed") ? changes.value(QStringLiteral("landSpeed")).toObject() : QJsonObject();
-    landMode_->setCurrentIndex(land.isEmpty() ? 0 : std::max(0, landMode_->findData(land.begin().key())));
-    landFeet_->setValue(land.isEmpty() ? 0 : land.begin().value().toInt());
+    // {"add": -10} is "lowered by 10".
+    const bool lowered = !land.isEmpty() && land.begin().key() == QLatin1String("add") &&
+                         land.begin().value().toInt() < 0;
+    landMode_->setCurrentIndex(land.isEmpty() ? 0
+                               : lowered      ? landMode_->findData(QStringLiteral("lower"))
+                                              : std::max(0, landMode_->findData(land.begin().key())));
+    landFeet_->setValue(land.isEmpty() ? 0 : std::abs(land.begin().value().toInt()));
     speeds_->setPlainText(showsHere("speeds") ? linesOf(changes.value(QStringLiteral("speeds"))) : QString());
     size_->setCurrentIndex(std::max(0, size_->findData(changes.value(QStringLiteral("size")).toString())));
 
     immunities_->setText(joinList(changes.value(QStringLiteral("immunities"))));
+    removeImmunities_->setText(showsHere("removeImmunities")
+                                   ? removeImmunitiesLine(changes.value(QStringLiteral("removeImmunities"))).value_or(QString())
+                                   : QString());
     resistances_->setPlainText(showsHere("resistances") ? linesOf(changes.value(QStringLiteral("resistances"))) : QString());
     weaknesses_->setPlainText(showsHere("weaknesses") ? linesOf(changes.value(QStringLiteral("weaknesses"))) : QString());
     hpAbilities_->setPlainText(showsHere("hpAbilities") ? linesOf(changes.value(QStringLiteral("hpAbilities"))) : QString());
@@ -1460,6 +1671,18 @@ QJsonObject AdjustmentEditor::readForm(QString *name) const
         changes.insert(QStringLiteral("hp"), stepsOf(hp_->value()));
     }
     number("spellBonus", spellBonus_->value());
+    QJsonArray dcs;
+    for (const QString &line : nonEmptyLines(abilityDcs_->toPlainText()))
+    {
+        if (const std::optional<QJsonObject> o = abilityDcFromLine(line))
+        {
+            dcs.append(*o);
+        }
+    }
+    if (!dcs.isEmpty() && shows(QStringLiteral("abilityDcs")))
+    {
+        changes.insert(QStringLiteral("abilityDcs"), dcs);
+    }
 
     list("traits", traits_->text());
     list("removeTraits", removeTraits_->text());
@@ -1480,10 +1703,13 @@ QJsonObject AdjustmentEditor::readForm(QString *name) const
         changes.insert(QStringLiteral("languagesAlways"), true);
     }
     list("languageExtras", languageExtras_->text());
-    if (!landMode_->currentData().toString().isEmpty() && shows(QStringLiteral("landSpeed")))
+    list("removeLanguages", removeLanguages_->text());
+    if (const QString mode = landMode_->currentData().toString(); !mode.isEmpty() && shows(QStringLiteral("landSpeed")))
     {
+        // Lowered by 10: {"add": -10}.
         changes.insert(QStringLiteral("landSpeed"),
-                       QJsonObject{{landMode_->currentData().toString(), landFeet_->value()}});
+                       mode == QLatin1String("lower") ? QJsonObject{{QStringLiteral("add"), -landFeet_->value()}}
+                                                      : QJsonObject{{mode, landFeet_->value()}});
     }
     auto typedList = [&](const char *key, QPlainTextEdit *edit, bool amountNeeded) {
         QJsonArray items;
@@ -1514,6 +1740,11 @@ QJsonObject AdjustmentEditor::readForm(QString *name) const
     }
 
     list("immunities", immunities_->text());
+    if (const QJsonArray removed = removeImmunitiesFromLine(removeImmunities_->text());
+        !removed.isEmpty() && shows(QStringLiteral("removeImmunities")))
+    {
+        changes.insert(QStringLiteral("removeImmunities"), removed);
+    }
     typedList("resistances", resistances_, false);
     typedList("weaknesses", weaknesses_, false);
     typedList("hpAbilities", hpAbilities_, false);
@@ -1627,6 +1858,40 @@ QList<HomebrewEditor::FieldProblem> AdjustmentEditor::checkForm() const
     {
         badLines(speeds_, true, QStringLiteral("fly 30"));
     }
+    if (speeds_->isEnabled())
+    {
+        // "all 10": "all" only lowers.
+        for (const QString &line : nonEmptyLines(speeds_->toPlainText()))
+        {
+            const std::optional<QJsonObject> o = typedFromLine(line, true);
+            if (o && o->value(QStringLiteral("type")).toString().compare(QLatin1String("all"), Qt::CaseInsensitive) == 0 &&
+                singleChange(o->value(QStringLiteral("steps"))).value_or(-1) > 0)
+            {
+                problems.push_back({speeds_,
+                                    tr("\"%1\": \"all\" can only lower its Speeds (\"all -10\"); it can't "
+                                       "raise them.")
+                                        .arg(line.trimmed()),
+                                    false});
+            }
+        }
+    }
+    if (abilityDcs_->isEnabled())
+    {
+        QStringList bad;
+        for (const QString &line : nonEmptyLines(abilityDcs_->toPlainText()))
+        {
+            if (!abilityDcFromLine(line))
+            {
+                bad << line;
+            }
+        }
+        if (!bad.isEmpty())
+        {
+            problems.push_back({abilityDcs_, tr("These lines need a change first, like \"-2\" or \"+2 poison, "
+                                                "spore\": %1")
+                                                 .arg(bad.join(QStringLiteral("; ")))});
+        }
+    }
     if (const int incomplete = replaceOrAdd_->incompleteRows(); incomplete > 0)
     {
         problems.push_back({replaceOrAdd_, tr("A trait to replace needs both boxes: the trait it has and the "
@@ -1729,7 +1994,7 @@ QList<HomebrewEditor::FieldProblem> AdjustmentEditor::checkForm() const
         checkList(strikes_, tr("Strike"));
     }
     // "fly 25 when heritage:skywatcher": the same check for the lines.
-    for (QPlainTextEdit *edit : {speeds_, resistances_, weaknesses_, hpAbilities_})
+    for (QPlainTextEdit *edit : {speeds_, resistances_, weaknesses_, hpAbilities_, abilityDcs_})
     {
         if (!edit->isEnabled())
         {
@@ -1737,7 +2002,8 @@ QList<HomebrewEditor::FieldProblem> AdjustmentEditor::checkForm() const
         }
         for (const QString &line : nonEmptyLines(edit->toPlainText()))
         {
-            const std::optional<QJsonObject> o = typedFromLine(line, false);
+            const std::optional<QJsonObject> o =
+                edit == abilityDcs_ ? abilityDcFromLine(line) : typedFromLine(line, false);
             const QString when = o ? o->value(QStringLiteral("when")).toString() : QString();
             for (QString part : when.split(QLatin1Char('&'), Qt::SkipEmptyParts))
             {
@@ -1752,6 +2018,29 @@ QList<HomebrewEditor::FieldProblem> AdjustmentEditor::checkForm() const
                                         tr("\"%1\" (in \"%2\") names no choice of this one; it would never "
                                            "be made.")
                                             .arg(when, line.trimmed()),
+                                        false});
+                }
+            }
+        }
+    }
+    if (removeImmunities_->isEnabled())
+    {
+        for (const QJsonValue &v : removeImmunitiesFromLine(removeImmunities_->text()))
+        {
+            const QString when = v.toObject().value(QStringLiteral("when")).toString();
+            for (QString part : when.split(QLatin1Char('&'), Qt::SkipEmptyParts))
+            {
+                if (part.startsWith(QLatin1Char('!')))
+                {
+                    part = part.mid(1);
+                }
+                const QString key = part.section(QLatin1Char(':'), 0, 0);
+                if (!key.isEmpty() && !choiceKeys.contains(key))
+                {
+                    problems.push_back({removeImmunities_,
+                                        tr("\"%1\" (in Remove immunities) names no choice of this one; it would "
+                                           "never be made.")
+                                            .arg(when),
                                         false});
                 }
             }

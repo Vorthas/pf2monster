@@ -182,6 +182,41 @@ namespace monster
                 m.replaceOrAdd.emplace_back(it.key(), it.value().toString());
             }
             m.languagesAlways = changes.value(QStringLiteral("languagesAlways")).toBool();
+            m.removeLanguages = readStrings(changes.value(QStringLiteral("removeLanguages")));
+            // ["fire"] or [{"type": "fire", "when": "burnable"}].
+            for (const QJsonValue &v : changes.value(QStringLiteral("removeImmunities")).toArray())
+            {
+                if (v.isString())
+                {
+                    Modifier::Typed t;
+                    t.type = v.toString().trimmed();
+                    m.removeImmunities.push_back(t);
+                }
+                else
+                {
+                    const std::vector<Modifier::Typed> one = readTyped(QJsonArray{v});
+                    m.removeImmunities.insert(m.removeImmunities.end(), one.begin(), one.end());
+                }
+            }
+            for (const QJsonValue &v : changes.value(QStringLiteral("abilityDcs")).toArray())
+            {
+                const QJsonObject o = v.toObject();
+                Modifier::AbilityDcs entry;
+                entry.change = o.value(QStringLiteral("change")).toInt();
+                // "poison, spore" or ["poison", "spore"].
+                const QJsonValue match = o.value(QStringLiteral("match"));
+                const QStringList words =
+                    match.isArray() ? readStrings(match) : match.toString().split(QLatin1Char(','));
+                for (const QString &word : words)
+                {
+                    if (!word.trimmed().isEmpty())
+                    {
+                        entry.match << word.trimmed().toLower();
+                    }
+                }
+                entry.when = o.value(QStringLiteral("when")).toString();
+                m.abilityDcs.push_back(entry);
+            }
             if (const QJsonObject land = changes.value(QStringLiteral("landSpeed")).toObject(); !land.isEmpty())
             {
                 for (const auto &[key, target] : {std::pair{"set", &m.landSet}, std::pair{"add", &m.landAdd},
@@ -438,11 +473,11 @@ namespace monster
                                      "dialog", "appliesTo", "group", "optional", "order", "source",
                                      "license", "changes", "abilities", "strikes", "choices", "note"};
         const QSet<QString> kChangeKeys{
-            "attributeMin", "attributeSet", "bonus", "bonusSkip", "convertStrike", "derivedSpeeds",
+            "abilityDcs", "attributeMin", "attributeSet", "bonus", "bonusSkip", "convertStrike", "derivedSpeeds",
             "domainSpells", "editAbilities", "grow", "hp", "hpAbilities", "immunities", "innateSpells",
             "items", "landSpeed", "landToFly", "languageExtras", "languages", "languagesAlways", "level", "livingType",
-            "lores", "newSkills", "rarity", "reach", "recallKnowledge", "removeLiving", "removeTraits",
-            "renameStrikes", "replaceOrAdd", "replaceTraits", "resistances", "saveNote", "senses",
+            "lores", "newSkills", "rarity", "reach", "recallKnowledge", "removeImmunities", "removeLanguages", "removeLiving",
+            "removeTraits", "renameStrikes", "replaceOrAdd", "replaceTraits", "resistances", "saveNote", "senses",
             "senseUpgrades", "size", "skillBenchmarks", "skillsToHighest", "speeds", "spellBonus",
             "statChanges", "strikeDamage", "strikeDamageAdd", "strikeDie", "strikeTraits", "traits",
             "weaknesses"};
@@ -454,6 +489,26 @@ namespace monster
         const QSet<QString> kChoiceKeys{"key",  "type",    "label",    "note",      "placeholder",
                                         "default", "when", "minLevel", "itemsFrom", "items"};
         const QSet<QString> kItemKeys{"key", "label", "tip", "on", "minLevel", "changes"};
+        const QSet<QString> kAbilityDcsKeys{"change", "match", "when"};
+        const QSet<QString> kRemoveImmunityKeys{"type", "when"};
+
+        // The keys inside a "changes" object's lists that can be checked
+        // too: "abilityDcs" entries.
+        void checkChangeLists(const QString &path, const QString &text, const QJsonObject &changes)
+        {
+            for (const QJsonValue &v : changes.value(QStringLiteral("abilityDcs")).toArray())
+            {
+                checkKeys(path, text, v.toObject(), kAbilityDcsKeys, QStringLiteral("in an \"abilityDcs\" entry"));
+            }
+            for (const QJsonValue &v : changes.value(QStringLiteral("removeImmunities")).toArray())
+            {
+                if (v.isObject())
+                {
+                    checkKeys(path, text, v.toObject(), kRemoveImmunityKeys,
+                              QStringLiteral("in a \"removeImmunities\" entry"));
+                }
+            }
+        }
 
         // A homebrew adjustment or template file checked for what the user
         // might have got wrong; nullopt (with problems recorded) if it can't
@@ -506,6 +561,7 @@ namespace monster
             checkKeys(path, text, root, kTopKeys);
             checkKeys(path, text, root.value(QStringLiteral("changes")).toObject(), kChangeKeys,
                       QStringLiteral("in \"changes\""));
+            checkChangeLists(path, text, root.value(QStringLiteral("changes")).toObject());
             for (const QJsonValue &v : root.value(QStringLiteral("abilities")).toArray())
             {
                 checkKeys(path, text, v.toObject(), kAbilityKeys, QStringLiteral("in an ability"));
@@ -523,6 +579,7 @@ namespace monster
                     checkKeys(path, text, item.toObject(), kItemKeys, QStringLiteral("in a choice's item"));
                     checkKeys(path, text, item.toObject().value(QStringLiteral("changes")).toObject(), kChangeKeys,
                               QStringLiteral("in a choice item's \"changes\""));
+                    checkChangeLists(path, text, item.toObject().value(QStringLiteral("changes")).toObject());
                 }
             }
             if (!usable)
@@ -918,6 +975,35 @@ namespace monster
                 }
             }
             return -1;
+        }
+
+        // Lowers a Speed by `by` feet, to no less than 5 feet (the rounding
+        // rule's minimum; one already slower stays): "fly" (the item that
+        // starts with it), "land" (the one that starts with a number) or
+        // "all" (every one). A Speed it doesn't have stays missing.
+        void lowerSpeed(QString &speed, const QString &type, int by)
+        {
+            auto [items, rest] = splitList(speed);
+            const bool all = type.compare(QLatin1String("all"), Qt::CaseInsensitive) == 0;
+            const qsizetype only = type.compare(QLatin1String("land"), Qt::CaseInsensitive) == 0 ? landItem(items)
+                                                                                                 : findItem(items, type);
+            static const QRegularExpression number(QStringLiteral(R"(\d+)"));
+            for (qsizetype i = 0; i < items.size(); ++i)
+            {
+                if (!all && i != only)
+                {
+                    continue;
+                }
+                const QRegularExpressionMatch match = number.match(items[i]);
+                if (!match.hasMatch())
+                {
+                    continue; // "climb (see below)": left as written
+                }
+                const int feet = match.captured().toInt();
+                const int lowered = std::max(std::min(feet, 5), feet - by);
+                items[i].replace(match.capturedStart(), match.capturedLength(), QString::number(lowered));
+            }
+            speed = joinList(items, rest);
         }
 
         void deriveSpeed(Monster &m, const Modifier::DerivedSpeed &d)
@@ -1869,6 +1955,90 @@ namespace monster
                                          : list + QStringLiteral("; ") + extras.join(QStringLiteral(", "));
         }
 
+        // Takes languages out of its Languages line: "all" empties it;
+        // a name takes the item that is it or starts with it and a space
+        // ("telepathy" takes "telepathy 100 feet"), before or after the
+        // semicolon.
+        void removeLanguagesFrom(QString &languages, const QStringList &names)
+        {
+            for (const QString &name : names)
+            {
+                if (name.trimmed().compare(QLatin1String("all"), Qt::CaseInsensitive) == 0)
+                {
+                    languages.clear();
+                    return;
+                }
+            }
+            auto takes = [&](const QString &item) {
+                for (const QString &name : names)
+                {
+                    const QString wanted = name.trimmed();
+                    if (!wanted.isEmpty() && (item.compare(wanted, Qt::CaseInsensitive) == 0 ||
+                                              item.startsWith(wanted + QLatin1Char(' '), Qt::CaseInsensitive)))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            };
+            const qsizetype semi = languages.indexOf(QLatin1Char(';'));
+            QStringList head, extras;
+            for (const QString &item : (semi < 0 ? languages : languages.left(semi)).split(QLatin1Char(',')))
+            {
+                if (!item.trimmed().isEmpty() && !takes(item.trimmed()))
+                {
+                    head << item.trimmed();
+                }
+            }
+            if (semi >= 0)
+            {
+                for (const QString &item : languages.mid(semi + 1).split(QLatin1Char(',')))
+                {
+                    if (!item.trimmed().isEmpty() && !takes(item.trimmed()))
+                    {
+                        extras << item.trimmed();
+                    }
+                }
+            }
+            const QString list = head.join(QStringLiteral(", "));
+            languages = extras.isEmpty() ? list
+                        : list.isEmpty() ? extras.join(QStringLiteral(", "))
+                                         : list + QStringLiteral("; ") + extras.join(QStringLiteral(", "));
+        }
+
+        // Whether an ability fits an abilityDcs entry's words: one is among
+        // its traits, or starts a word of its name ("spore": Emit Spores).
+        // No words: every ability fits.
+        bool abilityFits(const Special &special, const QStringList &match)
+        {
+            if (match.isEmpty())
+            {
+                return true;
+            }
+            static const QRegularExpression nonWord(QStringLiteral(R"([^\w']+)"));
+            const QStringList nameWords = special.name.split(nonWord, Qt::SkipEmptyParts);
+            QStringList traits;
+            for (const QString &trait : special.traits.split(QLatin1Char(',')))
+            {
+                traits << trait.trimmed().toLower();
+            }
+            for (const QString &word : match)
+            {
+                if (traits.contains(word))
+                {
+                    return true;
+                }
+                for (const QString &nameWord : nameWords)
+                {
+                    if (nameWord.startsWith(word, Qt::CaseInsensitive))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         // The type of a Strike's damage: the word after its first roll
         // ("1d6+5 piercing plus venom" -> "piercing"), or empty.
         QString damageTypeOf(const QString &damage)
@@ -2078,7 +2248,8 @@ namespace monster
             }
             if (mod.landAdd && wanted)
             {
-                *wanted += *mod.landAdd;
+                // Lowered: never below 5 feet (one already slower stays).
+                *wanted = std::max(std::min(*wanted, 5), *wanted + *mod.landAdd);
             }
             if (mod.landMax && wanted && *wanted > *mod.landMax)
             {
@@ -2614,6 +2785,20 @@ namespace monster
                     }
                 }
             }
+            if (!mod.abilityDcs.empty())
+            {
+                for (Special &special : m.specials)
+                {
+                    for (const Modifier::AbilityDcs &entry : mod.abilityDcs)
+                    {
+                        if (chosen(options, entry.when) && abilityFits(special, entry.match))
+                        {
+                            special.description = addTextDcs(special.description, entry.change);
+                            break;
+                        }
+                    }
+                }
+            }
             if (mod.spellBonus != 0)
             {
                 for (auto &[key, stat] : m.stats)
@@ -2656,6 +2841,10 @@ namespace monster
                     addMissing(m.traits, trait);
                     m.addedTraits << trait;
                 }
+            }
+            if (!mod.removeLanguages.isEmpty())
+            {
+                removeLanguagesFrom(m.languages, mod.removeLanguages);
             }
             if (mod.languagesAlways)
             {
@@ -2954,6 +3143,24 @@ namespace monster
             {
                 m.name = prefix + QLatin1Char(' ') + m.name;
             }
+            // Removed first, so a weakness this one adds isn't skipped for
+            // an immunity it takes away.
+            for (const Modifier::Typed &t : mod.removeImmunities)
+            {
+                const QString type = expandOptions(choicesOf, options, t.type, level);
+                if (type.isEmpty() || !chosen(options, t.when))
+                {
+                    continue;
+                }
+                Stat &stat = m.stat(QStringLiteral("immunity"));
+                QString list = stat.value.text();
+                auto [items, rest] = splitList(list);
+                for (qsizetype at = findItem(items, type); at >= 0; at = findItem(items, type))
+                {
+                    items.removeAt(at);
+                }
+                stat.value = Value(joinList(items, rest));
+            }
             for (const QString &listed : mod.immunities)
             {
                 const QString immunity = expandOptions(choicesOf, options, listed, level);
@@ -3030,7 +3237,18 @@ namespace monster
             }
             for (const Modifier::Typed &t : mod.speeds)
             {
-                if (const int feet = typedAmount(t, before, level); feet > 0 && chosen(options, t.when))
+                if (!chosen(options, t.when))
+                {
+                    continue;
+                }
+                // "fly -10" lowers its fly Speed, "all -10" every one; "all"
+                // with a positive amount does nothing.
+                const int feet = typedAmount(t, before, level);
+                if (feet < 0)
+                {
+                    lowerSpeed(m.speed, t.type, -feet);
+                }
+                else if (feet > 0 && t.type.compare(QLatin1String("all"), Qt::CaseInsensitive) != 0)
                 {
                     raiseItem(m.speed, t.type, feet, QStringLiteral(" feet"));
                 }

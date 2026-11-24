@@ -314,7 +314,9 @@ In the editor's form, each of these is one line: `fire 5`,
 `physical 5 (except silver)`, `fire {=max(1, level / 2)}`. Add `when` and a
 condition at the end to make it depend on a choice: `fly 25 when thrusters`,
 `fire 5 when frame:large` (see [Conditions](#conditions)). This works for
-Other Speeds, Resistances, Weaknesses and HP abilities.
+Other Speeds, Resistances, Weaknesses and HP abilities. In Other Speeds, a
+negative amount lowers a Speed it has: `fly -10`, or `all -10` for every
+Speed (land too).
 
 | Key | What it does |
 |---|---|
@@ -323,6 +325,7 @@ Other Speeds, Resistances, Weaknesses and HP abilities.
 | `bonusSkip` | Left out of the bonus: `["perception"]`, `["dcs"]`, or both. |
 | `strikeDamage` | Added to its Strikes' damage. |
 | `spellBonus` | Added to its spell DCs and spell attacks. |
+| `abilityDcs` | The DCs written in the abilities it already has, raised or lowered; see [Ability DCs](#ability-dcs). |
 | `hp` | Steps: the HP change. HP never goes below 1. |
 | `traits` | Traits added if missing: `["stonekin"]`. |
 | `removeTraits` | Traits taken away. |
@@ -336,14 +339,16 @@ Other Speeds, Resistances, Weaknesses and HP abilities.
 | `languages` | Languages added, only to a creature that has languages. |
 | `languagesAlways` | `true`: add `languages` even to a creature with none. |
 | `languageExtras` | `["telepathy 100 feet"]`: added after the semicolon in its Languages line ("Aklo, Common; telepathy 100 feet"), even to a creature with no languages. One it has with a smaller amount is raised. |
-| `landSpeed` | `{"set": 25}`, `{"add": 5}`, `{"max": 20}` (lowered to at most) or `{"min": 30}` (raised to at least). |
-| `speeds` | Typed: Speeds added, or raised to this (`{"type": "fly", "steps": [{"change": 30}]}`). |
+| `removeLanguages` | Languages it loses, before `languages` are added: `["all"]` removes every one, and everything after the semicolon (telepathy too); names remove just those (`["Common", "telepathy"]`; "telepathy" removes "telepathy 100 feet"). |
+| `landSpeed` | `{"set": 25}`, `{"add": 5}`, `{"add": -10}` (lowered by; never below 5 feet), `{"max": 20}` (lowered to at most) or `{"min": 30}` (raised to at least). |
+| `speeds` | Typed: Speeds added, or raised to this (`{"type": "fly", "steps": [{"change": 30}]}`). A negative amount lowers a Speed it has, never below 5 feet (`{"type": "fly", "steps": [{"change": -10}]}`); type `"all"` lowers every Speed, land too. A Speed it doesn't have isn't added. |
 | `derivedSpeeds` | Speeds worked out from others: `{"type": "swim", "from": "land", "half": true, "min": 5, "onlyIfMissing": true}`. `"from"` can be `"fastest"`. |
 | `landToFly` | `true`: its land Speed becomes a fly Speed. |
 | `size` | The size it becomes: `"tiny"` to `"gargantuan"`. |
 | `grow` | `{"sizes": 1, "reach": 5}`: it grows by that many sizes; at Huge or bigger, its melee reach grows by `reach` feet. |
 | `reach` | `{"lowest": 0, "others": 5}`: its shortest-reach melee Strikes get the first reach, the others the second (Miniature). |
 | `immunities` | Immunities added; a resistance or weakness to the same thing is removed. |
+| `removeImmunities` | Immunities it loses, before its immunities, resistances and weaknesses are added (so a weakness to fire can replace an immunity to fire): `["fire"]` (also removes "fire (except magical)"), or `[{"type": "fire", "when": "burnable"}]` for only when a choice is made. In the form: `fire, cold when burnable`. |
 | `resistances`, `weaknesses` | Typed: added, or raised to this amount. A resistance and weakness to the same type cancel out. |
 | `hpAbilities` | After its HP: `["void healing"]`, or typed for an amount (`{"type": "fast healing", "steps": [{"change": 5}]}`). |
 | `saveNote` | Added to the saves' note: `"+1 status to all saves vs. magic"`. |
@@ -371,6 +376,34 @@ heritages (changeling, nephilim, ...) aren't ancestries, so they stay. Your
 own ancestries count too: every trait an "any ancestry" replacement gives,
 so a Stonekin replaces an Elf and the other way round, and every homebrew
 trait with `"ancestry": true` (see [Traits](#traits)).
+
+### Ability DCs
+
+`"abilityDcs"` raises or lowers the DCs written in the creature's abilities
+("DC 24 Fortitude"; "DC 5 flat check" is left alone). Only the abilities it
+already has change, not the ones this adjustment adds, and not its spells
+(those are `spellBonus`). Each entry has a `change` and, if wanted:
+
+- `match`: only abilities with one of these words among their traits, or
+  starting a word of their name (`"poison, spore"` fits a (poison) ability
+  and Emit Spores).
+- `when`: only when a choice is made (see [Conditions](#conditions)).
+
+For each ability the first entry that fits is used, so put the entries with
+`match` or `when` before one without. A sporeborn lowers its old abilities'
+DCs by 2, but raises its poison and spore ones by 2 with Potent Poison:
+
+```json
+"abilityDcs": [
+ {"change": 2, "match": "poison, spore", "when": "abilities:potent-poison"},
+ {"change": -2}
+]
+```
+
+In the editor's form (Ability DCs), each entry is one line: `-2`,
+`+2 poison, spore when abilities:potent-poison`. Put `abilityDcs` in the
+main `changes` with a `when`, not in a choice item's changes (those come
+after the adjustment's own abilities, so they would change those too).
 
 ### Abilities
 
@@ -454,24 +487,24 @@ depend on the options dialog (in the form: the **Only when** field, or
 Ability texts (and traits, names and Strike damage) can hold these; they are
 worked out for each monster:
 
-| Placeholder | Becomes |
-|---|---|
-| `{Name}`, `{name}` | What the monster is called, with or without a capital ("The stonekin guard", or "Sziskazha" for a proper name). |
-| `{level}` | Its level after the change. |
-| `{halfHp}` | Half its Hit Points. |
-| `{=level / 2}` | A number; see [Formulas](#formulas). |
-| `{steps\|1d6\|5=2d6\|15=3d6}` | The text of the last step its level reaches. |
-| `{dc:standard}` | GM Core's DC for its level (`easy`, `hard`, `very hard`, ... also work). |
-| `{spelldc:high}` | The spell DC table at its level (`extreme`, `high`, `moderate`). |
-| `{spellattack:high}`, `{skill:high}` | Those tables at its level ("+17"). |
-| `{area:unlimited}`, `{area:limited}` | The area damage table's dice at its level. |
-| `{statdc:will}` | 10 + its Will (any statistic). |
-| `{abilitydc}` | The highest DC in its other abilities, else the high spell DC. |
-| `{owndc:moderate}` | The highest DC it lists anywhere, else the spell DC table's. |
-| `{strikeattack:best}`, `{strikeattack:claw}` | Its best melee Strike's attack, or its claw's. |
-| `{strikedice:claw}` | Its claw's damage dice ("1d8+9"). |
-| `{opt:key}` | A choice's text; `{opt:key\|lower}` in lower case, `{opt:key\|cap}` with a capital. |
-| `{tradition}` | Its magic tradition (arcane, divine, occult or primal), from a `"tradition"` choice or its traits. |
+| Placeholder                                  | Becomes                                                                                                         |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `{Name}`, `{name}`                           | What the monster is called, with or without a capital ("The stonekin guard", or "Sziskazha" for a proper name). |
+| `{level}`                                    | Its level after the change.                                                                                     |
+| `{halfHp}`                                   | Half its Hit Points.                                                                                            |
+| `{=level / 2}`                               | A number; see [Formulas](#formulas).                                                                            |
+| `{steps\|1d6\|5=2d6\|15=3d6}`                | The text of the last step its level reaches.                                                                    |
+| `{dc:standard}`                              | GM Core's DC for its level (`easy`, `hard`, `very hard`, ... also work).                                        |
+| `{spelldc:high}`                             | The spell DC table at its level (`extreme`, `high`, `moderate`).                                                |
+| `{spellattack:high}`, `{skill:high}`         | Those tables at its level ("+17").                                                                              |
+| `{area:unlimited}`, `{area:limited}`         | The area damage table's dice at its level.                                                                      |
+| `{statdc:will}`                              | 10 + its Will (any statistic).                                                                                  |
+| `{abilitydc}`                                | The highest DC in its other abilities, else the high spell DC.                                                  |
+| `{owndc:moderate}`                           | The highest DC it lists anywhere, else the spell DC table's.                                                    |
+| `{strikeattack:best}`, `{strikeattack:claw}` | Its best melee Strike's attack, or its claw's.                                                                  |
+| `{strikedice:claw}`                          | Its claw's damage dice ("1d8+9").                                                                               |
+| `{opt:key}`                                  | A choice's text; `{opt:key\|lower}` in lower case, `{opt:key\|cap}` with a capital.                             |
+| `{tradition}`                                | Its magic tradition (arcane, divine, occult or primal), from a `"tradition"` choice or its traits.              |
 
 These also work in a monster's own text, typed in the form: its abilities,
 description, Strike names, spells, items and languages (and a hazard's

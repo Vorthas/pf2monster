@@ -156,6 +156,7 @@ private:
     QSpinBox *strikeDamage_ = nullptr;
     QSpinBox *hp_ = nullptr;
     QSpinBox *spellBonus_ = nullptr;
+    QPlainTextEdit *abilityDcs_ = nullptr;
     // Traits.
     QLineEdit *traits_ = nullptr;
     QLineEdit *removeTraits_ = nullptr;
@@ -166,6 +167,7 @@ private:
     QLineEdit *languages_ = nullptr;
     QCheckBox *languagesAlways_ = nullptr;
     QLineEdit *languageExtras_ = nullptr;
+    QLineEdit *removeLanguages_ = nullptr;
     // Speeds and size.
     QComboBox *landMode_ = nullptr;
     QSpinBox *landFeet_ = nullptr;
@@ -173,6 +175,7 @@ private:
     QComboBox *size_ = nullptr;
     // Defenses.
     QLineEdit *immunities_ = nullptr;
+    QLineEdit *removeImmunities_ = nullptr;
     QPlainTextEdit *resistances_ = nullptr;
     QPlainTextEdit *weaknesses_ = nullptr;
     QPlainTextEdit *hpAbilities_ = nullptr;

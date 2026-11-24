@@ -338,6 +338,27 @@ namespace monster
         // this amount ("telepathy 100 feet"), even to a creature without
         // languages.
         QStringList languageExtras;
+        // Languages it loses, before this one's own are added: "all" (every
+        // one, and everything after the semicolon: telepathy too) or names
+        // ("Common"; "telepathy" takes "telepathy 100 feet").
+        QStringList removeLanguages;
+        // Immunities it loses ("fire"; "fire" also takes "fire (except
+        // magical)"), each only when its `when` is made; before this one's
+        // immunities, resistances and weaknesses, so a weakness to fire can
+        // replace an immunity to it.
+        std::vector<Typed> removeImmunities;
+        // DCs in the texts of the abilities it already has, raised or
+        // lowered (Sporeborn: -2). For each ability the first entry that
+        // fits wins: its `when` is made and, with `match`, one of those
+        // words is among the ability's traits or starts a word of its name
+        // ("spore" fits Emit Spores). Spell DCs are spellBonus's.
+        struct AbilityDcs
+        {
+            int change = 0;
+            QStringList match;
+            QString when;
+        };
+        std::vector<AbilityDcs> abilityDcs;
         // Innate spells added to a spell list of that name ("Divine
         // Innate"), made if it has none, with the DC from the spell DC
         // table at `dc` for its level: "telekinetic haul (x3)" at the rank
