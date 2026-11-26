@@ -88,7 +88,7 @@
    "name": "Construct",
    "lines": [
     "**Traits** Many constructs lack minds and have the mindless trait.",
-    "**Immunities** bleed, death effects, diseased, doomed, drained, fatigued, healing, nonlethal attacks, paralyzed, poison, sickened, spirit, unconscious, vitality, void; if mindless, add mental"
+    "**Immunities** bleed, death effects, disease, doomed, drained, fatigued, healing, nonlethal attacks, paralyzed, poison, sickened, spirit, unconscious, vitality, void; if mindless, add mental"
    ]
   },
   "daemon": {
